@@ -1,18 +1,18 @@
 <template>
   <div>
-    <v-container v-if="album">
+    <v-container v-if="currentAlbum">
       <v-row align-content="center">
         <v-col cols="2">
           <v-img max-width="200" max-height="200" :src="cover"></v-img>
         </v-col>
         <v-col cols="10">
           <h1 class="title">
-            <span class="album-title" v-text="album.name"></span>
+            <span class="album-title" v-text="currentAlbum.name"></span>
             <v-btn fab small outlined color="dark-grey"
               ><v-icon>mdi-play</v-icon></v-btn
             >
           </h1>
-          <h2 class="subtitle-1" v-text="album.artist"></h2>
+          <h2 class="subtitle-1" v-text="currentAlbum.artist"></h2>
           <span class="subtitle-2">{{ metaData }}</span>
           <v-btn class="d-block btn-shuffle" text>
             <v-icon>mdi-shuffle</v-icon>
@@ -22,7 +22,7 @@
       </v-row>
       <v-row>
         <v-col cols="12">
-          <v-s-songlist :songs="album.song"></v-s-songlist>
+          <v-s-songlist :songs="currentAlbum.song"></v-s-songlist>
         </v-col>
       </v-row>
     </v-container>
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import VSEmptyState from "@/components/EmptyState";
 import { duration } from "@/utils/generic";
 import VSSonglist from "@/components/Songlist";
@@ -45,25 +45,25 @@ export default {
   components: { VSSonglist, VSEmptyState },
   data() {
     return {
-      album: null,
       cover: "",
       notFound: false
     };
   },
   computed: {
+    ...mapState("album", ["currentAlbum"]),
     metaData() {
       const data = [];
-      if (this?.album.year) {
-        data.push(this.album.year);
+      if (this?.currentAlbum.year) {
+        data.push(this.currentAlbum.year);
       }
-      if (this?.album.songCount) {
-        data.push(`${this.album.songCount} songs`);
+      if (this?.currentAlbum.songCount) {
+        data.push(`${this.currentAlbum.songCount} songs`);
       }
-      if (this?.album.duration) {
-        data.push(duration(this.album.duration));
+      if (this?.currentAlbum.duration) {
+        data.push(duration(this.currentAlbum.duration));
       }
-      if (this?.album.genre) {
-        data.push(this.album.genre);
+      if (this?.currentAlbum.genre) {
+        data.push(this.currentAlbum.genre);
       }
       return data.join(" • ");
     }
@@ -71,13 +71,8 @@ export default {
   mounted() {
     this.getAlbumFromMusicDirectory(this.$route.params).then(
       album => {
-        album.song = album.song.map(song => {
-          song.durationFormatted = duration(song.duration);
-          return song;
-        });
-        this.album = album;
-        if (this.album.coverArt) {
-          this.getCoverArt({ id: this.album.coverArt }).then(cover => {
+        if (album.coverArt) {
+          this.getCoverArt({ id: album.coverArt }).then(cover => {
             this.cover = window.URL.createObjectURL(cover);
           });
         }

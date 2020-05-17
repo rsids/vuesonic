@@ -4,6 +4,7 @@ import { user } from "@/store/userStore";
 import Vue from "vue";
 import Vuex from "vuex";
 import { stream } from "@/store/streamStore";
+import { annotation } from "@/store/annotationStore";
 
 Vue.use(Vuex);
 
@@ -15,6 +16,7 @@ export default new Vuex.Store({
     connection,
     user,
     album,
-    stream
+    stream,
+    annotation
   }
 });

@@ -64,7 +64,7 @@
 import VSLogin from "@/components/Login.vue";
 import VSPlayer from "@/components/Player.vue";
 import Vue from "vue";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default Vue.extend({
   name: "App",
@@ -79,8 +79,15 @@ export default Vue.extend({
     drawer: false
   }),
 
+  mounted() {
+    this.init();
+  },
+
   computed: {
     ...mapGetters("connection", ["hasCredentials"])
+  },
+  methods: {
+    ...mapActions("stream", ["init"])
   }
 });
 </script>

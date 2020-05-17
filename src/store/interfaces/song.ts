@@ -22,4 +22,6 @@ export interface Song {
   track: number;
   type: string;
   year: number;
+  starred: boolean;
+  durationFormatted?: string;
 }

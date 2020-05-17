@@ -4,19 +4,25 @@ import { RootState } from "@/store/RootState";
 import { SubsonicResponse } from "@/store/SubsonicResponse";
 import Vue from "vue";
 import { Module } from "vuex";
+import { Song } from "@/store/interfaces/song";
+import { duration } from "@/utils/generic";
 
 interface AlbumState {
   recents: Album[];
   covers: Map<string, string>;
+  currentAlbum?: Album;
 }
 
 const state: AlbumState = {
   recents: [],
-  covers: new Map<string, string>()
+  covers: new Map<string, string>(),
+  currentAlbum: undefined
 };
 
 const SET_RECENTS = "setRecentsMutation";
 const SET_COVER = "setCover";
+const SET_ALBUM = "setAlbum";
+export const UPDATE_STAR = "updateStar";
 
 const mutations = {
   [SET_RECENTS](state: AlbumState, value: Album[]) {
@@ -24,15 +30,43 @@ const mutations = {
   },
   [SET_COVER](state: AlbumState, value: Cover) {
     state.covers.set(value.id, value.cover);
+  },
+  [SET_ALBUM](state: AlbumState, value: Album) {
+    state.currentAlbum = value;
+  },
+  [UPDATE_STAR](state: AlbumState, { id, albumId, toggle }) {
+    if (state.currentAlbum) {
+      if (id) {
+        state.currentAlbum.song = state.currentAlbum.song.map((song: Song) => {
+          if (song.id === id) {
+            song.starred = toggle;
+          }
+          return song;
+        });
+      }
+      if (albumId) {
+        if (state.currentAlbum.id === albumId) {
+          state.currentAlbum.starred = toggle;
+        }
+      }
+    }
   }
 };
 
 const actions = {
-  getAlbum(ctx, { id }) {
+  getAlbum({ commit, state }, { id }) {
     return Vue.prototype.axios
       .get(`getAlbum?id=${id}`)
       .then((response: SubsonicResponse) => {
-        return response.album;
+        if (response.album) {
+          response.album.song = response.album.song.map(song => {
+            song.durationFormatted = duration(song.duration);
+            song.starred = !!song.starred;
+            return song;
+          });
+        }
+        commit(SET_ALBUM, response.album);
+        return state.currentAlbum;
       });
   },
 

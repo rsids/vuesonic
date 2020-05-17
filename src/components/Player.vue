@@ -12,6 +12,10 @@
           step="0.1"
           :max="song.duration"
         ></v-slider>
+        <span v-if="!!song" class="progress-text caption">
+          <span v-text="progressFormatted"></span> /
+          <span v-text="song.durationFormatted"></span>
+        </span>
         <div>
           <div v-if="!!song" class="d-flex align-center">
             <v-img
@@ -33,12 +37,14 @@
         </div>
         <div class="player-main-controls">
           <v-btn icon><v-icon>mdi-repeat</v-icon></v-btn>
-          <v-btn icon><v-icon>mdi-skip-previous</v-icon></v-btn>
+          <v-btn icon @click="skipPrev()"
+            ><v-icon>mdi-skip-previous</v-icon></v-btn
+          >
           <v-btn fab :disabled="!song" @click="togglePlay()" color="primary">
             <v-icon v-if="!playing">mdi-play</v-icon>
             <v-icon v-if="playing">mdi-pause</v-icon>
           </v-btn>
-          <v-btn icon><v-icon>mdi-skip-next</v-icon></v-btn>
+          <v-btn icon @click="skipNext()"><v-icon>mdi-skip-next</v-icon></v-btn>
           <v-btn icon color="#ff6600"><v-icon>mdi-shuffle</v-icon></v-btn>
         </div>
         <div>
@@ -53,6 +59,7 @@
 <script>
 import { mapActions, mapMutations, mapState } from "vuex";
 import { PAUSE, PLAY, SEEK } from "@/store/streamStore";
+import { duration } from "@/utils/generic";
 
 export default {
   name: "VSPlayer",
@@ -65,6 +72,7 @@ export default {
   },
   methods: {
     ...mapActions("album", ["getCoverArt"]),
+    ...mapActions("stream", ["next", "prev"]),
     ...mapMutations("stream", [PLAY, PAUSE, SEEK]),
 
     changePlayhead($event) {
@@ -73,6 +81,14 @@ export default {
     },
     startSeeking() {
       this.seeking = true;
+    },
+
+    skipNext() {
+      this.next();
+    },
+
+    skipPrev() {
+      this.prev();
     },
 
     togglePlay() {
@@ -89,6 +105,10 @@ export default {
       set(val) {
         this.songProgress = val;
       }
+    },
+
+    progressFormatted() {
+      return duration(this.songProgress);
     },
 
     playing: {
@@ -137,5 +157,11 @@ export default {
   left: 82px;
   right: -8px;
   top: -15px;
+}
+.progress-text {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  text-align: right;
 }
 </style>
