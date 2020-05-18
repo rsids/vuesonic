@@ -2,6 +2,9 @@ import { Album } from "@/store/interfaces/album";
 import { AlbumList } from "@/store/interfaces/albumList";
 import { User } from "@/store/interfaces/user";
 import { Directory } from "@/store/interfaces/directory";
+import { PlaylistList } from "@/store/interfaces/playlistList";
+import { Playlist } from "@/store/interfaces/playlist";
+import { Index } from "@/store/interfaces/Index";
 
 export interface SubsonicResponse {
   status: string;
@@ -10,6 +13,11 @@ export interface SubsonicResponse {
   albumList?: AlbumList;
   album?: Album;
   directory?: Directory;
+  playlists?: PlaylistList;
+  playlist?: Playlist;
+  artists?: {
+    index: Index[];
+  };
 }
 
 export interface SubsonicError {

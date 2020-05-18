@@ -1,4 +1,3 @@
-import { SubsonicError } from "@/store/SubsonicResponse";
 import axios, {
   AxiosError,
   AxiosRequestConfig,
@@ -7,6 +6,7 @@ import axios, {
 } from "axios";
 import Vue from "vue";
 import store from "../store";
+import { SubsonicError } from "@/store/interfaces/subsonicResponse";
 
 const $axios = axios.create({});
 

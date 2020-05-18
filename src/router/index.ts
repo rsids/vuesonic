@@ -5,6 +5,8 @@ import Library from "../views/Library.vue";
 import Artists from "../views/Artists.vue";
 import Playlists from "../views/Playlists.vue";
 import Recent from "../views/Recent.vue";
+import Albums from "../views/Albums.vue";
+import Playlist from "../views/Playlist.vue";
 
 Vue.use(VueRouter);
 
@@ -34,7 +36,7 @@ const routes: Array<RouteConfig> = [
       {
         path: "albums",
         name: "albums",
-        component: Playlists // todo: Change to albums
+        component: Albums
       }
     ]
   },
@@ -43,6 +45,12 @@ const routes: Array<RouteConfig> = [
     name: "album",
     alias: "/library/albums/:id/*",
     component: Album
+  },
+  {
+    path: "/library/playlists/:id",
+    name: "playlist",
+    alias: "/library/playlists/:id/*",
+    component: Playlist
   },
   {
     path: "/about",

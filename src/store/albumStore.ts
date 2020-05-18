@@ -1,24 +1,27 @@
 import { Album } from "@/store/interfaces/album";
 import { Cover } from "@/store/interfaces/cover";
 import { RootState } from "@/store/RootState";
-import { SubsonicResponse } from "@/store/SubsonicResponse";
 import Vue from "vue";
 import { Module } from "vuex";
 import { Song } from "@/store/interfaces/song";
 import { duration } from "@/utils/generic";
+import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
 
 interface AlbumState {
+  albums: Album[];
   recents: Album[];
   covers: Map<string, string>;
   currentAlbum?: Album;
 }
 
 const state: AlbumState = {
+  albums: [],
   recents: [],
   covers: new Map<string, string>(),
   currentAlbum: undefined
 };
 
+const SET_ALBUMS = "setAlbums";
 const SET_RECENTS = "setRecentsMutation";
 const SET_COVER = "setCover";
 const SET_ALBUM = "setAlbum";
@@ -33,6 +36,9 @@ const mutations = {
   },
   [SET_ALBUM](state: AlbumState, value: Album) {
     state.currentAlbum = value;
+  },
+  [SET_ALBUMS](state: AlbumState, value: Album[]) {
+    state.albums = value;
   },
   [UPDATE_STAR](state: AlbumState, { id, albumId, toggle }) {
     if (state.currentAlbum) {
@@ -85,6 +91,14 @@ const actions = {
       .get(`getAlbumList?type=newest&size=20`)
       .then((response: SubsonicResponse) => {
         commit(SET_RECENTS, response.albumList?.album);
+        return state.recents;
+      });
+  },
+  getAlbums({ commit, state }) {
+    return Vue.prototype.axios
+      .get(`getAlbumList?type=alphabeticalByName&size=21`)
+      .then((response: SubsonicResponse) => {
+        commit(SET_ALBUMS, response.albumList?.album);
         return state.recents;
       });
   },

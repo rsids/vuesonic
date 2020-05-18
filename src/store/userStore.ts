@@ -1,8 +1,8 @@
 import { User } from "@/store/interfaces/user";
 import { RootState } from "@/store/RootState";
-import { SubsonicResponse } from "@/store/SubsonicResponse";
 import Vue from "vue";
 import { Module } from "vuex";
+import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
 
 interface UserState {
   user?: User;

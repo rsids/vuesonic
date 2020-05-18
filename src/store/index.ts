@@ -5,6 +5,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 import { stream } from "@/store/streamStore";
 import { annotation } from "@/store/annotationStore";
+import { playlist } from "@/store/playlistStore";
+import { artist } from "@/store/artistStore";
 
 Vue.use(Vuex);
 
@@ -17,6 +19,8 @@ export default new Vuex.Store({
     user,
     album,
     stream,
-    annotation
+    annotation,
+    playlist,
+    artist
   }
 });

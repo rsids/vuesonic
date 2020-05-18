@@ -31,6 +31,11 @@ const actions = {
         { id, albumId, artistId, toggle },
         { root: true }
       );
+      commit(
+        "playlist/updateStar",
+        { id, albumId, artistId, toggle },
+        { root: true }
+      );
     });
   }
 

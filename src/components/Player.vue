@@ -18,14 +18,7 @@
         </span>
         <div>
           <div v-if="!!song" class="d-flex align-center">
-            <v-img
-              aspect-ratio="1"
-              max-width="90"
-              width="90"
-              max-height="90"
-              height="90"
-              :src="cover"
-            ></v-img>
+            <v-s-cover :size="90" type="album" :entity="song"></v-s-cover>
             <div class="ma-3">
               <div v-text="song.title" class="body-1 font-weight-medium"></div>
               <div class="body-2">
@@ -60,18 +53,18 @@
 import { mapActions, mapMutations, mapState } from "vuex";
 import { PAUSE, PLAY, SEEK } from "@/store/streamStore";
 import { duration } from "@/utils/generic";
+import VSCover from "@/components/Cover";
 
 export default {
   name: "VSPlayer",
+  components: { VSCover },
   data() {
     return {
-      cover: "",
       seeking: false,
       songProgress: 0
     };
   },
   methods: {
-    ...mapActions("album", ["getCoverArt"]),
     ...mapActions("stream", ["next", "prev"]),
     ...mapMutations("stream", [PLAY, PAUSE, SEEK]),
 
@@ -121,13 +114,6 @@ export default {
     }
   },
   watch: {
-    song: function(val) {
-      if (val) {
-        this.getCoverArt({ id: this.song.coverArt }).then(cover => {
-          this.cover = window.URL.createObjectURL(cover);
-        });
-      }
-    },
     progress: function(val) {
       if (!this.seeking) {
         this.songProgress = val;
@@ -136,7 +122,6 @@ export default {
   }
 };
 </script>
-
 <style lang="scss" scoped>
 .footer-container {
   padding-bottom: 0;
@@ -157,6 +142,7 @@ export default {
   left: 82px;
   right: -8px;
   top: -15px;
+  z-index: 1;
 }
 .progress-text {
   position: absolute;
