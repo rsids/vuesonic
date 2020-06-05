@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Album from "../views/Album.vue";
 import Library from "../views/Library.vue";
+import Artist from "../views/Artist.vue";
 import Artists from "../views/Artists.vue";
 import Playlists from "../views/Playlists.vue";
 import Recent from "../views/Recent.vue";
@@ -45,6 +46,12 @@ const routes: Array<RouteConfig> = [
     name: "album",
     alias: "/library/albums/:id/*",
     component: Album
+  },
+  {
+    path: "/library/artists/:id",
+    name: "artist",
+    alias: "/library/artists/:id/*",
+    component: Artist
   },
   {
     path: "/library/playlists/:id",

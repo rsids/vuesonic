@@ -1,6 +1,7 @@
 import { Song } from "@/store/interfaces/song";
 
 export interface Album {
+  album: string;
   artist: string;
   artistId: number;
   coverArt: string;

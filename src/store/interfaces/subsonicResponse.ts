@@ -5,12 +5,15 @@ import { Directory } from "@/store/interfaces/directory";
 import { PlaylistList } from "@/store/interfaces/playlistList";
 import { Playlist } from "@/store/interfaces/playlist";
 import { Index } from "@/store/interfaces/Index";
+import { Artist } from "@/store/interfaces/artist";
 
 export interface SubsonicResponse {
   status: string;
   version: string;
   user?: User;
   albumList?: AlbumList;
+  albumList2?: AlbumList;
+  artist?: Artist;
   album?: Album;
   directory?: Directory;
   playlists?: PlaylistList;

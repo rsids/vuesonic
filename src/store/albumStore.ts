@@ -9,6 +9,7 @@ import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
 
 interface AlbumState {
   albums: Album[];
+  hasMoreAlbums: boolean;
   recents: Album[];
   covers: Map<string, string>;
   currentAlbum?: Album;
@@ -16,6 +17,7 @@ interface AlbumState {
 
 const state: AlbumState = {
   albums: [],
+  hasMoreAlbums: true,
   recents: [],
   covers: new Map<string, string>(),
   currentAlbum: undefined
@@ -37,8 +39,9 @@ const mutations = {
   [SET_ALBUM](state: AlbumState, value: Album) {
     state.currentAlbum = value;
   },
-  [SET_ALBUMS](state: AlbumState, value: Album[]) {
-    state.albums = value;
+  [SET_ALBUMS](state: AlbumState, { albums, hasMoreAlbums }) {
+    state.albums = [].concat(state.albums as any, albums);
+    state.hasMoreAlbums = hasMoreAlbums;
   },
   [UPDATE_STAR](state: AlbumState, { id, albumId, toggle }) {
     if (state.currentAlbum) {
@@ -94,11 +97,18 @@ const actions = {
         return state.recents;
       });
   },
-  getAlbums({ commit, state }) {
+  getAlbums({ commit, state }, { start }) {
     return Vue.prototype.axios
-      .get(`getAlbumList?type=alphabeticalByName&size=21`)
+      .get(`getAlbumList?type=alphabeticalByName&size=21&offset=${start}`)
       .then((response: SubsonicResponse) => {
-        commit(SET_ALBUMS, response.albumList?.album);
+        let albums = response.albumList?.album;
+        let hasMoreAlbums = true;
+        if (albums && albums.length === 21) {
+          albums = albums.slice(0, 20);
+        } else {
+          hasMoreAlbums = false;
+        }
+        commit(SET_ALBUMS, { albums: albums, hasMore: hasMoreAlbums });
         return state.recents;
       });
   },

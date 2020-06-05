@@ -28,7 +28,8 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapMutations } from "vuex";
+import { PLAYLIST } from "@/store/streamStore";
 
 export default {
   name: "VSCover",
@@ -54,14 +55,24 @@ export default {
     }
   },
   methods: {
-    ...mapActions("album", ["getCoverArt"]),
+    ...mapActions("album", ["getCoverArt", "getAlbumFromMusicDirectory"]),
+    ...mapActions("stream", ["play"]),
+    ...mapMutations("stream", [PLAYLIST]),
 
     playIt() {
       // todo: implement
+      if (this.type === "album") {
+        this.getAlbumFromMusicDirectory(this.entity).then(album => {
+          // eslint-disable-next-line no-console
+          console.log("Play album:", album);
+          this[PLAYLIST](album.song);
+          this.play({ song: album.song[0] });
+        });
+      }
     }
   },
   mounted() {
-    if (this.entity.coverArt !== "") {
+    if (this.entity.coverArt && this.entity.coverArt !== "") {
       this.getCoverArt({ id: this.entity.coverArt }).then(cover => {
         this.cover = window.URL.createObjectURL(cover);
       });

@@ -50,6 +50,15 @@
       </div>
 
       <v-spacer></v-spacer>
+      <v-text-field
+        solo-inverted
+        flat
+        hide-details
+        label="Search"
+        v-model="searchQuery"
+        prepend-inner-icon="mdi-search"
+      ></v-text-field>
+      <v-spacer></v-spacer>
     </v-app-bar>
 
     <v-content class="main-content">
@@ -64,7 +73,10 @@
 import VSLogin from "@/components/Login.vue";
 import VSPlayer from "@/components/Player.vue";
 import Vue from "vue";
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
+
+let searchDelay;
+const SEARCH_DELAY = 150;
 
 export default Vue.extend({
   name: "App",
@@ -84,7 +96,20 @@ export default Vue.extend({
   },
 
   computed: {
-    ...mapGetters("connection", ["hasCredentials"])
+    ...mapGetters("connection", ["hasCredentials"]),
+    ...mapState("search", ["query"]),
+
+    searchQuery: {
+      get() {
+        return this.query;
+      },
+      set(val) {
+        clearTimeout(searchDelay);
+        searchDelay = setTimeout(() => {
+          this.query = val;
+        }, SEARCH_DELAY);
+      }
+    }
   },
   methods: {
     ...mapActions("stream", ["init"])

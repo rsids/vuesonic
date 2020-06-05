@@ -1,8 +1,8 @@
 <template>
-  <v-card :to="albumUrl" class="ma-3" max-width="200px" width="200px">
+  <v-card class="ma-3" max-width="200px" width="200px" @click="gotoAlbum()">
     <v-s-cover type="album" :size="200" :entity="album"></v-s-cover>
     <v-card-title class="subtitle-1">
-      <div class="text-no-wrap text-truncate" v-text="album.album"></div>
+      <div class="text-no-wrap text-truncate" v-text="albumName"></div>
     </v-card-title>
     <v-card-subtitle>
       <div class="text-no-wrap text-truncate" v-text="album.artist"></div>
@@ -26,6 +26,12 @@ export default {
     };
   },
 
+  methods: {
+    gotoAlbum() {
+      this.$router.push(this.albumUrl);
+    }
+  },
+
   computed: {
     albumUrl() {
       if (this.album) {
@@ -36,6 +42,15 @@ export default {
         return `/library/albums/${this.album.id}/${artist}/${album}`;
       }
       return undefined;
+    },
+
+    albumName() {
+      if (this.album.album) {
+        return this.album.album;
+      } else if (this.album.name) {
+        return this.album.name;
+      }
+      return "";
     }
   }
 };

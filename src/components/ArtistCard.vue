@@ -1,9 +1,13 @@
 <template>
-  <div class="artist" :to="artistUrl">
+  <div class="artist" @click="gotoArtist()">
     <v-sheet class="artist__photo ma-4" elevation="4">
       <v-s-cover :entity="artist" type="artist" :size="160"></v-s-cover>
     </v-sheet>
-    <span class="subtitle-1">{{ artist.name }}</span>
+    <span
+      class="subtitle-1 text-no-wrap text-truncate"
+      style="max-width: 160px"
+      >{{ artist.name }}</span
+    >
   </div>
 </template>
 
@@ -16,6 +20,12 @@ export default {
   components: { VSCover },
   props: {
     artist: Artist
+  },
+
+  methods: {
+    gotoArtist() {
+      this.$router.push(this.artistUrl);
+    }
   },
 
   computed: {

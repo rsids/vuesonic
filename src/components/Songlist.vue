@@ -2,6 +2,7 @@
   <v-data-table
     :hide-default-footer="true"
     class="elevation-1"
+    disable-pagination
     :headers="headers"
     :items="songs"
   >
@@ -21,7 +22,10 @@
         @mouseleave="hovered = null"
       >
         <td class="text-center">
-          <span v-text="item.item.track" v-if="hovered !== item.item.id"></span>
+          <span v-if="hovered !== item.item.id">
+            <span v-if="numbering === 'track'" v-text="item.item.track"></span>
+            <span v-else v-text="songs.indexOf(item.item) + 1"></span>
+          </span>
           <v-icon size="28" v-if="hovered === item.item.id">mdi-play</v-icon>
         </td>
         <td>

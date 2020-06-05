@@ -7,6 +7,7 @@ import { stream } from "@/store/streamStore";
 import { annotation } from "@/store/annotationStore";
 import { playlist } from "@/store/playlistStore";
 import { artist } from "@/store/artistStore";
+import { search } from "@/store/searchStore";
 
 Vue.use(Vuex);
 
@@ -21,6 +22,7 @@ export default new Vuex.Store({
     stream,
     annotation,
     playlist,
-    artist
+    artist,
+    search
   }
 });

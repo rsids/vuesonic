@@ -8,6 +8,9 @@
           v-for="(album, i) in albums"
           :key="i"
         ></v-s-album-card>
+        <div v-intersect="onIntersect" style="visibility: hidden">
+          INTERSECTOR
+        </div>
       </v-row>
     </v-container>
   </div>
@@ -21,17 +24,40 @@ export default {
   name: "Albums",
   components: { VSAlbumCard },
   data() {
-    return {};
+    return {
+      loading: true
+    };
   },
   mounted() {
-    this.getAlbums();
+    if (this.albums.length === 0) {
+      this.getAlbumSet();
+    } else {
+      setTimeout(() => {
+        this.loading = false;
+      }, 100);
+    }
   },
 
   computed: {
     ...mapState("album", ["albums"])
   },
   methods: {
-    ...mapActions("album", ["getAlbums"])
+    ...mapActions("album", ["getAlbums"]),
+
+    getAlbumSet() {
+      this.loading = true;
+      this.getAlbums({ start: this.albums.length }).then(() => {
+        // eslint-disable-next-line no-console
+        console.log("RESUKT");
+        this.loading = false;
+      });
+    },
+
+    onIntersect(entries, observer, isIntersecting) {
+      if (!this.loading && isIntersecting) {
+        this.getAlbumSet();
+      }
+    }
   }
 };
 </script>
