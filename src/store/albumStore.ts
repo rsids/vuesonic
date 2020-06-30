@@ -13,7 +13,13 @@ interface AlbumState {
   hasMoreAlbums: boolean;
   recents: Album[];
   covers: Map<string, string>;
+  albumsDetailed: Map<string, Album>;
+  musicDirectoryAlbumAdapter: Map<string, string>;
   currentAlbum?: Album;
+}
+
+interface Cancelable {
+  cancel: Function;
 }
 
 const state: AlbumState = {
@@ -21,6 +27,8 @@ const state: AlbumState = {
   hasMoreAlbums: true,
   recents: [],
   covers: new Map<string, string>(),
+  albumsDetailed: new Map<string, Album>(),
+  musicDirectoryAlbumAdapter: new Map<string, string>(),
   currentAlbum: undefined
 };
 const requests: CancelTokenSource[] = [];
@@ -66,32 +74,53 @@ const mutations = {
 const actions = {
   cancelAllRequests() {
     while (requests.length > 0) {
-      (requests.pop() as any).cancel();
+      (requests.pop() as Cancelable).cancel();
     }
   },
   getAlbum({ commit, state }, { id }) {
-    return Vue.prototype.axios
-      .get(`getAlbum?id=${id}`)
-      .then((response: SubsonicResponse) => {
-        if (response.album) {
-          response.album.song = response.album.song.map(song => {
-            song.durationFormatted = duration(song.duration);
-            song.starred = !!song.starred;
-            return song;
+    return new Promise(resolve => {
+      if (state.albumsDetailed.has(id)) {
+        commit(SET_ALBUM, state.albumsDetailed.get(id));
+        resolve(state.currentAlbum);
+      } else {
+        Vue.prototype.axios
+          .get(`getAlbum?id=${id}`)
+          .then((response: SubsonicResponse) => {
+            if (response.album) {
+              response.album.song = response.album.song.map(song => {
+                song.durationFormatted = duration(song.duration);
+                song.starred = !!song.starred;
+                return song;
+              });
+              state.albumsDetailed.set(id, response.album);
+            }
+            commit(SET_ALBUM, response.album);
+            resolve(state.currentAlbum);
           });
-        }
-        commit(SET_ALBUM, response.album);
-        return state.currentAlbum;
-      });
+      }
+    });
   },
 
-  getAlbumFromMusicDirectory(ctx, { id }) {
-    return Vue.prototype.axios
-      .get(`getMusicDirectory?id=${id}`)
-      .then((response: SubsonicResponse) => {
-        // eslint-disable-next-line no-console
-        return response?.directory?.child[0].albumId;
-      });
+  getAlbumFromMusicDirectory({ commit, state }, { id }) {
+    return new Promise(resolve => {
+      const getAlbum = function(albumId) {
+        return actions
+          .getAlbum({ commit, state }, { id: albumId })
+          .then(resolve);
+      };
+      if (state.musicDirectoryAlbumAdapter.has(id)) {
+        return getAlbum(state.musicDirectoryAlbumAdapter.get(id));
+      }
+      Vue.prototype.axios
+        .get(`getMusicDirectory?id=${id}`)
+        .then((response: SubsonicResponse) => {
+          state.musicDirectoryAlbumAdapter.set(
+            id,
+            response?.directory?.child[0].albumId
+          );
+          return getAlbum(response?.directory?.child[0].albumId);
+        });
+    });
   },
   getRecents({ commit, state }) {
     return Vue.prototype.axios

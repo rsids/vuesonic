@@ -4,18 +4,22 @@
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
-    <v-icon :size="size" v-if="cover === ''" class="no-cover">{{
-      icon
-    }}</v-icon>
-    <v-img
-      v-if="cover !== ''"
-      aspect-ratio="1"
-      :max-width="size"
-      :width="size"
-      :max-height="size"
-      :height="size"
-      :src="cover"
-    ></v-img>
+    <intersect @enter="loadCover()">
+      <div>
+        <v-icon :size="size" v-if="cover === ''" class="no-cover"
+          >{{ icon }}
+        </v-icon>
+        <v-img
+          v-if="cover !== ''"
+          aspect-ratio="1"
+          :max-width="size"
+          :width="size"
+          :max-height="size"
+          :height="size"
+          :src="cover"
+        ></v-img>
+      </div>
+    </intersect>
     <v-btn
       small
       class="btn--play"
@@ -28,16 +32,19 @@
 </template>
 
 <script>
+import Intersect from "vue-intersect";
 import { mapActions, mapMutations } from "vuex";
 import { PLAYLIST } from "@/store/streamStore";
 
 export default {
   name: "VSCover",
+  components: { Intersect },
   data() {
     return {
       cover: "",
       hover: false,
-      request: null
+      request: null,
+      requested: false
     };
   },
   props: {
@@ -67,16 +74,34 @@ export default {
           this.play({ song: album.song[0] });
         });
       }
+    },
+    loadCover() {
+      if (!this.requested) {
+        this.requested = true;
+        this.getCover();
+      }
+    },
+    getCover() {
+      if (
+        this.requested &&
+        this.entity &&
+        this.entity.coverArt &&
+        this.entity.coverArt !== ""
+      ) {
+        this.getCoverArt({ id: this.entity.coverArt }).then(cover => {
+          this.cover = window.URL.createObjectURL(cover);
+        });
+      } else {
+        this.cover = "";
+      }
     }
   },
-
-  mounted() {
-    if (this.entity && this.entity.coverArt && this.entity.coverArt !== "") {
-      this.getCoverArt({ id: this.entity.coverArt }).then(cover => {
-        this.cover = window.URL.createObjectURL(cover);
-      });
-    } else {
-      this.cover = "";
+  watch: {
+    entity: {
+      immediate: true,
+      handler: function() {
+        this.getCover();
+      }
     }
   }
 };

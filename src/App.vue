@@ -61,19 +61,21 @@
       <v-spacer></v-spacer>
     </v-app-bar>
 
-    <v-main class="main-content d-flex">
+    <v-main class="main-content">
       <div class="d-flex">
-        <v-btn icon class="btn--flex">
-          <v-icon>mdi-home</v-icon>
-          <span class="btn__content">Home</span>
-        </v-btn>
-        <v-btn icon class="btn--flex">
-          <v-icon>mdi-music-box-multiple</v-icon>
-          <span class="btn__content">Music Library</span>
-        </v-btn>
+        <div class="d-flex flex-column button-bar">
+          <v-btn text class="btn--flex">
+            <v-icon>mdi-home</v-icon>
+            <span class="btn__content">Home</span>
+          </v-btn>
+          <v-btn text class="btn--flex">
+            <v-icon>mdi-music-box-multiple</v-icon>
+            <span class="btn__content">Music Library</span>
+          </v-btn>
+        </div>
+        <router-view v-if="hasCredentials"></router-view>
+        <v-s-login :active="!hasCredentials"></v-s-login>
       </div>
-      <router-view v-if="hasCredentials"></router-view>
-      <v-s-login :active="!hasCredentials"></v-s-login>
     </v-main>
     <v-s-player></v-s-player>
   </v-app>
@@ -132,8 +134,14 @@ export default Vue.extend({
   background: #efefef;
   margin-bottom: 90px;
 }
+.button-bar {
+  margin-top: 20px;
+}
 
 .btn--flex {
+  color: #616161 !important;
+  margin-bottom: 20px;
+
   .btn__content {
     font-size: 0.8em;
     text-transform: none;
