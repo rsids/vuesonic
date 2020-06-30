@@ -34,7 +34,7 @@
 <script>
 import Intersect from "vue-intersect";
 import { mapActions, mapMutations } from "vuex";
-import { PLAYLIST } from "@/store/streamStore";
+import { PLAYLIST } from "@/store/modules/stream";
 
 export default {
   name: "VSCover",

@@ -43,7 +43,7 @@ import { mapActions, mapMutations, mapState } from "vuex";
 import VSCover from "@/components/Cover";
 import VSAlbumCard from "@/components/AlbumCard";
 import { noop } from "@/utils/generic";
-import { SET_ARTIST } from "@/store/artistStore";
+import { SET_ARTIST } from "@/store/modules/artist";
 export default {
   name: "Artist",
   components: { VSAlbumCard, VSCover, VSEmptyState },

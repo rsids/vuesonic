@@ -1,13 +1,13 @@
-import { album } from "@/store/albumStore";
-import { connection } from "@/store/connectionStore";
-import { user } from "@/store/userStore";
 import Vue from "vue";
 import Vuex from "vuex";
-import { stream } from "@/store/streamStore";
-import { annotation } from "@/store/annotationStore";
-import { playlist } from "@/store/playlistStore";
-import { artist } from "@/store/artistStore";
-import { search } from "@/store/searchStore";
+import { album } from "@/store/modules/album";
+import { annotation } from "@/store/modules/annotation";
+import { artist } from "@/store/modules/artist";
+import { search } from "@/store/modules/search";
+import { playlist } from "@/store/modules/playlist";
+import { connection } from "@/store/modules/connection";
+import { user } from "@/store/modules/user";
+import { stream } from "@/store/modules/stream";
 
 Vue.use(Vuex);
 
@@ -16,13 +16,13 @@ export default new Vuex.Store({
   mutations: {},
   actions: {},
   modules: {
-    connection,
-    user,
     album,
-    stream,
     annotation,
-    playlist,
     artist,
-    search
+    connection,
+    playlist,
+    search,
+    stream,
+    user
   }
 });

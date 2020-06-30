@@ -51,7 +51,7 @@
 
 <script>
 import { mapActions, mapMutations, mapState } from "vuex";
-import { PAUSE, PLAY, SEEK } from "@/store/streamStore";
+import { PAUSE, PLAY, SEEK } from "@/store/modules/stream";
 import { duration } from "@/utils/generic";
 import VSCover from "@/components/Cover";
 

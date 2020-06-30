@@ -43,7 +43,7 @@ import { mapActions, mapMutations, mapState } from "vuex";
 import VSEmptyState from "@/components/EmptyState";
 import { duration } from "@/utils/generic";
 import VSSonglist from "@/components/Songlist";
-import { PLAYLIST } from "@/store/streamStore";
+import { PLAYLIST } from "@/store/modules/stream";
 
 export default {
   name: "Playlist",

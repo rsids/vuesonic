@@ -48,7 +48,7 @@ import VSEmptyState from "@/components/EmptyState";
 import { duration, noop } from "@/utils/generic";
 import VSSonglist from "@/components/Songlist";
 import VSCover from "@/components/Cover";
-import { SET_ALBUM } from "@/store/albumStore";
+import { SET_ALBUM } from "@/store/modules/album";
 
 export default {
   name: "Album",

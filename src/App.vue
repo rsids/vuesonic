@@ -59,6 +59,15 @@
         prepend-inner-icon="mdi-search"
       ></v-text-field>
       <v-spacer></v-spacer>
+      <template v-slot:extension>
+        <v-tabs v-model="tab" align-with-title>
+          <v-tabs-slider color="yellow"></v-tabs-slider>
+
+          <v-tab v-for="item in items" :key="item">
+            {{ item }}
+          </v-tab>
+        </v-tabs>
+      </template>
     </v-app-bar>
 
     <v-main class="main-content">
@@ -73,7 +82,7 @@
             <span class="btn__content">Music Library</span>
           </v-btn>
         </div>
-        <router-view v-if="hasCredentials"></router-view>
+        <router-view v-if="hasCredentials" :key="$route.fullPath"></router-view>
         <v-s-login :active="!hasCredentials"></v-s-login>
       </div>
     </v-main>
@@ -100,7 +109,9 @@ export default Vue.extend({
 
   data: () => ({
     dialog: false,
-    drawer: false
+    drawer: false,
+    tab: null,
+    items: ["web", "shopping", "videos", "images", "news"]
   }),
 
   mounted() {

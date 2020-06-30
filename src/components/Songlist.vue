@@ -69,7 +69,7 @@
 
 <script>
 import { mapActions, mapMutations, mapState } from "vuex";
-import { PLAYLIST } from "@/store/streamStore";
+import { PLAYLIST } from "@/store/modules/stream";
 
 export default {
   name: "VSSonglist",
