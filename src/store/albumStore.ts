@@ -2,6 +2,7 @@ import { Album } from "@/store/interfaces/album";
 import { Cover } from "@/store/interfaces/cover";
 import { RootState } from "@/store/RootState";
 import Vue from "vue";
+import axios, { CancelTokenSource } from "axios";
 import { Module } from "vuex";
 import { Song } from "@/store/interfaces/song";
 import { duration } from "@/utils/generic";
@@ -22,11 +23,11 @@ const state: AlbumState = {
   covers: new Map<string, string>(),
   currentAlbum: undefined
 };
-
+const requests: CancelTokenSource[] = [];
 const SET_ALBUMS = "setAlbums";
 const SET_RECENTS = "setRecentsMutation";
 const SET_COVER = "setCover";
-const SET_ALBUM = "setAlbum";
+export const SET_ALBUM = "setAlbum";
 export const UPDATE_STAR = "updateStar";
 
 const mutations = {
@@ -40,7 +41,7 @@ const mutations = {
     state.currentAlbum = value;
   },
   [SET_ALBUMS](state: AlbumState, { albums, hasMoreAlbums }) {
-    state.albums = [].concat(state.albums as any, albums);
+    state.albums = ([] as Album[]).concat(state.albums, albums);
     state.hasMoreAlbums = hasMoreAlbums;
   },
   [UPDATE_STAR](state: AlbumState, { id, albumId, toggle }) {
@@ -63,6 +64,11 @@ const mutations = {
 };
 
 const actions = {
+  cancelAllRequests() {
+    while (requests.length > 0) {
+      (requests.pop() as any).cancel();
+    }
+  },
   getAlbum({ commit, state }, { id }) {
     return Vue.prototype.axios
       .get(`getAlbum?id=${id}`)
@@ -84,9 +90,7 @@ const actions = {
       .get(`getMusicDirectory?id=${id}`)
       .then((response: SubsonicResponse) => {
         // eslint-disable-next-line no-console
-        return actions.getAlbum(ctx, {
-          id: response?.directory?.child[0].albumId
-        });
+        return response?.directory?.child[0].albumId;
       });
   },
   getRecents({ commit, state }) {
@@ -121,20 +125,31 @@ const actions = {
       params.push(`size=${px}`);
       coverId += `|${size}`;
     }
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       if (state.covers.has(coverId)) {
         resolve(state.covers.get(coverId));
       } else {
+        const request = axios.CancelToken.source();
+        requests.push(request);
         return Vue.prototype.axios
           .get(`getCoverArt?${params.join("&")}`, {
-            responseType: "blob"
+            responseType: "blob",
+            cancelToken: request.token
           })
           .then(response => {
-            commit(SET_COVER, {
-              id: coverId,
-              cover: response.data
-            });
-            resolve(state.covers.get(coverId));
+            if (response) {
+              commit(SET_COVER, {
+                id: coverId,
+                cover: response.data
+              });
+              resolve(state.covers.get(coverId));
+            } else {
+              reject();
+            }
+          })
+          .catch(() => {
+            // cancelled
+            reject();
           });
       }
     });

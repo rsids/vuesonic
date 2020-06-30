@@ -61,10 +61,20 @@
       <v-spacer></v-spacer>
     </v-app-bar>
 
-    <v-content class="main-content">
+    <v-main class="main-content d-flex">
+      <div class="d-flex">
+        <v-btn icon class="btn--flex">
+          <v-icon>mdi-home</v-icon>
+          <span class="btn__content">Home</span>
+        </v-btn>
+        <v-btn icon class="btn--flex">
+          <v-icon>mdi-music-box-multiple</v-icon>
+          <span class="btn__content">Music Library</span>
+        </v-btn>
+      </div>
       <router-view v-if="hasCredentials"></router-view>
       <v-s-login :active="!hasCredentials"></v-s-login>
-    </v-content>
+    </v-main>
     <v-s-player></v-s-player>
   </v-app>
 </template>
@@ -117,9 +127,20 @@ export default Vue.extend({
 });
 </script>
 
-<style>
+<style lang="scss">
 .main-content {
   background: #efefef;
   margin-bottom: 90px;
+}
+
+.btn--flex {
+  .btn__content {
+    font-size: 0.8em;
+    text-transform: none;
+  }
+  .v-btn__content {
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>

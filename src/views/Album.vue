@@ -2,17 +2,25 @@
   <div>
     <v-container v-if="currentAlbum">
       <v-row align-content="center">
-        <v-col cols="2">
-          <v-img max-width="200" max-height="200" :src="cover"></v-img>
+        <v-col cols="3">
+          <v-s-cover
+            type="artist"
+            :size="160"
+            :entity="currentAlbum"
+          ></v-s-cover>
         </v-col>
-        <v-col cols="10">
+        <v-col cols="9">
           <h1 class="title">
             <span class="album-title" v-text="currentAlbum.name"></span>
             <v-btn fab small outlined color="dark-grey"
               ><v-icon>mdi-play</v-icon></v-btn
             >
           </h1>
-          <h2 class="subtitle-1" v-text="currentAlbum.artist"></h2>
+          <h2
+            class="subtitle-1"
+            v-text="currentAlbum.artist"
+            @click="gotoArtist()"
+          ></h2>
           <span class="subtitle-2">{{ metaData }}</span>
           <v-btn class="d-block btn-shuffle" text>
             <v-icon>mdi-shuffle</v-icon>
@@ -35,14 +43,16 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 import VSEmptyState from "@/components/EmptyState";
-import { duration } from "@/utils/generic";
+import { duration, noop } from "@/utils/generic";
 import VSSonglist from "@/components/Songlist";
+import VSCover from "@/components/Cover";
+import { SET_ALBUM } from "@/store/albumStore";
 
 export default {
   name: "Album",
-  components: { VSSonglist, VSEmptyState },
+  components: { VSCover, VSSonglist, VSEmptyState },
   data() {
     return {
       cover: "",
@@ -69,24 +79,29 @@ export default {
     }
   },
   mounted() {
-    this.getAlbumFromMusicDirectory(this.$route.params).then(
-      album => {
-        if (album.coverArt) {
-          this.getCoverArt({ id: album.coverArt }).then(cover => {
-            this.cover = window.URL.createObjectURL(cover);
-          });
-        }
-      },
-      err => {
-        if (err.error.code === 70) {
-          // 404
-          this.notFound = true;
-        }
+    this.getAlbum(this.$route.params).then(noop, err => {
+      if (err.error.code === 70) {
+        // 404
+        this.notFound = true;
       }
-    );
+    });
+  },
+  destroyed() {
+    this[SET_ALBUM](null);
   },
   methods: {
-    ...mapActions("album", ["getAlbumFromMusicDirectory", "getCoverArt"])
+    ...mapActions("album", ["getAlbum", "getCoverArt"]),
+    ...mapMutations("album", [SET_ALBUM]),
+
+    gotoArtist() {
+      const artist = encodeURIComponent(
+        this.currentAlbum.artist.split(" ").join("-")
+      );
+
+      this.$router.push(
+        `/library/artists/${this.currentAlbum.artistId}/${artist}`
+      );
+    }
   }
 };
 </script>

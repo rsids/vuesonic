@@ -47,8 +47,6 @@ export default {
     getAlbumSet() {
       this.loading = true;
       this.getAlbums({ start: this.albums.length }).then(() => {
-        // eslint-disable-next-line no-console
-        console.log("RESUKT");
         this.loading = false;
       });
     },

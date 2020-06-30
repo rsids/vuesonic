@@ -28,7 +28,7 @@ interface StreamState {
 }
 
 const state: StreamState = {
-  audio: new Audio(),
+  audio: document.createElement("audio"),
   song: undefined,
   paused: true,
   progress: 0,

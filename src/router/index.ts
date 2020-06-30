@@ -44,7 +44,7 @@ const routes: Array<RouteConfig> = [
   {
     path: "/library/albums/:id",
     name: "album",
-    alias: "/library/albums/:id/*",
+    alias: ["/library/albums/:id/*", "/library/albums/:id/*/*"],
     component: Album
   },
   {

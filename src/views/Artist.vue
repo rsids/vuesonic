@@ -21,12 +21,7 @@
           </h2>
         </v-col>
       </v-row>
-      <v-row
-        dense
-        align-content="start"
-        justify="start"
-        v-if="currentArtist.album"
-      >
+      <v-row align-content="start" justify="start" v-if="currentArtist.album">
         <v-s-album-card
           :album="album"
           v-for="(album, i) in currentArtist.album"

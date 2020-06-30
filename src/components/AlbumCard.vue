@@ -13,6 +13,7 @@
 <script>
 import { Album } from "@/store/interfaces/album";
 import VSCover from "@/components/Cover";
+import { mapActions } from "vuex";
 
 export default {
   name: "VSAlbumCard",
@@ -27,23 +28,32 @@ export default {
   },
 
   methods: {
+    ...mapActions("album", ["getAlbumFromMusicDirectory", "cancelAllRequests"]),
     gotoAlbum() {
-      this.$router.push(this.albumUrl);
-    }
-  },
+      this.cancelAllRequests();
+      if (this.album.isDir) {
+        this.getAlbumFromMusicDirectory(this.album).then(id => {
+          this.$router.push(this.getAlbumUrl(id));
+        });
+      } else {
+        this.$router.push(this.getAlbumUrl(this.album.id));
+      }
+    },
 
-  computed: {
-    albumUrl() {
+    getAlbumUrl(id) {
       if (this.album) {
         const artist = encodeURIComponent(
           this.album.artist.split(" ").join("-")
         );
-        const album = encodeURIComponent(this.album.album.split(" ").join("-"));
-        return `/library/albums/${this.album.id}/${artist}/${album}`;
+        const albumName = this.album.album || this.album.name;
+        const album = encodeURIComponent(albumName.split(" ").join("-"));
+        return `/library/albums/${id}/${artist}/${album}`.toLowerCase();
       }
       return undefined;
-    },
+    }
+  },
 
+  computed: {
     albumName() {
       if (this.album.album) {
         return this.album.album;

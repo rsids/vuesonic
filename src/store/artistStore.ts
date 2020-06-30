@@ -48,11 +48,7 @@ const actions = {
     return Vue.prototype.axios
       .get(`getArtist?id=${id}`)
       .then((response: SubsonicResponse) => {
-        const artists: Artist[] = [];
         if (response?.artist) {
-          // response.artists.index.forEach((idx: Index) => {
-          //   artists.push(...idx.artist);
-          // });
           commit(SET_ARTIST, response.artist);
         }
         return state.currentArtist;

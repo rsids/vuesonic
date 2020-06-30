@@ -14,6 +14,7 @@
 <script>
 import { Artist } from "@/store/interfaces/artist";
 import VSCover from "@/components/Cover";
+import { mapActions } from "vuex";
 
 export default {
   name: "VSArtistCard",
@@ -23,7 +24,9 @@ export default {
   },
 
   methods: {
+    ...mapActions("album", ["cancelAllRequests"]),
     gotoArtist() {
+      this.cancelAllRequests();
       this.$router.push(this.artistUrl);
     }
   },

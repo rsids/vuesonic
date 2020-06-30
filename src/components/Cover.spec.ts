@@ -1,25 +1,17 @@
 import Cover from "@/components/Cover.vue";
 import Vuex from "vuex";
-import { expect } from "chai";
-import Vuetify from "vuetify";
-import { mount, createLocalVue } from "@vue/test-utils";
+import { createLocalVue, mount } from "@vue/test-utils";
+import "jest";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe("Cover", () => {
-  let vuetify;
   const mountFunction = options => {
-    return mount(Cover, {
-      localVue,
-      vuetify,
-      ...options
-    });
+    return mount(Cover, { localVue, ...options });
   };
 
-  beforeEach(() => {
-    vuetify = new Vuetify();
-  });
+  beforeEach(() => {});
 
   it("should show a play button if the entity is not an artist", () => {
     const wrapper = mountFunction({
@@ -38,23 +30,21 @@ describe("Cover", () => {
         entity: {}
       }
     });
-    expect(wrapper.contains("v-btn")).to.be.false;
+    expect(wrapper.contains("v-btn")).toBeFalsy();
   });
 
   it("should return the correct icon for artist", () => {
-    expect(Cover["computed"].icon.call({ type: "artist" })).to.equal(
+    expect(Cover["computed"].icon.call({ type: "artist" })).toEqual(
       "mdi-account"
     );
   });
 
   it("should return the correct icon for album", () => {
-    expect(Cover["computed"].icon.call({ type: "album" })).to.equal(
-      "mdi-album"
-    );
+    expect(Cover["computed"].icon.call({ type: "album" })).toEqual("mdi-album");
   });
 
   it("should return the correct icon for playlist", () => {
-    expect(Cover["computed"].icon.call({ type: "artust" })).to.equal(
+    expect(Cover["computed"].icon.call({ type: "playlist" })).toEqual(
       "mdi-playlist"
     );
   });

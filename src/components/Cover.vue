@@ -36,7 +36,8 @@ export default {
   data() {
     return {
       cover: "",
-      hover: false
+      hover: false,
+      request: null
     };
   },
   props: {
@@ -60,19 +61,17 @@ export default {
     ...mapMutations("stream", [PLAYLIST]),
 
     playIt() {
-      // todo: implement
       if (this.type === "album") {
         this.getAlbumFromMusicDirectory(this.entity).then(album => {
-          // eslint-disable-next-line no-console
-          console.log("Play album:", album);
           this[PLAYLIST](album.song);
           this.play({ song: album.song[0] });
         });
       }
     }
   },
+
   mounted() {
-    if (this.entity.coverArt && this.entity.coverArt !== "") {
+    if (this.entity && this.entity.coverArt && this.entity.coverArt !== "") {
       this.getCoverArt({ id: this.entity.coverArt }).then(cover => {
         this.cover = window.URL.createObjectURL(cover);
       });
