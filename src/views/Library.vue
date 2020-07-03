@@ -14,8 +14,20 @@
 </template>
 
 <script>
+import { SET_TABS } from "@/store/modules/ui";
+import { mapMutations } from "vuex";
+
 export default {
-  name: "VSLibrary"
+  name: "VSLibrary",
+  mounted() {
+    this[SET_TABS](["playlists", "artists", "albums", "songs", "genres"]);
+  },
+  destroyed() {
+    this[SET_TABS]([]);
+  },
+  computed: {
+    ...mapMutations("ui", [SET_TABS])
+  }
 };
 </script>
 

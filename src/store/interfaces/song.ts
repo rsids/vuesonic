@@ -7,7 +7,7 @@ export interface Song {
   contentType: string;
   coverArt: number;
   created: string;
-  discNumber: number;
+  discNumber?: number;
   duration: number;
   genre: string;
   id: number;
@@ -22,6 +22,6 @@ export interface Song {
   track: number;
   type: string;
   year: number;
-  starred: boolean;
+  starred?: boolean;
   durationFormatted?: string;
 }

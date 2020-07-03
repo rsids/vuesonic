@@ -32,15 +32,15 @@ const state: AlbumState = {
   currentAlbum: undefined
 };
 const requests: CancelTokenSource[] = [];
-const SET_ALBUMS = "setAlbums";
-const SET_RECENTS = "setRecentsMutation";
-const SET_COVER = "setCover";
+export const SET_ALBUMS = "setAlbums";
+export const SET_RECENTS = "setRecentsMutation";
+export const SET_COVER = "setCover";
 export const SET_ALBUM = "setAlbum";
 export const UPDATE_STAR = "updateStar";
 
 const mutations = {
   [SET_RECENTS](state: AlbumState, value: Album[]) {
-    state.recents = Array.from(value);
+    state.recents = ([] as Album[]).concat(value);
   },
   [SET_COVER](state: AlbumState, value: Cover) {
     state.covers.set(value.id, value.cover);

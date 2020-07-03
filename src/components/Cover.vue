@@ -4,7 +4,7 @@
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
-    <intersect @enter="loadCover()">
+    <intersect @enter.once="loadCover()">
       <div>
         <v-icon :size="size" v-if="cover === ''" class="no-cover"
           >{{ icon }}

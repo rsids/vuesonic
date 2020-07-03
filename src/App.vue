@@ -38,37 +38,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-      :clipped-left="$vuetify.breakpoint.lgAndUp"
-    >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <div class="d-flex align-center">
-        VueSonic
-      </div>
-
-      <v-spacer></v-spacer>
-      <v-text-field
-        solo-inverted
-        flat
-        hide-details
-        label="Search"
-        v-model="searchQuery"
-        prepend-inner-icon="mdi-search"
-      ></v-text-field>
-      <v-spacer></v-spacer>
-      <template v-slot:extension>
-        <v-tabs v-model="tab" align-with-title>
-          <v-tabs-slider color="yellow"></v-tabs-slider>
-
-          <v-tab v-for="item in items" :key="item">
-            {{ item }}
-          </v-tab>
-        </v-tabs>
-      </template>
-    </v-app-bar>
+    <v-s-toolbar></v-s-toolbar>
 
     <v-main class="main-content">
       <div class="d-flex">
@@ -95,6 +65,7 @@ import VSLogin from "@/components/Login.vue";
 import VSPlayer from "@/components/Player.vue";
 import Vue from "vue";
 import { mapActions, mapGetters, mapState } from "vuex";
+import VSToolbar from "@/components/Toolbar.vue";
 
 let searchDelay;
 const SEARCH_DELAY = 150;
@@ -103,6 +74,7 @@ export default Vue.extend({
   name: "App",
 
   components: {
+    VSToolbar,
     VSLogin,
     VSPlayer
   },

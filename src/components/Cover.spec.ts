@@ -13,24 +13,32 @@ describe("Cover", () => {
 
   beforeEach(() => {});
 
-  it("should show a play button if the entity is not an artist", () => {
+  it("should show a play button if the entity is not an artist", done => {
     const wrapper = mountFunction({
       propsData: {
         type: "album",
         entity: {}
       }
     });
-    expect(wrapper.contains("v-btn"));
+    wrapper.find(".cover-container").trigger("mouseover");
+    wrapper.vm.$nextTick(() => {
+      expect(wrapper.find(".btn--play").exists()).toBeTruthy();
+      done();
+    });
   });
 
-  it("should not show a play button if the entity is an artist", () => {
+  it("should not show a play button if the entity is an artist", done => {
     const wrapper = mountFunction({
       propsData: {
         type: "artist",
         entity: {}
       }
     });
-    expect(wrapper.contains("v-btn")).toBeFalsy();
+    wrapper.find(".cover-container").trigger("mouseover");
+    wrapper.vm.$nextTick(() => {
+      expect(wrapper.find(".btn--play").exists()).toBeFalsy();
+      done();
+    });
   });
 
   it("should return the correct icon for artist", () => {
