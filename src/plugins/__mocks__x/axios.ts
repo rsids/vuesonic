@@ -1,20 +1,13 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import store from "../store";
 import {
   SubsonicError,
   SubsonicResponse
 } from "@/store/interfaces/subsonicResponse";
 
 export const $axios = axios.create({});
-
 $axios.interceptors.request.use(
   (config: AxiosRequestConfig) => {
-    const server = store.getters["connection/server"];
-    config.baseURL = `${server}/rest/`;
-    config.params = {
-      ...config.params,
-      ...store.getters["connection/params"]
-    };
+    config.baseURL = `http://localhost/`;
     return config;
   },
   (err: AxiosError) => {
@@ -26,6 +19,8 @@ $axios.interceptors.response.use(
   (
     response: AxiosResponse
   ): SubsonicResponse | Promise<SubsonicError> | any => {
+    // eslint-disable-next-line no-console
+    console.log(response);
     if (response.headers["content-type"].startsWith("application/json")) {
       if (response.data["subsonic-response"].status == "ok") {
         return response.data["subsonic-response"] as SubsonicResponse;
@@ -38,6 +33,8 @@ $axios.interceptors.response.use(
     return response;
   },
   err => {
-    Promise.reject(err);
+    // eslint-disable-next-line no-console
+    console.log("intercptr error", err);
+    return Promise.reject(err);
   }
 );

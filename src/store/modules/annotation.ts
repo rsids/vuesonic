@@ -1,6 +1,6 @@
 import { RootState } from "@/store/RootState";
-import Vue from "vue";
 import { Module } from "vuex";
+import { $axios } from "@/plugins/axios";
 
 interface AnnotationState {
   stars: number;
@@ -20,12 +20,12 @@ const actions = {
       params.push(`id=${id}`);
     }
     if (albumId) {
-      params.push(`id=${albumId}`);
+      params.push(`albumId=${albumId}`);
     }
     if (artistId) {
-      params.push(`id=${artistId}`);
+      params.push(`artistId=${artistId}`);
     }
-    return Vue.prototype.axios.get(`${action}?${params.join("&")}`).then(() => {
+    return $axios.get(`${action}?${params.join("&")}`).then(() => {
       commit(
         "album/updateStar",
         { id, albumId, artistId, toggle },
@@ -38,17 +38,6 @@ const actions = {
       );
     });
   }
-
-  // unstar(ctx, { id }) {
-  //   return Vue.prototype.axios
-  //     .get(`getMusicDirectory?id=${id}`)
-  //     .then((response: SubsonicResponse) => {
-  //       // eslint-disable-next-line no-console
-  //       return actions.getAnnotation(ctx, {
-  //         id: response?.directory?.child[0].annotationId
-  //       });
-  //     });
-  // }
 };
 
 export const annotation: Module<AnnotationState, RootState> = {

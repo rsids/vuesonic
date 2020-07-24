@@ -1,10 +1,11 @@
 import { RootState } from "@/store/RootState";
-import Vue from "vue";
 import { Module } from "vuex";
 import { Playlist } from "@/store/interfaces/playlist";
 import { duration } from "@/utils/generic";
 import { Song } from "@/store/interfaces/song";
 import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
+import { $axios } from "@/plugins/axios";
+
 const PLAYLISTS = "mutatePlaylists";
 const PLAYLIST = "mutatePlaylist";
 const UPDATE_STAR = "updateStar";
@@ -44,15 +45,15 @@ const mutations = {
 
 const actions = {
   getPlaylists({ commit }) {
-    return Vue.prototype.axios
-      .get(`getPlaylists`)
+    return $axios
+      .get<any, SubsonicResponse>(`getPlaylists`)
       .then((response: SubsonicResponse) => {
         commit(PLAYLISTS, response.playlists?.playlist);
       });
   },
   getPlaylist({ commit }, { id }) {
-    return Vue.prototype.axios
-      .get(`getPlaylist?id=${id}`)
+    return $axios
+      .get<any, SubsonicResponse>(`getPlaylist?id=${id}`)
       .then((response: SubsonicResponse) => {
         if (response.playlist) {
           response.playlist.entry = response.playlist?.entry.map(song => {
@@ -67,7 +68,7 @@ const actions = {
   }
 
   // unstar(ctx, { id }) {
-  //   return Vue.prototype.axios
+  //   return $axios
   //     .get(`getMusicDirectory?id=${id}`)
   //     .then((response: SubsonicResponse) => {
   //       // eslint-disable-next-line no-console

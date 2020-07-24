@@ -12,6 +12,9 @@ import Vuex from "vuex";
 import { cloneDeep } from "lodash";
 import { Album } from "@/store/interfaces/album";
 import { Cover } from "@/store/interfaces/cover";
+import { $axios } from "@/plugins/axios";
+import Mock = jest.Mock;
+jest.mock("@/plugins/axios");
 
 describe("album store", () => {
   let store;
@@ -343,5 +346,141 @@ describe("album store", () => {
         store.state.currentAlbum.song.find(s => s.id === 1305).starred
       ).toBeTruthy();
     });
+  });
+
+  describe("actions", () => {
+    describe("getRecents", () => {
+      it("should get the recent albums", async () => {
+        ($axios["get"] as Mock).mockImplementationOnce(() =>
+          Promise.resolve({
+            albumList: {
+              album: [album]
+            }
+          })
+        );
+
+        const promise = store.dispatch("getRecents");
+        await promise;
+        expect(store.state.recents).toEqual([album]);
+        // request.done();
+      });
+    });
+
+    describe("getAlbums", () => {
+      it("should get an alfabetical list of albums", async () => {
+        ($axios["get"] as Mock).mockImplementationOnce(() =>
+          Promise.resolve({
+            albumList: {
+              album: [album]
+            }
+          })
+        );
+        const promise = store.dispatch("getAlbums", { start: 0 });
+        await promise;
+        expect(store.state.albums).toEqual([album]);
+        expect(store.state.hasMoreAlbums).toEqual(false);
+      });
+
+      it("should set hasMoreAlbums to true if getAlbums returns > 20 albums", async () => {
+        ($axios["get"] as Mock).mockImplementationOnce(() =>
+          Promise.resolve({
+            albumList: {
+              album: Array(21).fill(album)
+            }
+          })
+        );
+        const promise = store.dispatch("getAlbums", { start: 0 });
+        await promise;
+        expect(store.state.albums.length).toEqual(20);
+        expect(store.state.hasMoreAlbums).toEqual(true);
+      });
+    });
+
+    describe("getAlbum", () => {
+      it("should fetch the album from the backend", async () => {
+        ($axios["get"] as Mock).mockImplementation(() =>
+          Promise.resolve({
+            album: album
+          })
+        );
+        const promise = store.dispatch("getAlbum", { id: 73 });
+        await promise;
+        expect(store.state.currentAlbum).toEqual(album);
+      });
+
+      it("should fetch the album only once from the backend", async () => {
+        const mock = ($axios["get"] as Mock).mockImplementation(() =>
+          Promise.resolve({
+            album: album
+          })
+        );
+        let promise = store.dispatch("getAlbum", { id: 73 });
+        await promise;
+        promise = store.dispatch("getAlbum", { id: 73 });
+        await promise;
+        expect(store.state.currentAlbum).toEqual(album);
+        expect(mock.mock.calls.length).toEqual(1);
+      });
+    });
+
+    describe("getAlbumFromMusicDirectory", () => {
+      it("should get the musicdirectory first, then the album", async () => {
+        const mock = ($axios["get"] as Mock)
+          .mockImplementationOnce(() =>
+            Promise.resolve({
+              directory: {
+                child: [
+                  {
+                    albumId: 73
+                  }
+                ]
+              }
+            })
+          )
+          .mockImplementationOnce(() =>
+            Promise.resolve({
+              album: album
+            })
+          );
+        let promise = store.dispatch("getAlbumFromMusicDirectory", { id: 73 });
+        await promise;
+        expect(store.state.currentAlbum).toEqual(album);
+        expect(mock.mock.calls.length).toEqual(2);
+      });
+
+      it("should get cache the musicdirectory ", async () => {
+        const mock = ($axios["get"] as Mock)
+          .mockImplementationOnce(() =>
+            Promise.resolve({
+              directory: {
+                child: [
+                  {
+                    albumId: 73
+                  }
+                ]
+              }
+            })
+          )
+          .mockImplementationOnce(() =>
+            Promise.resolve({
+              album: album
+            })
+          );
+        let promise = store.dispatch("getAlbumFromMusicDirectory", {
+          id: 73
+        });
+        await promise;
+        promise = store.dispatch("getAlbumFromMusicDirectory", { id: 73 });
+        await promise;
+        expect(store.state.currentAlbum).toEqual(album);
+        expect(mock.mock.calls.length).toEqual(2);
+      });
+    });
+  });
+
+  afterEach(() => {
+    // mockAxios.reset();
+    // nock.restore();
+    jest.clearAllMocks();
   });
 });

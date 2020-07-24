@@ -9,7 +9,7 @@ import { Artist } from "@/store/interfaces/artist";
 
 export interface SubsonicResponse {
   status: string;
-  version: string;
+  version?: string;
   user?: User;
   albumList?: AlbumList;
   albumList2?: AlbumList;
