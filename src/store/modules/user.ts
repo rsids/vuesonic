@@ -2,7 +2,7 @@ import { User } from "@/store/interfaces/user";
 import { RootState } from "@/store/RootState";
 import { Module } from "vuex";
 import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
-import { $axios } from "@/plugins/axios";
+import Vue from "vue";
 
 interface UserState {
   user?: User;
@@ -23,8 +23,8 @@ const mutations = {
 const actions = {
   getUser({ commit, state }, { user }) {
     return new Promise((resolve, reject) => {
-      $axios
-        .get<any, SubsonicResponse>(`getUser?username=${user}`)
+      Vue.prototype.axios
+        .get(`getUser?username=${user}`)
         .then((response: SubsonicResponse) => {
           commit(SET_USER, response.user);
           resolve(state.user);

@@ -12,8 +12,8 @@ import Vuex from "vuex";
 import { cloneDeep } from "lodash";
 import { Album } from "@/store/interfaces/album";
 import { Cover } from "@/store/interfaces/cover";
-import { $axios } from "@/plugins/axios";
 import Mock = jest.Mock;
+import Vue from "vue";
 jest.mock("@/plugins/axios");
 
 describe("album store", () => {
@@ -351,7 +351,7 @@ describe("album store", () => {
   describe("actions", () => {
     describe("getRecents", () => {
       it("should get the recent albums", async () => {
-        ($axios["get"] as Mock).mockImplementationOnce(() =>
+        (Vue.prototype.axios["get"] as Mock).mockImplementationOnce(() =>
           Promise.resolve({
             albumList: {
               album: [album]
@@ -368,7 +368,7 @@ describe("album store", () => {
 
     describe("getAlbums", () => {
       it("should get an alfabetical list of albums", async () => {
-        ($axios["get"] as Mock).mockImplementationOnce(() =>
+        (Vue.prototype.axios["get"] as Mock).mockImplementationOnce(() =>
           Promise.resolve({
             albumList: {
               album: [album]
@@ -382,7 +382,7 @@ describe("album store", () => {
       });
 
       it("should set hasMoreAlbums to true if getAlbums returns > 20 albums", async () => {
-        ($axios["get"] as Mock).mockImplementationOnce(() =>
+        (Vue.prototype.axios["get"] as Mock).mockImplementationOnce(() =>
           Promise.resolve({
             albumList: {
               album: Array(21).fill(album)
@@ -398,7 +398,7 @@ describe("album store", () => {
 
     describe("getAlbum", () => {
       it("should fetch the album from the backend", async () => {
-        ($axios["get"] as Mock).mockImplementation(() =>
+        (Vue.prototype.axios["get"] as Mock).mockImplementation(() =>
           Promise.resolve({
             album: album
           })
@@ -409,10 +409,11 @@ describe("album store", () => {
       });
 
       it("should fetch the album only once from the backend", async () => {
-        const mock = ($axios["get"] as Mock).mockImplementation(() =>
-          Promise.resolve({
-            album: album
-          })
+        const mock = (Vue.prototype.axios["get"] as Mock).mockImplementation(
+          () =>
+            Promise.resolve({
+              album: album
+            })
         );
         let promise = store.dispatch("getAlbum", { id: 73 });
         await promise;
@@ -425,7 +426,7 @@ describe("album store", () => {
 
     describe("getAlbumFromMusicDirectory", () => {
       it("should get the musicdirectory first, then the album", async () => {
-        const mock = ($axios["get"] as Mock)
+        const mock = (Vue.prototype.axios["get"] as Mock)
           .mockImplementationOnce(() =>
             Promise.resolve({
               directory: {
@@ -449,7 +450,7 @@ describe("album store", () => {
       });
 
       it("should get cache the musicdirectory ", async () => {
-        const mock = ($axios["get"] as Mock)
+        const mock = (Vue.prototype.axios["get"] as Mock)
           .mockImplementationOnce(() =>
             Promise.resolve({
               directory: {

@@ -1,6 +1,6 @@
 import { RootState } from "@/store/RootState";
 import { Module } from "vuex";
-import { $axios } from "@/plugins/axios";
+import Vue from "vue";
 
 interface AnnotationState {
   stars: number;
@@ -25,7 +25,7 @@ const actions = {
     if (artistId) {
       params.push(`artistId=${artistId}`);
     }
-    return $axios.get(`${action}?${params.join("&")}`).then(() => {
+    return Vue.prototype.axios.get(`${action}?${params.join("&")}`).then(() => {
       commit(
         "album/updateStar",
         { id, albumId, artistId, toggle },

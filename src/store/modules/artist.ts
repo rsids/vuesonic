@@ -3,7 +3,8 @@ import { RootState } from "@/store/RootState";
 import { Module } from "vuex";
 import { Index } from "@/store/interfaces";
 import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
-import { $axios } from "@/plugins/axios";
+import { AxiosResponse } from "axios";
+import Vue from "vue";
 
 interface ArtistState {
   artists: Artist[];
@@ -17,7 +18,7 @@ const state: ArtistState = {
   currentArtist: undefined
 };
 
-const SET_ARTISTS = "setArtists";
+export const SET_ARTISTS = "setArtists";
 export const SET_ARTIST = "setArtist";
 
 const mutations = {
@@ -31,8 +32,8 @@ const mutations = {
 
 const actions = {
   getArtists({ commit, state }) {
-    return $axios
-      .get<any, SubsonicResponse>(`getArtists`)
+    return Vue.prototype.axios
+      .get(`getArtists`)
       .then((response: SubsonicResponse) => {
         const artists: Artist[] = [];
         if (response.artists) {
@@ -46,11 +47,13 @@ const actions = {
   },
 
   getArtist({ commit, state }, { id }) {
-    return $axios
-      .get<any, SubsonicResponse>(`getArtist?id=${id}`)
+    return Vue.prototype.axios
+      .get(`getArtist?id=${id}`)
       .then((response: SubsonicResponse) => {
         if (response?.artist) {
           commit(SET_ARTIST, response.artist);
+        } else {
+          commit(SET_ARTIST, null);
         }
         return state.currentArtist;
       });

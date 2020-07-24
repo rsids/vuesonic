@@ -1,29 +1,8 @@
-import axios, {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse,
-  AxiosStatic
-} from "axios";
+import axios, { AxiosResponse, AxiosStatic } from "axios";
 import Vue from "vue";
-import store from "../store";
 import { SubsonicError } from "@/store/interfaces/subsonicResponse";
 
 const $axios = axios.create({});
-
-$axios.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
-    const server = store.getters["connection/server"];
-    config.baseURL = `${server}/rest/`;
-    config.params = {
-      ...config.params,
-      ...store.getters["connection/params"]
-    };
-    return config;
-  },
-  (err: AxiosError) => {
-    return Promise.reject(err);
-  }
-);
 
 $axios.interceptors.response.use(
   (response: AxiosResponse) => {

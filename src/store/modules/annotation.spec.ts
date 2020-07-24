@@ -3,17 +3,16 @@ import { annotation as annotationStore } from "@/store/modules/annotation";
 import { createLocalVue } from "@vue/test-utils";
 import Vuex from "vuex";
 import { cloneDeep } from "lodash";
-import { $axios } from "@/plugins/axios";
 import Mock = jest.Mock;
 import { album } from "@/store/modules/album";
 import { playlist } from "@/store/modules/playlist";
+import Vue from "vue";
 jest.mock("@/plugins/axios");
 jest.mock("@/store/modules/playlist");
 jest.mock("@/store/modules/album");
 
-describe("annotation store", () => {
+fdescribe("annotation store", () => {
   let store;
-
   beforeEach(() => {
     const localVue = createLocalVue();
     localVue.use(Vuex);
@@ -30,7 +29,7 @@ describe("annotation store", () => {
     let mock;
 
     beforeEach(() => {
-      mock = ($axios["get"] as Mock).mockImplementationOnce(() =>
+      mock = (Vue.prototype.axios["get"] as Mock).mockImplementationOnce(() =>
         Promise.resolve({})
       );
       store.commit = jest.fn();

@@ -1,12 +1,12 @@
 import { Album } from "@/store/interfaces/album";
 import { Cover } from "@/store/interfaces/cover";
 import { RootState } from "@/store/RootState";
-import axios, { CancelTokenSource } from "axios";
+import axios, { AxiosResponse, CancelTokenSource } from "axios";
 import { Module } from "vuex";
 import { Song } from "@/store/interfaces/song";
 import { duration } from "@/utils/generic";
 import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
-import { $axios } from "@/plugins/axios";
+import Vue from "vue";
 
 interface AlbumState {
   albums: Album[];
@@ -84,8 +84,8 @@ const actions = {
         commit(SET_ALBUM, state.albumsDetailed.get(id));
         resolve(state.currentAlbum);
       } else {
-        $axios
-          .get<any, SubsonicResponse>(`getAlbum?id=${id}`)
+        Vue.prototype.axios
+          .get(`getAlbum?id=${id}`)
           .then((response: SubsonicResponse) => {
             if (response.album) {
               response.album.song = response.album.song.map(song => {
@@ -112,8 +112,8 @@ const actions = {
       if (state.musicDirectoryAlbumAdapter.has(id)) {
         return getAlbum(state.musicDirectoryAlbumAdapter.get(id));
       }
-      $axios
-        .get<any, SubsonicResponse>(`getMusicDirectory?id=${id}`)
+      Vue.prototype.axios
+        .get(`getMusicDirectory?id=${id}`)
         .then((response: SubsonicResponse) => {
           state.musicDirectoryAlbumAdapter.set(
             id,
@@ -124,8 +124,8 @@ const actions = {
     });
   },
   getRecents({ commit, state }) {
-    return $axios
-      .get<any, SubsonicResponse>(`getAlbumList?type=newest&size=20`)
+    return Vue.prototype.axios
+      .get(`getAlbumList?type=newest&size=20`)
       .then((response: SubsonicResponse) => {
         commit(SET_RECENTS, response.albumList?.album);
         return state.recents;
@@ -133,10 +133,8 @@ const actions = {
   },
 
   getAlbums({ commit, state }, { start }) {
-    return $axios
-      .get<any, SubsonicResponse>(
-        `getAlbumList?type=alphabeticalByName&size=21&offset=${start}`
-      )
+    return Vue.prototype.axios
+      .get(`getAlbumList?type=alphabeticalByName&size=21&offset=${start}`)
       .then((response: SubsonicResponse) => {
         let albums = response.albumList?.album;
         let hasMoreAlbums = true;
@@ -164,7 +162,7 @@ const actions = {
       } else {
         const request = axios.CancelToken.source();
         requests.push(request);
-        return $axios
+        return Vue.prototype.axios
           .get(`getCoverArt?${params.join("&")}`, {
             responseType: "blob",
             cancelToken: request.token
