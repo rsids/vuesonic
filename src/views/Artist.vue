@@ -1,26 +1,25 @@
 <template>
   <div>
     <v-container v-if="currentArtist">
-      <v-row align-content="center">
-        <v-col cols="3">
-          <v-s-cover
-            type="artist"
-            :size="160"
-            :entity="currentArtist"
-          ></v-s-cover>
-        </v-col>
-        <v-col cols="9">
+      <div class="d-flex mb-8">
+        <v-s-cover
+          type="artist"
+          :size="160"
+          :entity="currentArtist"
+        ></v-s-cover>
+        <div class="pl-4 pt-4">
           <h1 class="title">
             <span class="artist-title" v-text="currentArtist.name"></span>&nbsp;
-            <v-btn fab small outlined color="dark-grey"
-              ><v-icon>mdi-play</v-icon></v-btn
-            >
+            <!--            <v-btn fab small outlined color="dark-grey"-->
+            <!--              ><v-icon>mdi-play</v-icon></v-btn-->
+            <!--            >-->
+            <!-- @todo implement play all albums -->
           </h1>
           <h2 class="subtitle-1">
             <span v-text="currentArtist.albumCount"></span> albums
           </h2>
-        </v-col>
-      </v-row>
+        </div>
+      </div>
       <v-row align-content="start" justify="start" v-if="currentArtist.album">
         <v-s-album-card
           :album="album"

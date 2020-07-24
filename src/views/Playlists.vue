@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h4>Playlists</h4>
     <v-container fluid>
       <v-row dense align-content="start" justify="start" v-if="playlists">
         <v-s-playlist-card
@@ -9,6 +8,12 @@
           :key="i"
         ></v-s-playlist-card>
       </v-row>
+
+      <v-s-empty-state
+        v-if="playlists && playlists.length === 0"
+        icon="mdi-playlist-music"
+        description="No playlists found!"
+      ></v-s-empty-state>
     </v-container>
   </div>
 </template>
@@ -16,10 +21,11 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import VSPlaylistCard from "@/components/PlaylistCard";
+import VSEmptyState from "@/components/EmptyState";
 
 export default {
   name: "Playlists",
-  components: { VSPlaylistCard },
+  components: { VSEmptyState, VSPlaylistCard },
   data() {
     return {};
   },

@@ -5,7 +5,9 @@
     dark
     :clipped-left="$vuetify.breakpoint.lgAndUp"
   >
-    <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+    <v-app-bar-nav-icon
+      @click.stop="showDrawer = !showDrawer"
+    ></v-app-bar-nav-icon>
     <div class="d-flex align-center">
       VueSonic
     </div>
@@ -21,9 +23,9 @@
     ></v-text-field>
     <v-spacer></v-spacer>
     <template v-slot:extension>
-      <v-tabs align-with-title v-model="tab">
+      <v-tabs v-model="tab" centered>
         <v-tabs-slider color="yellow"></v-tabs-slider>
-        <v-tab v-for="item in toolbarTabs" :key="item">
+        <v-tab v-for="item in toolbarTabs" :key="item" :to="{ name: item }">
           {{ item }}
         </v-tab>
       </v-tabs>
@@ -32,24 +34,35 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapMutations, mapState } from "vuex";
+import { SET_DRAWER } from "@/store/modules/ui";
 
 export default {
   name: "VSToolbar",
   data() {
     return {
-      drawer: false,
       searchQuery: "",
       tab: ""
     };
   },
   computed: {
-    ...mapState("ui", ["tabs"]),
+    ...mapState("ui", ["tabs", "drawer"]),
     toolbarTabs: {
       get() {
         return this.tabs;
       }
+    },
+    showDrawer: {
+      get() {
+        return this.drawer;
+      },
+      set(val) {
+        this[SET_DRAWER](val);
+      }
     }
+  },
+  methods: {
+    ...mapMutations("ui", [SET_DRAWER])
   }
 };
 </script>

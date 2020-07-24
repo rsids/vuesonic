@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h3>Artists</h3>
     <v-container fluid>
       <v-row dense align-content="start" justify="start" v-if="artists">
         <v-s-artist-card

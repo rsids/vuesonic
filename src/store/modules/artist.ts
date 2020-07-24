@@ -3,7 +3,6 @@ import { RootState } from "@/store/RootState";
 import { Module } from "vuex";
 import { Index } from "@/store/interfaces";
 import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
-import { AxiosResponse } from "axios";
 import Vue from "vue";
 
 interface ArtistState {

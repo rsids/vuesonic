@@ -9,7 +9,7 @@
 <script>
 export default {
   name: "VSEmptyState",
-  props: ["icon", "label", "description"]
+  props: ["icon", "description"]
 };
 </script>
 

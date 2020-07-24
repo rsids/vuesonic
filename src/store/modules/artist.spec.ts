@@ -36,7 +36,8 @@ describe("artist store", () => {
           duration: 3135,
           created: "2014-04-08T20:16:35.000Z",
           year: 2003,
-          genre: "Rock"
+          genre: "Rock",
+          song: []
         },
         {
           id: 69,
@@ -48,7 +49,8 @@ describe("artist store", () => {
           duration: 2728,
           created: "2014-04-08T20:17:31.000Z",
           year: 2006,
-          genre: "Rock"
+          genre: "Rock",
+          song: []
         },
         {
           id: 72,
@@ -60,7 +62,8 @@ describe("artist store", () => {
           duration: 3179,
           created: "2015-10-25T14:23:00.000Z",
           year: 2015,
-          genre: "Pop / Rock"
+          genre: "Pop / Rock",
+          song: []
         },
         {
           id: 74,
@@ -72,7 +75,8 @@ describe("artist store", () => {
           duration: 4309,
           created: "2014-04-08T20:17:32.000Z",
           year: 2008,
-          genre: "Rock"
+          genre: "Rock",
+          song: []
         },
         {
           id: 73,
@@ -84,7 +88,8 @@ describe("artist store", () => {
           duration: 3095,
           created: "2014-04-08T20:17:33.000Z",
           year: 2001,
-          genre: "Alternative"
+          genre: "Alternative",
+          song: []
         },
         {
           id: 75,
@@ -96,7 +101,8 @@ describe("artist store", () => {
           duration: 2980,
           created: "2014-04-08T20:17:47.000Z",
           year: 1999,
-          genre: "Other"
+          genre: "Other",
+          song: []
         },
         {
           id: 71,
@@ -108,7 +114,8 @@ describe("artist store", () => {
           duration: 3207,
           created: "2014-04-08T19:40:30.000Z",
           year: 2012,
-          genre: "Indie Rock"
+          genre: "Indie Rock",
+          song: []
         },
         {
           id: 70,
@@ -120,7 +127,8 @@ describe("artist store", () => {
           duration: 3254,
           created: "2014-04-08T20:18:01.000Z",
           year: 2009,
-          genre: "Brit Rock"
+          genre: "Brit Rock",
+          song: []
         }
       ]
     };

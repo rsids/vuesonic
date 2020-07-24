@@ -1,7 +1,7 @@
 import { Album } from "@/store/interfaces/album";
 import { Cover } from "@/store/interfaces/cover";
 import { RootState } from "@/store/RootState";
-import axios, { AxiosResponse, CancelTokenSource } from "axios";
+import axios, { CancelTokenSource } from "axios";
 import { Module } from "vuex";
 import { Song } from "@/store/interfaces/song";
 import { duration } from "@/utils/generic";
@@ -10,12 +10,13 @@ import Vue from "vue";
 
 interface AlbumState {
   albums: Album[];
-  hasMoreAlbums: boolean;
-  recents: Album[];
-  covers: Map<string, string>;
   albumsDetailed: Map<string, Album>;
-  musicDirectoryAlbumAdapter: Map<string, string>;
+  covers: Map<string, string>;
   currentAlbum?: Album;
+  hasMoreAlbums: boolean;
+  musicDirectoryAlbumAdapter: Map<string, string>;
+  recents: Album[];
+  starred?: Song[];
 }
 
 interface Cancelable {
@@ -24,33 +25,35 @@ interface Cancelable {
 
 const state: AlbumState = {
   albums: [],
-  hasMoreAlbums: true,
-  recents: [],
-  covers: new Map<string, string>(),
   albumsDetailed: new Map<string, Album>(),
+  covers: new Map<string, string>(),
+  currentAlbum: undefined,
+  hasMoreAlbums: true,
   musicDirectoryAlbumAdapter: new Map<string, string>(),
-  currentAlbum: undefined
+  recents: [],
+  starred: undefined
 };
 const requests: CancelTokenSource[] = [];
-export const SET_ALBUMS = "setAlbums";
-export const SET_RECENTS = "setRecentsMutation";
-export const SET_COVER = "setCover";
 export const SET_ALBUM = "setAlbum";
+export const SET_ALBUMS = "setAlbums";
+export const SET_COVER = "setCover";
+export const SET_RECENTS = "setRecentsMutation";
+export const SET_STARRED = "setStarred";
 export const UPDATE_STAR = "updateStar";
 
 const mutations = {
-  [SET_RECENTS](state: AlbumState, value: Album[]) {
-    state.recents = ([] as Album[]).concat(value);
+  [SET_ALBUM](state: AlbumState, value: Album) {
+    state.currentAlbum = value;
   },
   [SET_COVER](state: AlbumState, value: Cover) {
     state.covers.set(value.id, value.cover);
   },
-  [SET_ALBUM](state: AlbumState, value: Album) {
-    state.currentAlbum = value;
-  },
   [SET_ALBUMS](state: AlbumState, { albums, hasMoreAlbums }) {
     state.albums = ([] as Album[]).concat(state.albums, albums);
     state.hasMoreAlbums = hasMoreAlbums;
+  },
+  [SET_STARRED](state: AlbumState, value: Song[]) {
+    state.starred = ([] as Song[]).concat(value);
   },
   [UPDATE_STAR](state: AlbumState, { id, albumId, toggle }) {
     if (state.currentAlbum) {
@@ -61,6 +64,17 @@ const mutations = {
           }
           return song;
         });
+        if (state.starred) {
+          if (toggle) {
+            state.starred = state.starred.concat(state.currentAlbum.song);
+          } else {
+            state.starred = state.starred.filter(
+              song =>
+                state.currentAlbum?.song.find(s => s.id === song.id) ===
+                undefined
+            );
+          }
+        }
       }
       if (albumId) {
         if (state.currentAlbum.id === albumId) {
@@ -184,6 +198,21 @@ const actions = {
           });
       }
     });
+  },
+
+  getStarred({ commit, state }) {
+    return Vue.prototype.axios
+      .get(`getStarred2`)
+      .then((response: SubsonicResponse) => {
+        const songs = ([] as Song[])
+          .concat(response.starred2?.song)
+          .map(song => {
+            song.durationFormatted = duration(song.duration);
+            return song;
+          });
+        commit(SET_STARRED, songs);
+        return state.starred;
+      });
   }
 };
 

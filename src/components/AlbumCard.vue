@@ -32,8 +32,8 @@ export default {
     gotoAlbum() {
       this.cancelAllRequests();
       if (this.album.isDir) {
-        this.getAlbumFromMusicDirectory(this.album).then(id => {
-          this.$router.push(this.getAlbumUrl(id));
+        this.getAlbumFromMusicDirectory(this.album).then(album => {
+          this.$router.push(this.getAlbumUrl(album.id));
         });
       } else {
         this.$router.push(this.getAlbumUrl(this.album.id));

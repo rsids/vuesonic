@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-navigation-drawer
-      v-model="drawer"
+      v-model="showDrawer"
       :clipped="$vuetify.breakpoint.lgAndUp"
       app
     >
@@ -41,20 +41,10 @@
     <v-s-toolbar></v-s-toolbar>
 
     <v-main class="main-content">
-      <div class="d-flex">
-        <div class="d-flex flex-column button-bar">
-          <v-btn text class="btn--flex">
-            <v-icon>mdi-home</v-icon>
-            <span class="btn__content">Home</span>
-          </v-btn>
-          <v-btn text class="btn--flex">
-            <v-icon>mdi-music-box-multiple</v-icon>
-            <span class="btn__content">Music Library</span>
-          </v-btn>
-        </div>
+      <div class="pt-8">
         <router-view v-if="hasCredentials" :key="$route.fullPath"></router-view>
-        <v-s-login :active="!hasCredentials"></v-s-login>
       </div>
+      <v-s-login :active="!hasCredentials"></v-s-login>
     </v-main>
     <v-s-player></v-s-player>
   </v-app>
@@ -64,8 +54,9 @@
 import VSLogin from "@/components/Login.vue";
 import VSPlayer from "@/components/Player.vue";
 import Vue from "vue";
-import { mapActions, mapGetters, mapState } from "vuex";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import VSToolbar from "@/components/Toolbar.vue";
+import { SET_DRAWER } from "@/store/modules/ui";
 
 let searchDelay;
 const SEARCH_DELAY = 150;
@@ -81,7 +72,6 @@ export default Vue.extend({
 
   data: () => ({
     dialog: false,
-    drawer: false,
     tab: null,
     items: ["web", "shopping", "videos", "images", "news"]
   }),
@@ -93,7 +83,15 @@ export default Vue.extend({
   computed: {
     ...mapGetters("connection", ["hasCredentials"]),
     ...mapState("search", ["query"]),
-
+    ...mapState("ui", ["drawer"]),
+    showDrawer: {
+      get() {
+        return this.drawer;
+      },
+      set(val) {
+        this[SET_DRAWER](val);
+      }
+    },
     searchQuery: {
       get() {
         return this.query;
@@ -107,7 +105,8 @@ export default Vue.extend({
     }
   },
   methods: {
-    ...mapActions("stream", ["init"])
+    ...mapActions("stream", ["init"]),
+    ...mapMutations("ui", [SET_DRAWER])
   }
 });
 </script>

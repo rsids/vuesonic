@@ -1,15 +1,9 @@
 <template>
   <div>
     <v-container v-if="currentAlbum">
-      <v-row align-content="center">
-        <v-col cols="3">
-          <v-s-cover
-            type="artist"
-            :size="160"
-            :entity="currentAlbum"
-          ></v-s-cover>
-        </v-col>
-        <v-col cols="9">
+      <div class="d-flex mb-8">
+        <v-s-cover type="artist" :size="160" :entity="currentAlbum"></v-s-cover>
+        <div class="pl-4 pt-4">
           <h1 class="title">
             <span class="album-title" v-text="currentAlbum.name"></span>
             <v-btn fab small outlined color="dark-grey"
@@ -26,8 +20,8 @@
             <v-icon>mdi-shuffle</v-icon>
             shuffle
           </v-btn>
-        </v-col>
-      </v-row>
+        </div>
+      </div>
       <v-row>
         <v-col cols="12">
           <v-s-songlist :songs="currentAlbum.song"></v-s-songlist>

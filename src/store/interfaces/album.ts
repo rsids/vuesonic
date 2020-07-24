@@ -10,7 +10,7 @@ export interface Album {
   genre?: string;
   id: number;
   name: string;
-  song?: Song[];
+  song: Song[];
   songCount: number;
   year: number;
   starred?: boolean;

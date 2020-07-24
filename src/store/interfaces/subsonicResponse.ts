@@ -6,6 +6,7 @@ import { PlaylistList } from "@/store/interfaces/playlistList";
 import { Playlist } from "@/store/interfaces/playlist";
 import { Index } from "@/store/interfaces/Index";
 import { Artist } from "@/store/interfaces/artist";
+import { Song } from "@/store/interfaces/song";
 
 export interface SubsonicResponse {
   status: string;
@@ -18,6 +19,9 @@ export interface SubsonicResponse {
   directory?: Directory;
   playlists?: PlaylistList;
   playlist?: Playlist;
+  starred2: {
+    song: Song[];
+  };
   artists?: {
     index: Index[];
   };

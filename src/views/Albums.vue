@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h4>Albums</h4>
     <v-container fluid>
       <v-row dense align-content="start" justify="start" v-if="albums">
         <v-s-album-card

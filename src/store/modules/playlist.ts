@@ -1,5 +1,6 @@
 import { RootState } from "@/store/RootState";
 import { Module } from "vuex";
+import qs from "qs";
 import { Playlist } from "@/store/interfaces/playlist";
 import { duration } from "@/utils/generic";
 import { Song } from "@/store/interfaces/song";
@@ -44,17 +45,17 @@ const mutations = {
 };
 
 const actions = {
-  getPlaylists({ commit }) {
+  createPlaylist({ commit }, { title, songs }) {
     return Vue.prototype.axios
-      .get(`getPlaylists`)
+      .get(`createPlaylist`, {
+        params: {
+          name: title,
+          songId: songs.map(song => song.id)
+        },
+        paramsSerializer: params => qs.stringify(params)
+      })
       .then((response: SubsonicResponse) => {
-        commit(PLAYLISTS, response.playlists?.playlist);
-      });
-  },
-  getPlaylist({ commit }, { id }) {
-    return Vue.prototype.axios
-      .get(`getPlaylist?id=${id}`)
-      .then((response: SubsonicResponse) => {
+        // todo: duplicate code, merge with getPlaylist response handler
         if (response.playlist) {
           response.playlist.entry = response.playlist?.entry.map(song => {
             song.durationFormatted = duration(song.duration);
@@ -65,18 +66,35 @@ const actions = {
         commit(PLAYLIST, response.playlist);
         return response.playlist;
       });
-  }
+  },
 
-  // unstar(ctx, { id }) {
-  //   return Vue.prototype.axios
-  //     .get(`getMusicDirectory?id=${id}`)
-  //     .then((response: SubsonicResponse) => {
-  //       // eslint-disable-next-line no-console
-  //       return actions.getPlaylist(ctx, {
-  //         id: response?.directory?.child[0].playlistId
-  //       });
-  //     });
-  // }
+  deletePlaylist({ commit }, { id }) {
+    return Vue.prototype.axios.get(`deletePlaylist?id=${id}`).then(() => {
+      commit(PLAYLISTS, undefined);
+    });
+  },
+  getPlaylists({ commit }) {
+    return Vue.prototype.axios
+      .get(`getPlaylists`)
+      .then((response: SubsonicResponse) => {
+        commit(PLAYLISTS, response.playlists?.playlist || []);
+      });
+  },
+  getPlaylist({ commit }, { id }) {
+    return Vue.prototype.axios
+      .get(`getPlaylist?id=${id}`)
+      .then((response: SubsonicResponse) => {
+        if (response.playlist) {
+          response.playlist.entry = response.playlist?.entry?.map(song => {
+            song.durationFormatted = duration(song.duration);
+            song.starred = !!song.starred;
+            return song;
+          });
+        }
+        commit(PLAYLIST, response.playlist);
+        return response.playlist;
+      });
+  }
 };
 
 export const playlist: Module<PlaylistState, RootState> = {
