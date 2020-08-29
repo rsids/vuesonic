@@ -31,7 +31,7 @@
               class="text-no-wrap text-truncate"
             ></span>
             <v-spacer></v-spacer>
-            <v-menu bottom right>
+            <v-menu bottom right close-on-click>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn icon v-bind="attrs" v-on="on">
                   <v-icon>mdi-dots-vertical</v-icon>
@@ -45,35 +45,7 @@
                   <v-list-item-title>Add to queue</v-list-item-title>
                 </v-list-item>
                 <v-divider></v-divider>
-                <v-menu bottom right open-on-hover offset-x>
-                  <template v-slot:activator="{ on, attrs2 }">
-                    <v-list-item
-                      v-bind="attrs2"
-                      v-on="on"
-                      @mouseover="triggerGetPlaylists()"
-                    >
-                      <v-list-item-title>Add to playlist</v-list-item-title>
-                      <v-btn icon>
-                        <v-icon>mdi-menu-right</v-icon>
-                      </v-btn>
-                    </v-list-item>
-                  </template>
-                  <v-list>
-                    <v-list-item @click.stop="addToNewPlaylist(item.item)">
-                      <v-list-item-title>New Playlist</v-list-item-title>
-                    </v-list-item>
-                    <v-divider
-                      v-if="playlists && playlists.length > 0"
-                    ></v-divider>
-                    <v-list-item
-                      v-for="(playlist, index) in playlists"
-                      :key="index"
-                      @click.stop="addToPlaylist(item.item, playlist)"
-                    >
-                      <v-list-item-title>{{ playlist.name }}</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
+                <v-s-playlist-menu :song="item.item"></v-s-playlist-menu>
                 <v-divider></v-divider>
                 <slot
                   name="menuoptions"
@@ -120,9 +92,11 @@
 <script>
 import { mapActions, mapMutations, mapState } from "vuex";
 import { PLAYLIST } from "@/store/modules/stream";
+import VSPlaylistMenu from "@/components/PlaylistMenu";
 
 export default {
   name: "VSSonglist",
+  components: { VSPlaylistMenu },
   props: {
     songs: Array,
     full: Boolean,
@@ -130,47 +104,16 @@ export default {
   },
   data() {
     return {
-      fetchingPlaylists: false,
       hovered: null
     };
   },
   methods: {
     ...mapMutations("stream", [PLAYLIST]),
-    ...mapActions("playlist", ["getPlaylists", "updatePlaylist"]),
     ...mapActions("stream", ["play"]),
     ...mapActions("annotation", ["star"]),
 
     addStar(item) {
       this.star({ id: item.id, toggle: true });
-    },
-    addToNewPlaylist(item) {
-      // eslint-disable-next-line no-console
-      console.log("Add to new playlist:", item);
-    },
-    addToPlaylist(item, playlist) {
-      this.updatePlaylist({
-        playlistId: playlist.id,
-        songsToAdd: [item]
-      }).then(
-        e => {
-          // eslint-disable-next-line no-console
-          console.log(e);
-          this.$dialog.message.info("1 song added to playlist", {
-            position: "bottom-left"
-          });
-        },
-        e => {
-          // eslint-disable-next-line no-console
-          console.log("E", e);
-        }
-      );
-    },
-
-    triggerGetPlaylists() {
-      if (!this.fetchingPlaylists) {
-        this.fetchingPlaylists = true;
-        this.getPlaylists();
-      }
     },
     removeStar(item) {
       this.star({ id: item.id, toggle: false });
@@ -187,7 +130,6 @@ export default {
   },
   computed: {
     ...mapState("stream", [{ currentSong: "song" }]),
-    ...mapState("playlist", ["playlists"]),
 
     headers() {
       const headers = [

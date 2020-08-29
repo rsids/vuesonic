@@ -16,10 +16,16 @@
             @click="gotoArtist()"
           ></h2>
           <span class="subtitle-2">{{ metaData }}</span>
-          <v-btn class="d-block btn-shuffle" text>
-            <v-icon>mdi-shuffle</v-icon>
-            shuffle
-          </v-btn>
+          <div class="d-flex justify-lg-space-between">
+            <v-btn class="d-block btn-shuffle" text>
+              <v-icon>mdi-shuffle</v-icon>
+              shuffle
+            </v-btn>
+            <v-spacer></v-spacer>
+            <v-btn icon>
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </div>
         </div>
       </div>
       <v-row>
