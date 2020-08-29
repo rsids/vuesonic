@@ -16,7 +16,6 @@
               ><v-icon>mdi-play</v-icon></v-btn
             >
           </h1>
-          <!--          <h2 class="subtitle-1" v-text="currentAlbum.artist"></h2>-->
           <span class="subtitle-2">{{ metaData }}</span>
           <v-btn
             class="d-block btn-text-with-icon"
@@ -45,7 +44,13 @@
             :songs="currentPlaylist.entry"
             :full="true"
             :numbering="'index'"
-          ></v-s-songlist>
+          >
+            <template v-slot:menuoptions="slotProps">
+              <v-list-item @click.stop="removeFromPlaylist(slotProps)">
+                <v-list-item-title>Remove from playlist</v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-s-songlist>
           <v-s-empty-state
             v-if="currentPlaylist.songCount === 0"
             description="Your playlist is empty, add some songs to it!"
@@ -112,7 +117,11 @@ export default {
   },
   methods: {
     ...mapActions("album", ["getCoverArt"]),
-    ...mapActions("playlist", ["getPlaylist", "deletePlaylist"]),
+    ...mapActions("playlist", [
+      "getPlaylist",
+      "deletePlaylist",
+      "updatePlaylist"
+    ]),
     ...mapMutations("stream", [PLAYLIST]),
     ...mapActions("stream", ["play"]),
 
@@ -132,6 +141,24 @@ export default {
           this.$router.push({ name: "playlists" });
         });
       }
+    },
+
+    removeFromPlaylist({ index }) {
+      this.updatePlaylist({
+        playlistId: this.currentPlaylist.id,
+        songIndexToRemove: index
+      }).then(() => {
+        this.$dialog.message.info(
+          "1 song removed from playlist",
+          {
+            position: "bottom-left"
+          },
+          e => {
+            // eslint-disable-next-line no-console
+            console.log("E", e);
+          }
+        );
+      });
     }
   }
 };

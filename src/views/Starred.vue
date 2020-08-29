@@ -50,7 +50,7 @@ export default {
         title: "Enter the name of the playlist"
       });
       if (name) {
-        this.createPlaylist({ title: name, songs: this.starred }).then(d => {
+        this.createPlaylist({ title: name, songs: this.starred }).then(() => {
           this.$router.push({ name: "playlists" });
         });
       }

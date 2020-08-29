@@ -52,6 +52,9 @@ const mutations = {
     state.albums = ([] as Album[]).concat(state.albums, albums);
     state.hasMoreAlbums = hasMoreAlbums;
   },
+  [SET_RECENTS](state: AlbumState, recents) {
+    state.recents = recents;
+  },
   [SET_STARRED](state: AlbumState, value: Song[]) {
     state.starred = ([] as Song[]).concat(value);
   },

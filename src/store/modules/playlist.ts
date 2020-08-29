@@ -6,6 +6,7 @@ import { duration } from "@/utils/generic";
 import { Song } from "@/store/interfaces/song";
 import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
 import Vue from "vue";
+import { UpdatePlaylistParams } from "@/store/interfaces/updatePlaylistParams";
 
 const PLAYLISTS = "mutatePlaylists";
 const PLAYLIST = "mutatePlaylist";
@@ -29,7 +30,7 @@ const mutations = {
     state.currentPlaylist = playlist;
   },
   [UPDATE_STAR](state: PlaylistState, { id, toggle }) {
-    if (state.currentPlaylist) {
+    if (state?.currentPlaylist?.entry) {
       if (id) {
         state.currentPlaylist.entry = state.currentPlaylist.entry.map(
           (song: Song) => {
@@ -52,10 +53,9 @@ const actions = {
           name: title,
           songId: songs.map(song => song.id)
         },
-        paramsSerializer: params => qs.stringify(params)
+        paramsSerializer: params => qs.stringify(params, { indices: false })
       })
       .then((response: SubsonicResponse) => {
-        // todo: duplicate code, merge with getPlaylist response handler
         if (response.playlist) {
           response.playlist.entry = response.playlist?.entry.map(song => {
             song.durationFormatted = duration(song.duration);
@@ -73,6 +73,7 @@ const actions = {
       commit(PLAYLISTS, undefined);
     });
   },
+
   getPlaylists({ commit }) {
     return Vue.prototype.axios
       .get(`getPlaylists`)
@@ -80,6 +81,7 @@ const actions = {
         commit(PLAYLISTS, response.playlists?.playlist || []);
       });
   },
+
   getPlaylist({ commit }, { id }) {
     return Vue.prototype.axios
       .get(`getPlaylist?id=${id}`)
@@ -93,6 +95,25 @@ const actions = {
         }
         commit(PLAYLIST, response.playlist);
         return response.playlist;
+      });
+  },
+
+  updatePlaylist({ state, dispatch }, params: UpdatePlaylistParams) {
+    const getParams = { ...params };
+    getParams.songIdToAdd = getParams.songsToAdd
+      ?.map(song => `songIdToAdd=${song.id}`)
+      .join("&");
+    delete getParams.songsToAdd;
+
+    return Vue.prototype.axios
+      .get("updatePlaylist", {
+        params: getParams,
+        paramsSerializer: params => qs.stringify(params, { indices: false })
+      })
+      .then(() => {
+        if (state.currentPlaylist?.id === params.playlistId) {
+          dispatch("getPlaylist", state.currentPlaylist);
+        }
       });
   }
 };
