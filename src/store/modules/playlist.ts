@@ -46,7 +46,7 @@ const mutations = {
 };
 
 const actions = {
-  createPlaylist({ commit }, { title, songs }) {
+  createPlaylist({ dispatch }, { title, songs }) {
     return Vue.prototype.axios
       .get(`createPlaylist`, {
         params: {
@@ -55,16 +55,8 @@ const actions = {
         },
         paramsSerializer: params => qs.stringify(params, { indices: false })
       })
-      .then((response: SubsonicResponse) => {
-        if (response.playlist) {
-          response.playlist.entry = response.playlist?.entry.map(song => {
-            song.durationFormatted = duration(song.duration);
-            song.starred = !!song.starred;
-            return song;
-          });
-        }
-        commit(PLAYLIST, response.playlist);
-        return response.playlist;
+      .then(() => {
+        dispatch("getPlaylists");
       });
   },
 
@@ -100,9 +92,7 @@ const actions = {
 
   updatePlaylist({ state, dispatch }, params: UpdatePlaylistParams) {
     const getParams = { ...params };
-    getParams.songIdToAdd = getParams.songsToAdd
-      ?.map(song => `songIdToAdd=${song.id}`)
-      .join("&");
+    getParams.songIdToAdd = getParams.songsToAdd?.map(song => song.id);
     delete getParams.songsToAdd;
 
     return Vue.prototype.axios

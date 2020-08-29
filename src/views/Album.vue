@@ -22,9 +22,25 @@
               shuffle
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn icon>
-              <v-icon>mdi-dots-vertical</v-icon>
-            </v-btn>
+            <v-menu bottom right>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon v-bind="attrs" v-on="on">
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item>
+                  <v-list-item-title>Play next</v-list-item-title>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>Add to queue</v-list-item-title>
+                </v-list-item>
+                <v-divider></v-divider>
+                <v-s-playlist-menu
+                  :songs="currentAlbum.song"
+                ></v-s-playlist-menu>
+              </v-list>
+            </v-menu>
           </div>
         </div>
       </div>
@@ -49,10 +65,11 @@ import { duration, noop } from "@/utils/generic";
 import VSSonglist from "@/components/Songlist";
 import VSCover from "@/components/Cover";
 import { SET_ALBUM } from "@/store/modules/album";
+import VSPlaylistMenu from "@/components/PlaylistMenu";
 
 export default {
   name: "Album",
-  components: { VSCover, VSSonglist, VSEmptyState },
+  components: { VSPlaylistMenu, VSCover, VSSonglist, VSEmptyState },
   data() {
     return {
       cover: "",

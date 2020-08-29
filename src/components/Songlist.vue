@@ -31,7 +31,7 @@
               class="text-no-wrap text-truncate"
             ></span>
             <v-spacer></v-spacer>
-            <v-menu bottom right close-on-click>
+            <v-menu bottom right>
               <template v-slot:activator="{ on, attrs }">
                 <v-btn icon v-bind="attrs" v-on="on">
                   <v-icon>mdi-dots-vertical</v-icon>
@@ -45,7 +45,7 @@
                   <v-list-item-title>Add to queue</v-list-item-title>
                 </v-list-item>
                 <v-divider></v-divider>
-                <v-s-playlist-menu :song="item.item"></v-s-playlist-menu>
+                <v-s-playlist-menu :songs="[item.item]"></v-s-playlist-menu>
                 <v-divider></v-divider>
                 <slot
                   name="menuoptions"
