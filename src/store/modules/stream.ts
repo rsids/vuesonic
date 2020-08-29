@@ -9,6 +9,7 @@ export const NEXT = "mutateNext";
 export const SEEK = "mutateSeek";
 export const SONG = "mutateSong";
 export const PLAYLIST = "mutatePlaylist";
+export const ADD_TO_PLAYLIST = "mutateAddPlaylist";
 
 export const PLAYMODE = {
   ALBUM: 0,
@@ -16,7 +17,6 @@ export const PLAYMODE = {
   SEARCH: 2
 };
 
-// const audioContext = new AudioContext();
 interface StreamState {
   audio: HTMLAudioElement;
   song?: Song;
@@ -53,9 +53,14 @@ const mutations = {
   [SEEK](state: StreamState, seek) {
     state.audio.currentTime = seek;
   },
-  [PLAYLIST](state: StreamState, playlist: Song[]) {
-    state.history = [];
+  [PLAYLIST](state: StreamState, { playlist, resetHistory = true }) {
+    if (resetHistory) {
+      state.history = [];
+    }
     state.playlist = [...playlist];
+  },
+  [ADD_TO_PLAYLIST](state: StreamState, playlist: Song[]) {
+    state.playlist = [...state.playlist, ...playlist];
   }
 };
 
@@ -93,6 +98,18 @@ const actions = {
         idx = idx < state.playlist.length ? idx : 0;
         dispatch("play", { song: state.playlist[idx] });
       }
+    }
+  },
+  playNext({ state, dispatch, commit }, { songs }) {
+    let idx = 0;
+    if (state.song) {
+      idx = state.playlist.indexOf(state.song) + 1;
+    }
+    const arr = [...state.playlist];
+    arr.splice(idx, 0, ...songs);
+    commit(PLAYLIST, { playlist: arr, resetHistory: false });
+    if (!state.song) {
+      dispatch("play", { song: state.playlist[0] });
     }
   },
   prev({ state, dispatch }) {

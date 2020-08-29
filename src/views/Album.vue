@@ -29,7 +29,7 @@
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item>
+                <v-list-item @click="addToPlayingNext()">
                   <v-list-item-title>Play next</v-list-item-title>
                 </v-list-item>
                 <v-list-item>
@@ -108,7 +108,12 @@ export default {
   },
   methods: {
     ...mapActions("album", ["getAlbum", "getCoverArt"]),
+    ...mapActions("stream", ["playNext"]),
     ...mapMutations("album", [SET_ALBUM]),
+
+    addToPlayingNext() {
+      this.playNext({ songs: this.currentAlbum.song });
+    },
 
     gotoArtist() {
       const artist = encodeURIComponent(

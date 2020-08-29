@@ -16,7 +16,11 @@
       <v-icon size="medium">mdi-star</v-icon>
     </template>
     <template #item="item">
-      <tr @mouseover="onMouseOver(item.item.id)" @mouseleave="hovered = null">
+      <tr
+        @mouseover="onMouseOver(item.item.id)"
+        @click="playSong(item.item)"
+        @mouseleave="hovered = null"
+      >
         <td class="text-center">
           <span v-if="hovered !== item.item.id">
             <span v-if="numbering === 'track'" v-text="item.item.track"></span>
@@ -46,7 +50,7 @@
                 </v-list-item>
                 <v-divider></v-divider>
                 <v-s-playlist-menu :songs="[item.item]"></v-s-playlist-menu>
-                <v-divider></v-divider>
+                <v-divider v-if="hasMenuOptions"></v-divider>
                 <slot
                   name="menuoptions"
                   v-bind:song="item.item"
@@ -124,13 +128,15 @@ export default {
       }
     },
     playSong(item) {
-      this[PLAYLIST](this.songs);
+      this[PLAYLIST]({ playlist: this.songs });
       this.play({ song: item });
     }
   },
   computed: {
     ...mapState("stream", [{ currentSong: "song" }]),
-
+    hasMenuOptions() {
+      return !!this.$slots["menuoptions"];
+    },
     headers() {
       const headers = [
         {

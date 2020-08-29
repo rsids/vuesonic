@@ -70,7 +70,7 @@ export default {
     playIt() {
       if (this.type === "album") {
         this.getAlbumFromMusicDirectory(this.entity).then(album => {
-          this[PLAYLIST](album.song);
+          this[PLAYLIST]({ playlist: album.song });
           this.play({ song: album.song[0] });
         });
       }

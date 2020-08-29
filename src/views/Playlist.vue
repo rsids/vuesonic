@@ -126,7 +126,7 @@ export default {
     ...mapActions("stream", ["play"]),
 
     playIt() {
-      this[PLAYLIST](this.currentPlaylist.entry);
+      this[PLAYLIST]({ playlist: this.currentPlaylist.entry });
       this.play({ song: this.currentPlaylist.entry[0] });
     },
 
