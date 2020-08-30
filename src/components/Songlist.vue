@@ -42,12 +42,7 @@
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item>
-                  <v-list-item-title>Play next</v-list-item-title>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-title>Add to queue</v-list-item-title>
-                </v-list-item>
+                <v-s-queue-menu :songs="[item.item]"></v-s-queue-menu>
                 <v-divider></v-divider>
                 <v-s-playlist-menu :songs="[item.item]"></v-s-playlist-menu>
                 <v-divider v-if="hasMenuOptions"></v-divider>
@@ -97,10 +92,11 @@
 import { mapActions, mapMutations, mapState } from "vuex";
 import { PLAYLIST } from "@/store/modules/stream";
 import VSPlaylistMenu from "@/components/PlaylistMenu";
+import VSQueueMenu from "@/components/QueueMenu";
 
 export default {
   name: "VSSonglist",
-  components: { VSPlaylistMenu },
+  components: { VSQueueMenu, VSPlaylistMenu },
   props: {
     songs: Array,
     full: Boolean,

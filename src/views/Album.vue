@@ -17,7 +17,7 @@
           ></h2>
           <span class="subtitle-2">{{ metaData }}</span>
           <div class="d-flex justify-lg-space-between">
-            <v-btn class="d-block btn-shuffle" text>
+            <v-btn class="d-block btn-shuffle" text @click="shuffleAlbum()">
               <v-icon>mdi-shuffle</v-icon>
               shuffle
             </v-btn>
@@ -29,12 +29,10 @@
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item @click="addToPlayingNext()">
-                  <v-list-item-title>Play next</v-list-item-title>
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-title>Add to queue</v-list-item-title>
-                </v-list-item>
+                <v-s-queue-menu
+                  :songs="currentAlbum.song"
+                  type="album"
+                ></v-s-queue-menu>
                 <v-divider></v-divider>
                 <v-s-playlist-menu
                   :songs="currentAlbum.song"
@@ -66,10 +64,17 @@ import VSSonglist from "@/components/Songlist";
 import VSCover from "@/components/Cover";
 import { SET_ALBUM } from "@/store/modules/album";
 import VSPlaylistMenu from "@/components/PlaylistMenu";
+import VSQueueMenu from "@/components/QueueMenu";
 
 export default {
   name: "Album",
-  components: { VSPlaylistMenu, VSCover, VSSonglist, VSEmptyState },
+  components: {
+    VSQueueMenu,
+    VSPlaylistMenu,
+    VSCover,
+    VSSonglist,
+    VSEmptyState
+  },
   data() {
     return {
       cover: "",
@@ -108,12 +113,8 @@ export default {
   },
   methods: {
     ...mapActions("album", ["getAlbum", "getCoverArt"]),
-    ...mapActions("stream", ["playNext"]),
+    ...mapActions("stream", ["shuffleAndPlay"]),
     ...mapMutations("album", [SET_ALBUM]),
-
-    addToPlayingNext() {
-      this.playNext({ songs: this.currentAlbum.song });
-    },
 
     gotoArtist() {
       const artist = encodeURIComponent(
@@ -123,6 +124,10 @@ export default {
       this.$router.push(
         `/library/artists/${this.currentAlbum.artistId}/${artist}`
       );
+    },
+
+    shuffleAlbum() {
+      this.shuffleAndPlay({ songs: this.currentAlbum.song });
     }
   }
 };

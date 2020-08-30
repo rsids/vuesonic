@@ -29,7 +29,7 @@
           </div>
         </div>
         <div class="player-main-controls">
-          <v-btn icon><v-icon>mdi-repeat</v-icon></v-btn>
+          <!--          <v-btn icon><v-icon>mdi-repeat</v-icon></v-btn>-->
           <v-btn icon @click="skipPrev()"
             ><v-icon>mdi-skip-previous</v-icon></v-btn
           >
@@ -38,7 +38,7 @@
             <v-icon v-if="playing">mdi-pause</v-icon>
           </v-btn>
           <v-btn icon @click="skipNext()"><v-icon>mdi-skip-next</v-icon></v-btn>
-          <v-btn icon color="#ff6600"><v-icon>mdi-shuffle</v-icon></v-btn>
+          <!--          <v-btn icon color="#ff6600"><v-icon>mdi-shuffle</v-icon></v-btn>-->
         </div>
         <div>
           <v-btn icon><v-icon>mdi-volume-high</v-icon></v-btn>

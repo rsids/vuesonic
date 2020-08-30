@@ -1,6 +1,7 @@
 import { Module } from "vuex";
 import { RootState } from "@/store/RootState";
 import { Song } from "@/store/interfaces/song";
+import { shuffle } from "@/utils/generic";
 
 export const PAUSE = "mutatePause";
 export const PLAY = "mutatePlay";
@@ -65,6 +66,13 @@ const mutations = {
 };
 
 const actions = {
+  addToQueue({ state, commit }, { songs }) {
+    commit(PLAYLIST, {
+      playlist: [...state.playlist, songs],
+      resetHistory: false
+    });
+  },
+
   init({ state, dispatch }) {
     state.audio.addEventListener("timeupdate", () => {
       state.progress = state.audio.currentTime;
@@ -73,6 +81,7 @@ const actions = {
       dispatch("next");
     });
   },
+
   play({ dispatch, commit, state }, { song }) {
     commit(PAUSE);
     dispatch(
@@ -90,6 +99,7 @@ const actions = {
       }
     });
   },
+
   next({ state, dispatch }) {
     if (state.playlist && state.song) {
       let idx = state.playlist.findIndex(song => song.id === state.song.id);
@@ -100,6 +110,7 @@ const actions = {
       }
     }
   },
+
   playNext({ state, dispatch, commit }, { songs }) {
     let idx = 0;
     if (state.song) {
@@ -112,6 +123,7 @@ const actions = {
       dispatch("play", { song: state.playlist[0] });
     }
   },
+
   prev({ state, dispatch }) {
     if (state.playlist && state.song) {
       let idx = state.playlist.findIndex(song => song.id === state.song.id);
@@ -121,6 +133,11 @@ const actions = {
         dispatch("play", { song: state.playlist[idx] });
       }
     }
+  },
+
+  shuffleAndPlay({ state, commit, dispatch }, { songs }) {
+    commit(PLAYLIST, { playlist: shuffle(songs) });
+    dispatch("play", { song: state.playlist[0] });
   }
 };
 export const stream: Module<StreamState, RootState> = {
