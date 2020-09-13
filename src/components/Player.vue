@@ -37,15 +37,22 @@
             <v-icon v-if="!playing">mdi-play</v-icon>
             <v-icon v-if="playing">mdi-pause</v-icon>
           </v-btn>
-          <v-btn icon @click="skipNext()"><v-icon>mdi-skip-next</v-icon></v-btn>
+          <v-btn icon @click="skipNext()" :disabled="!hasNext"
+            ><v-icon>mdi-skip-next</v-icon></v-btn
+          >
           <!--          <v-btn icon color="#ff6600"><v-icon>mdi-shuffle</v-icon></v-btn>-->
         </div>
         <div>
           <v-btn icon><v-icon>mdi-volume-high</v-icon></v-btn>
-          <v-btn icon><v-icon>mdi-playlist-music</v-icon></v-btn>
+          <v-btn icon @click.stop="queue = true"
+            ><v-icon>mdi-playlist-music</v-icon></v-btn
+          >
         </div>
       </v-row>
     </v-container>
+    <v-dialog content-class="queueList" origin="bottom right" v-model="queue">
+      <v-s-queue-list></v-s-queue-list>
+    </v-dialog>
   </v-footer>
 </template>
 
@@ -54,12 +61,18 @@ import { mapActions, mapMutations, mapState } from "vuex";
 import { PAUSE, PLAY, SEEK } from "@/store/modules/stream";
 import { duration } from "@/utils/generic";
 import VSCover from "@/components/Cover";
+import VSQueueList from "@/components/QueueList";
 
+const PREV_MODE_PREV = 0;
+const PREV_MODE_SEEK = 1;
 export default {
   name: "VSPlayer",
-  components: { VSCover },
+  components: { VSQueueList, VSCover },
   data() {
     return {
+      prevClick: 0,
+      prevMode: PREV_MODE_PREV,
+      queue: false,
       seeking: false,
       songProgress: 0
     };
@@ -81,7 +94,15 @@ export default {
     },
 
     skipPrev() {
-      this.prev();
+      if (this.songProgress < 2 && this.prevMode === PREV_MODE_SEEK) {
+        this[SEEK](0);
+        this.prevMode = PREV_MODE_PREV;
+        this.prevClick = setTimeout(() => {
+          this.prevMode = PREV_MODE_SEEK;
+        }, 1000);
+      } else {
+        this.prev();
+      }
     },
 
     togglePlay() {
@@ -89,7 +110,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("stream", ["song", "paused", "progress"]),
+    ...mapState("stream", ["song", "paused", "progress", "hasNext", "hasPrev"]),
 
     playhead: {
       get() {
@@ -118,6 +139,10 @@ export default {
       if (!this.seeking) {
         this.songProgress = val;
       }
+    },
+
+    song: function() {
+      this.prevMode = PREV_MODE_SEEK;
     }
   }
 };
@@ -149,5 +174,14 @@ export default {
   top: 4px;
   right: 8px;
   text-align: right;
+}
+</style>
+
+<style lang="scss">
+.queueList {
+  align-self: flex-end;
+  box-shadow: none;
+  justify-self: end;
+  margin-bottom: 100px;
 }
 </style>

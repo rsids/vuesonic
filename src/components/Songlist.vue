@@ -1,7 +1,7 @@
 <template>
   <v-data-table
     :hide-default-footer="true"
-    class="elevation-1"
+    class="elevation-1 fixed-table"
     disable-pagination
     :headers="headers"
     :items="songs"
@@ -21,7 +21,7 @@
         @click="playSong(item.item)"
         @mouseleave="hovered = null"
       >
-        <td class="text-center">
+        <td class="px-0 text-center">
           <span v-if="hovered !== item.item.id">
             <span v-if="numbering === 'track'" v-text="item.item.track"></span>
             <span v-else v-text="songs.indexOf(item.item) + 1"></span>
@@ -30,10 +30,15 @@
         </td>
         <td>
           <div class="d-flex align-center">
-            <span
-              v-text="item.item.title"
-              class="text-no-wrap text-truncate"
-            ></span>
+            <div class="d-flex flex-column">
+              <span
+                v-text="item.item.title"
+                class="text-no-wrap text-truncate"
+              ></span>
+              <span v-if="dense" class="caption"
+                >{{ item.item.artist }} - {{ item.item.album }}</span
+              >
+            </div>
             <v-spacer></v-spacer>
             <v-menu bottom right>
               <template v-slot:activator="{ on, attrs }">
@@ -55,25 +60,25 @@
             </v-menu>
           </div>
         </td>
-        <td>
+        <td class="px-0">
           <span v-text="item.item.durationFormatted"></span>
         </td>
-        <td v-if="full">
+        <td v-if="full && !dense">
           <span
             v-text="item.item.artist"
             class="text-no-wrap text-truncate"
           ></span>
         </td>
-        <td v-if="full">
+        <td v-if="full && !dense">
           <span
             v-text="item.item.album"
             class="text-no-wrap text-truncate"
           ></span>
         </td>
-        <td>
+        <td class="px-2">
           <span v-text="item.item.playCount"></span>
         </td>
-        <td class="align-center justify-center text-center">
+        <td class="align-center justify-center text-center px-0">
           <v-icon
             v-if="!item.item.starred && hovered === item.item.id"
             @click.stop="addStar(item.item)"
@@ -99,6 +104,7 @@ export default {
   components: { VSQueueMenu, VSPlaylistMenu },
   props: {
     songs: Array,
+    dense: Boolean,
     full: Boolean,
     numbering: String
   },
@@ -138,31 +144,32 @@ export default {
         {
           text: "#",
           sortable: true,
-          class: "px-0",
+          class: "px-0 text-center",
           align: "center",
           value: "track",
-          width: 60
+          width: 40
         },
         {
           text: "NAME",
           sortable: true,
           value: "title",
-          width: "100%"
+          class: "sizeable-col"
         },
         {
           text: "Duration",
           sortable: true,
           align: "center",
+          class: "px-0",
           value: "durationFormatted",
-          width: 100
+          width: 60
         },
         {
           text: "Play count",
           sortable: true,
           value: "playCount",
-          class: "px-0",
+          class: "px-2",
           align: "center",
-          width: 60
+          width: 40
         },
         {
           text: "stars",
@@ -170,10 +177,10 @@ export default {
           class: "px-0",
           align: "center",
           value: "star",
-          width: 60
+          width: 50
         }
       ];
-      if (this.full === true) {
+      if (this.full && !this.dense) {
         headers.splice(
           3,
           0,
@@ -182,13 +189,13 @@ export default {
               text: "ARTIST",
               sortable: true,
               value: "artist",
-              width: "100%"
+              class: "sizeable-col"
             },
             {
               text: "ALBUM",
               sortable: true,
               value: "album",
-              width: "100%"
+              class: "sizeable-col"
             }
           ]
         );
@@ -199,4 +206,12 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style>
+.sizeable-col {
+  min-width: 60px;
+  max-width: 100%;
+}
+.fixed-table table {
+  table-layout: fixed;
+}
+</style>

@@ -8,6 +8,7 @@ import Library from "../views/Library.vue";
 import Playlist from "../views/Playlist.vue";
 import Playlists from "../views/Playlists.vue";
 import Recent from "../views/Recent.vue";
+import Search from "../views/Search.vue";
 import Starred from "../views/Starred.vue";
 
 Vue.use(VueRouter);
@@ -65,6 +66,11 @@ const routes: Array<RouteConfig> = [
     path: "/library/starred",
     name: "starred",
     component: Starred
+  },
+  {
+    path: "/search/:query",
+    name: "search",
+    component: Search
   },
   {
     path: "/about",

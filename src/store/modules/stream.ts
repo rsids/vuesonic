@@ -7,6 +7,9 @@ export const PAUSE = "mutatePause";
 export const PLAY = "mutatePlay";
 export const PREV = "mutatePrev";
 export const NEXT = "mutateNext";
+export const HAS_PREV = "mutateHasPrev";
+export const HAS_NEXT = "mutateHasNext";
+export const REPEAT = "mutateRepeat";
 export const SEEK = "mutateSeek";
 export const SONG = "mutateSong";
 export const PLAYLIST = "mutatePlaylist";
@@ -20,7 +23,10 @@ export const PLAYMODE = {
 
 interface StreamState {
   audio: HTMLAudioElement;
+  hasNext: boolean;
+  hasPrev: boolean;
   song?: Song;
+  repeat: boolean;
   paused: boolean;
   progress: number;
   playmode: number;
@@ -30,18 +36,31 @@ interface StreamState {
 
 const state: StreamState = {
   audio: document.createElement("audio"),
-  song: undefined,
+  hasNext: false,
+  hasPrev: false,
+  history: [],
   paused: true,
   progress: 0,
   playmode: -1,
   playlist: [],
-  history: []
+  repeat: false,
+  song: undefined
 };
 
 const mutations = {
-  [SONG](state, song) {
+  [HAS_NEXT](state: StreamState, has) {
+    state.hasNext = has;
+  },
+  [HAS_PREV](state: StreamState, has) {
+    state.hasPrev = has;
+  },
+  [REPEAT](state: StreamState, repeat) {
+    state.repeat = repeat;
+  },
+  [SONG](state, song: Song) {
     state.song = song;
     state.progress = 0;
+    document.title = `${song.artist} - ${song.title} // VueSonic`;
   },
   [PAUSE](state: StreamState) {
     state.paused = true;
@@ -93,6 +112,9 @@ const actions = {
       try {
         commit(SONG, song);
         commit(PLAY);
+        const idx = state.playlist.findIndex(s => s.id === song.id);
+        commit(HAS_NEXT, idx + 1 !== state.playlist.length || state.repeat);
+        commit(HAS_PREV, idx > 0);
       } catch (e) {
         // eslint-disable-next-line no-console
         console.log(e);
@@ -103,9 +125,8 @@ const actions = {
   next({ state, dispatch }) {
     if (state.playlist && state.song) {
       let idx = state.playlist.findIndex(song => song.id === state.song.id);
-      if (idx >= 0) {
+      if (idx >= 0 && idx < state.playlist.length - 1) {
         idx++;
-        idx = idx < state.playlist.length ? idx : 0;
         dispatch("play", { song: state.playlist[idx] });
       }
     }

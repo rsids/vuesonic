@@ -19,6 +19,7 @@
       hide-details
       label="Search"
       v-model="searchQuery"
+      @keypress.enter="doSearch()"
       prepend-inner-icon="mdi-search"
     ></v-text-field>
     <v-spacer></v-spacer>
@@ -34,7 +35,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 import { SET_DRAWER } from "@/store/modules/ui";
 
 export default {
@@ -47,6 +48,7 @@ export default {
   },
   computed: {
     ...mapState("ui", ["tabs", "drawer"]),
+    ...mapState("search", ["query"]),
     toolbarTabs: {
       get() {
         return this.tabs;
@@ -62,41 +64,16 @@ export default {
     }
   },
   methods: {
-    ...mapMutations("ui", [SET_DRAWER])
+    ...mapActions("search", ["search"]),
+    ...mapMutations("ui", [SET_DRAWER]),
+
+    doSearch() {
+      this.$router.push({
+        name: "search",
+        params: { query: this.searchQuery }
+      });
+      this.search({ query: this.searchQuery });
+    }
   }
 };
 </script>
-
-<style scoped></style>
-<!--
-<v-app-bar
-    app
-    color="primary"
-    dark
-    :clipped-left="$vuetify.breakpoint.lgAndUp"
-  >
-    <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-    <div class="d-flex align-center">
-      VueSonic
-    </div>
-
-    <v-spacer></v-spacer>
-    <v-text-field
-      solo-inverted
-      flat
-      hide-details
-      label="Search"
-      v-model="searchQuery"
-      prepend-inner-icon="mdi-search"
-    ></v-text-field>
-    <v-spacer></v-spacer>
-    <template v-slot:extension>
-      <v-tabs v-model="tab" align-with-title>
-        <v-tabs-slider color="yellow"></v-tabs-slider>
-
-        <v-tab v-for="item in tabs" :key="item">
-          {{ item }}
-        </v-tab>
-      </v-tabs>
-    </template>
-  </v-app-bar>  -->
