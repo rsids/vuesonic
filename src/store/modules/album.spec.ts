@@ -443,7 +443,9 @@ describe("album store", () => {
               album: album
             })
           );
-        let promise = store.dispatch("getAlbumFromMusicDirectory", { id: 73 });
+        const promise = store.dispatch("getAlbumFromMusicDirectory", {
+          id: 73
+        });
         await promise;
         expect(store.state.currentAlbum).toEqual(album);
         expect(mock.mock.calls.length).toEqual(2);

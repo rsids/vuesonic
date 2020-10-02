@@ -11,8 +11,6 @@ describe("Cover", () => {
     return mount(Cover, { localVue, ...options });
   };
 
-  beforeEach(() => {});
-
   it("should show a play button if the entity is not an artist", done => {
     const wrapper = mountFunction({
       propsData: {

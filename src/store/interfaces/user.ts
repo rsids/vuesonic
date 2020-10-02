@@ -13,5 +13,7 @@ export interface User {
   jukeboxRole: boolean;
   shareRole: boolean;
   videoConversionRole: boolean;
+  // @todo Add correct type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   folder: Array<any>;
 }

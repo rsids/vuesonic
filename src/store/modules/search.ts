@@ -19,6 +19,7 @@ export const search: Module<SearchState, RootState> = {
       const params = {
         query: query
       };
+      state.query = query;
       return Vue.prototype.axios
         .get(`search3`, { params: params })
         .then((response: SubsonicResponse) => {

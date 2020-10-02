@@ -9,10 +9,6 @@ import { Vue } from "vue-property-decorator";
 import Vuex from "vuex";
 import Vuetify from "vuetify";
 
-// function getVue() {
-// }
-// return { localVue, vuetify };
-
 export function createWrapper<V extends Vue, T>(
   component: VueClass<V>,
   options?: ThisTypedMountOptions<V>
@@ -21,5 +17,6 @@ export function createWrapper<V extends Vue, T>(
   const localVue = createLocalVue();
   localVue.use(Vuex);
   const vuetify = new Vuetify();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return mount(component, { localVue, vuetify, ...options }) as any;
 }

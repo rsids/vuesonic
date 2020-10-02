@@ -11,8 +11,6 @@ describe("AlbumCard", () => {
     return mount(AlbumCard, { localVue, ...options });
   };
 
-  beforeEach(() => {});
-
   it("should return the album name from the prop album", () => {
     expect(
       AlbumCard["computed"].albumName.call({
@@ -33,6 +31,8 @@ describe("AlbumCard", () => {
       name: "The Colour And the Shape",
       id: 42
     };
+    // @todo Add correct type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const wrapper = mountFunction({ propsData: { album: album } }) as any;
     expect(wrapper.vm.getAlbumUrl(42)).toEqual(
       `/library/albums/42/foo-fighters/the-colour-and-the-shape`
