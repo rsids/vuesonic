@@ -4,7 +4,7 @@ import { User } from "@/store/interfaces/user";
 import { Directory } from "@/store/interfaces/directory";
 import { PlaylistList } from "@/store/interfaces/playlistList";
 import { Playlist } from "@/store/interfaces/playlist";
-import { Index } from "@/store/interfaces/Index";
+import { Index } from "@/store/interfaces/index";
 import { Artist } from "@/store/interfaces/artist";
 import { Song } from "@/store/interfaces/song";
 
