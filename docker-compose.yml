@@ -1,0 +1,19 @@
+###############################################################################
+# Mysl port: 7502 / 3306                                                      #
+# Backend port: 7500 / 80                                                     #
+# Frontend port: 7501 / 80                                                    #
+# PHP server port: 7503 / 80                                                  #
+###############################################################################
+version: "3.5"
+services:
+
+  vuesonic:
+    image: nginx:alpine
+    container_name: vuesonic-frontend
+    working_dir: /application
+    volumes:
+      - ./logs/nginx:/var/log/nginx
+      - ./dist:/application
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "4020:80"

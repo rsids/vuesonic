@@ -1,17 +1,17 @@
 <template>
   <v-footer fixed height="90" elevation="4" padless>
-    <v-container fluid class="footer-container">
-      <v-row align="center" justify="space-between" class="player-row">
-        <v-slider
-          class="progress-slider"
-          v-if="!!song"
-          :value="playhead"
-          @change="changePlayhead($event)"
-          @mousedown="startSeeking()"
-          min="0"
-          step="0.1"
-          :max="song.duration"
-        ></v-slider>
+    <v-slider
+      class="progress-slider"
+      v-if="!!song"
+      :value="playhead"
+      @change="changePlayhead($event)"
+      @mousedown="startSeeking()"
+      min="0"
+      step="0.1"
+      :max="song.duration"
+    ></v-slider>
+    <div class="player">
+      <div class="player__song">
         <span v-if="!!song" class="progress-text caption">
           <span v-text="progressFormatted"></span> /
           <span v-text="song.durationFormatted"></span>
@@ -20,36 +20,39 @@
           <div v-if="!!song" class="d-flex align-center">
             <v-s-cover :size="90" type="album" :entity="song"></v-s-cover>
             <div class="ma-3">
-              <div v-text="song.title" class="body-1 font-weight-medium"></div>
-              <div class="body-2">
+              <div
+                v-text="song.title"
+                class="body-1 font-weight-medium text-no-wrap text-truncate"
+              ></div>
+              <div class="body-2 text-no-wrap text-truncate">
                 <span v-text="song.artist"></span> -
                 <span v-text="song.album"></span>
               </div>
             </div>
           </div>
         </div>
-        <div class="player-main-controls">
-          <!--          <v-btn icon><v-icon>mdi-repeat</v-icon></v-btn>-->
-          <v-btn icon @click="skipPrev()"
-            ><v-icon>mdi-skip-previous</v-icon></v-btn
-          >
-          <v-btn fab :disabled="!song" @click="togglePlay()" color="primary">
-            <v-icon v-if="!playing">mdi-play</v-icon>
-            <v-icon v-if="playing">mdi-pause</v-icon>
-          </v-btn>
-          <v-btn icon @click="skipNext()" :disabled="!hasNext"
-            ><v-icon>mdi-skip-next</v-icon></v-btn
-          >
-          <!--          <v-btn icon color="#ff6600"><v-icon>mdi-shuffle</v-icon></v-btn>-->
-        </div>
-        <div>
-          <v-btn icon><v-icon>mdi-volume-high</v-icon></v-btn>
-          <v-btn icon @click.stop="queue = true"
-            ><v-icon>mdi-playlist-music</v-icon></v-btn
-          >
-        </div>
-      </v-row>
-    </v-container>
+      </div>
+      <div class="player__controls">
+        <v-btn icon><v-icon>mdi-repeat</v-icon></v-btn>
+        <v-btn icon @click="skipPrev()"
+          ><v-icon>mdi-skip-previous</v-icon></v-btn
+        >
+        <v-btn fab :disabled="!song" @click="togglePlay()" color="primary">
+          <v-icon v-if="!playing">mdi-play</v-icon>
+          <v-icon v-if="playing">mdi-pause</v-icon>
+        </v-btn>
+        <v-btn icon @click="skipNext()" :disabled="!hasNext"
+          ><v-icon>mdi-skip-next</v-icon></v-btn
+        >
+        <v-btn icon color="#ff6600"><v-icon>mdi-shuffle</v-icon></v-btn>
+      </div>
+      <div class="player__sound">
+        <v-btn icon><v-icon>mdi-volume-high</v-icon></v-btn>
+        <v-btn icon @click.stop="queue = true"
+          ><v-icon>mdi-playlist-music</v-icon></v-btn
+        >
+      </div>
+    </div>
     <v-dialog content-class="queueList" origin="bottom right" v-model="queue">
       <v-s-queue-list></v-s-queue-list>
     </v-dialog>
@@ -148,19 +151,43 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+$playerWidth: 256px;
 .footer-container {
   padding-bottom: 0;
   padding-top: 0;
 }
 
-.player-main-controls {
+.player {
+  align-items: center;
+  display: flex;
+  width: 100vw;
+}
+
+.player__song {
+  display: flex;
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: calc(50vw - #{$playerWidth / 2});
+}
+
+.player__controls {
   .v-btn:not(:last-child) {
     margin-right: 12px;
   }
+
+  align-items: center;
+  display: flex;
+  flex-basis: $playerWidth;
+  flex-shrink: 0;
+  flex-grow: 0;
 }
 
-.player-row {
-  position: relative;
+.player__sound {
+  justify-content: flex-end;
+  display: flex;
+  flex-shrink: 0;
+  flex-grow: 1;
 }
 .progress-slider {
   position: absolute;
