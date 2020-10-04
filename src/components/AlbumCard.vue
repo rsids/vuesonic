@@ -1,5 +1,10 @@
 <template>
-  <v-card class="ma-3" max-width="200px" width="200px" @click="gotoAlbum()">
+  <v-card
+    class="ma-3 album-card"
+    max-width="200px"
+    width="200px"
+    @click="gotoAlbum()"
+  >
     <v-s-cover type="album" :size="200" :entity="album"></v-s-cover>
     <v-card-title class="subtitle-1">
       <div class="text-no-wrap text-truncate" v-text="albumName"></div>

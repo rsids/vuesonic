@@ -25,7 +25,10 @@ export interface SubsonicResponse {
   artists?: {
     index: Index[];
   };
-  searchResult3?: {
+}
+
+export interface SearchResponse extends SubsonicResponse {
+  searchResult3: {
     artist?: Artist;
     album?: Album;
     song?: Song;

@@ -1,30 +1,82 @@
 <template>
-  <v-container fluid>
-    <h2 class="mb-4">Search results for "{{ query }}"</h2>
-    <h3>Artists</h3>
-    <v-container fluid>
-      <v-row dense align-content="start" justify="start" v-if="artists">
-        <v-s-artist-card
-          v-for="(artist, i) in artists"
-          :key="i"
-          :artist="artist"
-        ></v-s-artist-card>
-      </v-row>
-    </v-container>
+  <v-container>
+    <v-row dense>
+      <v-col
+        ><h2 class="mb-4">Search results for "{{ query }}"</h2>
+        <h3 v-if="artists.length > 0" class="d-flex">
+          <span>Artists</span>
+          <v-spacer></v-spacer>
+          <v-btn
+            small
+            color="primary"
+            v-if="artists.length === 4"
+            @click="seeAll('artists')"
+            >See All</v-btn
+          >
+        </h3>
+      </v-col>
+    </v-row>
+    <v-row
+      dense
+      align-content="start"
+      justify="start"
+      class="mb-4"
+      v-if="artists.length > 0"
+    >
+      <v-s-artist-card
+        v-for="(artist, i) in artists"
+        :key="i"
+        :artist="artist"
+      ></v-s-artist-card>
+    </v-row>
 
-    <h3>Albums</h3>
-    <v-container fluid>
-      <v-row dense align-content="start" justify="start" v-if="albums">
-        <v-s-album-card
-          v-for="(album, i) in albums"
-          :key="i"
-          :album="album"
-        ></v-s-album-card>
-      </v-row>
-    </v-container>
-    <h3>Songs</h3>
+    <v-row v-if="albums.length > 0">
+      <v-col>
+        <h3 class="d-flex">
+          <span>Albums</span>
+          <v-spacer></v-spacer>
+          <v-btn
+            small
+            color="primary"
+            v-if="albums.length === 4"
+            @click="seeAll('albums')"
+            >See All</v-btn
+          >
+        </h3>
+      </v-col>
+    </v-row>
 
-    <v-container fluid v-if="songs && songs.length > 0">
+    <v-row
+      align-content="start"
+      justify="start"
+      class="mb-4"
+      v-if="albums.length > 0"
+    >
+      <v-s-album-card
+        v-for="(album, i) in albums"
+        :key="i"
+        :album="album"
+      ></v-s-album-card>
+    </v-row>
+
+    <v-row v-if="songs.length > 0">
+      <v-col>
+        <h3 class="d-flex">
+          <span>Songs</span>
+          <v-spacer></v-spacer>
+          <v-btn
+            small
+            color="primary"
+            v-if="songs.length === 10"
+            @click="seeAll('songs')"
+            >See All</v-btn
+          >
+        </h3>
+      </v-col>
+    </v-row>
+    <h3></h3>
+
+    <v-container fluid v-if="songs.length > 0">
       <v-row>
         <v-s-songlist
           :songs="songs"
@@ -58,7 +110,11 @@ export default {
   },
 
   methods: {
-    ...mapActions("search", ["search"])
+    ...mapActions("search", ["search", "searchMore"]),
+
+    seeAll(type) {
+      this.searchMore({ type });
+    }
   },
 
   mounted() {
