@@ -8,7 +8,8 @@ export interface Album {
   created: string;
   duration: number;
   genre?: string;
-  id: number;
+  id?: number;
+  musicDirectory?: number;
   name: string;
   song: Song[];
   songCount: number;

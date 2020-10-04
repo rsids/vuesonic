@@ -33,6 +33,8 @@ const state: AlbumState = {
   recents: [],
   starred: undefined
 };
+
+const ALBUMSET_SIZE = 30;
 const requests: CancelTokenSource[] = [];
 export const SET_ALBUM = "setAlbum";
 export const SET_ALBUMS = "setAlbums";
@@ -119,21 +121,21 @@ const actions = {
     });
   },
 
-  getAlbumFromMusicDirectory({ commit, state }, { id }) {
+  getAlbumFromMusicDirectory({ commit, state }, { musicDirectory }) {
     return new Promise(resolve => {
       const getAlbum = function(albumId) {
         return actions
           .getAlbum({ commit, state }, { id: albumId })
           .then(resolve);
       };
-      if (state.musicDirectoryAlbumAdapter.has(id)) {
-        return getAlbum(state.musicDirectoryAlbumAdapter.get(id));
+      if (state.musicDirectoryAlbumAdapter.has(musicDirectory)) {
+        return getAlbum(state.musicDirectoryAlbumAdapter.get(musicDirectory));
       }
       Vue.prototype.axios
-        .get(`getMusicDirectory?id=${id}`)
+        .get(`getMusicDirectory?id=${musicDirectory}`)
         .then((response: SubsonicResponse) => {
           state.musicDirectoryAlbumAdapter.set(
-            id,
+            musicDirectory,
             response?.directory?.child[0].albumId
           );
           return getAlbum(response?.directory?.child[0].albumId);
@@ -151,12 +153,19 @@ const actions = {
 
   getAlbums({ commit, state }, { start }) {
     return Vue.prototype.axios
-      .get(`getAlbumList?type=alphabeticalByName&size=21&offset=${start}`)
+      .get(
+        `getAlbumList?type=alphabeticalByName&size=${ALBUMSET_SIZE +
+          1}&offset=${start}`
+      )
       .then((response: SubsonicResponse) => {
         let albums = response.albumList?.album;
         let hasMoreAlbums = true;
-        if (albums && albums.length === 21) {
-          albums = albums.slice(0, 20);
+        if (albums && albums.length === ALBUMSET_SIZE + 1) {
+          albums = albums.slice(0, ALBUMSET_SIZE).map(album => {
+            album.musicDirectory = album.id;
+            album.id = undefined;
+            return album;
+          });
         } else {
           hasMoreAlbums = false;
         }

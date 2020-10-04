@@ -49,13 +49,13 @@
           >
           </v-text-field>
 
-          <v-checkbox
-            v-model="form.saveLogin"
-            value="1"
-            id="field-remember-me"
-            label="Remember me"
-          >
-          </v-checkbox>
+          <!--          <v-checkbox-->
+          <!--            v-model="form.saveLogin"-->
+          <!--            value="1"-->
+          <!--            id="field-remember-me"-->
+          <!--            label="Remember me"-->
+          <!--          >-->
+          <!--          </v-checkbox>-->
         </v-card-text>
 
         <v-divider></v-divider>

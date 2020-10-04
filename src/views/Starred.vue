@@ -8,7 +8,10 @@
             :full="true"
             :numbering="'index'"
           ></v-s-songlist>
-          <v-btn text @click="saveAsPlaylist()">Save as playlist</v-btn>
+          <v-s-save-playlist
+            label="Save as playlist"
+            :songs="starred"
+          ></v-s-save-playlist>
         </v-col>
       </v-row>
     </v-container>
@@ -25,10 +28,11 @@ import { mapActions, mapState } from "vuex";
 import { noop } from "@/utils/generic";
 import VSEmptyState from "@/components/EmptyState";
 import VSSonglist from "@/components/Songlist";
+import VSSavePlaylist from "@/components/SavePlaylist";
 
 export default {
   name: "Playlist",
-  components: { VSSonglist, VSEmptyState },
+  components: { VSSavePlaylist, VSSonglist, VSEmptyState },
   data() {
     return {
       cover: ""
@@ -41,20 +45,7 @@ export default {
     this.getStarred().then(noop);
   },
   methods: {
-    ...mapActions("album", ["getStarred"]),
-    ...mapActions("playlist", ["createPlaylist"]),
-
-    async saveAsPlaylist() {
-      const name = await this.$dialog.prompt({
-        text: "Save as",
-        title: "Enter the name of the playlist"
-      });
-      if (name) {
-        this.createPlaylist({ title: name, songs: this.starred }).then(() => {
-          this.$router.push({ name: "playlists" });
-        });
-      }
-    }
+    ...mapActions("album", ["getStarred"])
   }
 };
 </script>

@@ -21,7 +21,7 @@
         @click="playSong(item.item)"
         @mouseleave="hovered = null"
       >
-        <td class="px-0 text-center">
+        <td class="px-0 text-center" v-if="numbering !== 'none'">
           <span v-if="hovered !== item.item.id">
             <span v-if="numbering === 'track'" v-text="item.item.track"></span>
             <span v-else v-text="songs.indexOf(item.item) + 1"></span>
@@ -30,12 +30,9 @@
         </td>
         <td>
           <div class="d-flex align-center">
-            <div class="d-flex flex-column">
-              <span
-                v-text="item.item.title"
-                class="text-no-wrap text-truncate"
-              ></span>
-              <span v-if="dense" class="caption"
+            <div class="d-flex flex-column text-truncate">
+              <span v-text="item.item.title" class="text-no-wrap"></span>
+              <span v-if="dense" class="caption text-no-wrap"
                 >{{ item.item.artist }} - {{ item.item.album }}</span
               >
             </div>
@@ -66,15 +63,14 @@
         <td v-if="full && !dense">
           <span
             v-text="item.item.artist"
-            class="text-no-wrap text-truncate"
+            class="text-no-wrap d-inline-block text-truncate"
           ></span>
         </td>
-        <td v-if="full && !dense">
-          <span
-            v-text="item.item.album"
-            class="text-no-wrap text-truncate"
-          ></span>
-        </td>
+        <td
+          v-if="full && !dense"
+          class="text-no-wrap text-truncate"
+          v-text="item.item.album"
+        ></td>
         <td class="px-2">
           <span v-text="item.item.playCount"></span>
         </td>
@@ -199,6 +195,10 @@ export default {
             }
           ]
         );
+      }
+
+      if (this.numbering === "none") {
+        headers.splice(0, 1);
       }
       return headers;
     }

@@ -25,6 +25,11 @@ export interface SubsonicResponse {
   artists?: {
     index: Index[];
   };
+  searchResult3?: {
+    artist?: Artist;
+    album?: Album;
+    song?: Song;
+  };
 }
 
 export interface SubsonicError {

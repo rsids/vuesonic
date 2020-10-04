@@ -48,7 +48,6 @@ export default {
   },
   computed: {
     ...mapState("ui", ["tabs", "drawer"]),
-    ...mapState("search", ["query"]),
     toolbarTabs: {
       get() {
         return this.tabs;
@@ -64,7 +63,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions("search", ["search"]),
     ...mapMutations("ui", [SET_DRAWER]),
 
     doSearch() {
@@ -72,7 +70,6 @@ export default {
         name: "search",
         params: { query: this.searchQuery }
       });
-      this.search({ query: this.searchQuery });
     }
   }
 };

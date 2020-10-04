@@ -63,16 +63,27 @@ export default {
     }
   },
   methods: {
-    ...mapActions("album", ["getCoverArt", "getAlbumFromMusicDirectory"]),
+    ...mapActions("album", [
+      "getCoverArt",
+      "getAlbumFromMusicDirectory",
+      "getAlbum"
+    ]),
     ...mapActions("stream", ["play"]),
     ...mapMutations("stream", [PLAYLIST]),
 
     playIt() {
       if (this.type === "album") {
-        this.getAlbumFromMusicDirectory(this.entity).then(album => {
-          this[PLAYLIST]({ playlist: album.song });
-          this.play({ song: album.song[0] });
-        });
+        if (this.entity.id) {
+          this.getAlbum(this.entity).then(album => {
+            this[PLAYLIST]({ playlist: album.song });
+            this.play({ song: album.song[0] });
+          });
+        } else {
+          this.getAlbumFromMusicDirectory(this.entity).then(album => {
+            this[PLAYLIST]({ playlist: album.song });
+            this.play({ song: album.song[0] });
+          });
+        }
       }
     },
     loadCover() {
