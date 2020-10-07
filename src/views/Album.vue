@@ -6,7 +6,7 @@
         <div class="pl-4 pt-4">
           <h1 class="title">
             <span class="album-title" v-text="currentAlbum.name"></span>
-            <v-btn fab small outlined color="dark-grey"
+            <v-btn fab small outlined color="dark-grey" @click="playAlbum()"
               ><v-icon>mdi-play</v-icon></v-btn
             >
           </h1>
@@ -65,6 +65,7 @@ import VSCover from "@/components/Cover";
 import { SET_ALBUM } from "@/store/modules/album";
 import VSPlaylistMenu from "@/components/PlaylistMenu";
 import VSQueueMenu from "@/components/QueueMenu";
+import { PLAYLIST } from "@/store/modules/stream";
 
 export default {
   name: "Album",
@@ -113,8 +114,9 @@ export default {
   },
   methods: {
     ...mapActions("album", ["getAlbum", "getCoverArt"]),
-    ...mapActions("stream", ["shuffleAndPlay"]),
+    ...mapActions("stream", ["shuffleAndPlay", "play"]),
     ...mapMutations("album", [SET_ALBUM]),
+    ...mapMutations("stream", [PLAYLIST]),
 
     gotoArtist() {
       const artist = encodeURIComponent(
@@ -124,6 +126,11 @@ export default {
       this.$router.push(
         `/library/artists/${this.currentAlbum.artistId}/${artist}`
       );
+    },
+
+    playAlbum() {
+      this[PLAYLIST]({ playlist: this.currentAlbum.song });
+      this.play({ song: this.currentAlbum.song[0] });
     },
 
     shuffleAlbum() {

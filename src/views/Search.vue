@@ -9,7 +9,7 @@
           <v-btn
             small
             color="primary"
-            v-if="artists.length === 4"
+            v-if="hasMoreArtists"
             @click="seeAll('artists')"
             >See All</v-btn
           >
@@ -38,7 +38,7 @@
           <v-btn
             small
             color="primary"
-            v-if="albums.length === 4"
+            v-if="hasMoreAlbums"
             @click="seeAll('albums')"
             >See All</v-btn
           >
@@ -67,7 +67,7 @@
           <v-btn
             small
             color="primary"
-            v-if="songs.length === 10"
+            v-if="hasMoreSongs"
             @click="seeAll('songs')"
             >See All</v-btn
           >
@@ -103,7 +103,14 @@ export default {
   name: "Search",
   components: { VSSonglist, VSSavePlaylist, VSAlbumCard, VSArtistCard },
   computed: {
-    ...mapState("search", ["artists", "albums", "songs"]),
+    ...mapState("search", [
+      "artists",
+      "albums",
+      "songs",
+      "hasMoreAlbums",
+      "hasMoreArtists",
+      "hasMoreSongs"
+    ]),
     query() {
       return this.$route.params.query;
     }
