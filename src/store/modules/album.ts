@@ -146,7 +146,12 @@ const actions = {
     return Vue.prototype.axios
       .get(`getAlbumList?type=newest&size=20`)
       .then((response: SubsonicResponse) => {
-        commit(SET_RECENTS, response.albumList?.album);
+        const albums = response.albumList?.album.map(album => {
+          album.musicDirectory = album.id;
+          album.id = undefined;
+          return album;
+        });
+        commit(SET_RECENTS, albums);
         return state.recents;
       });
   },

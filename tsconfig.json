@@ -19,6 +19,7 @@
     "types": [
       "webpack-env",
       "jest",
+      "wicg-mediasession",
       "vuetify"
     ],
     "paths": {

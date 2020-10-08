@@ -74,7 +74,6 @@
         </h3>
       </v-col>
     </v-row>
-    <h3></h3>
 
     <v-container fluid v-if="songs.length > 0">
       <v-row>
@@ -129,5 +128,3 @@ export default {
   }
 };
 </script>
-
-<style scoped></style>

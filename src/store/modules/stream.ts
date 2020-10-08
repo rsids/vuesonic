@@ -59,6 +59,14 @@ const mutations = {
   },
   [SONG](state, song: Song) {
     state.song = song;
+
+    if ("mediaSession" in navigator) {
+      (navigator as any).mediaSession.metadata = new MediaMetadata({
+        title: song.title,
+        artist: song.artist,
+        album: song.album
+      });
+    }
     state.progress = 0;
     document.title = `${song.artist} - ${song.title} // VueSonic`;
   },
@@ -67,6 +75,9 @@ const mutations = {
     state.audio.pause();
   },
   [PLAY](state: StreamState) {
+    if ("mediaSession" in navigator) {
+      (navigator as any).mediaSession.playbackState = "playing";
+    }
     state.paused = false;
     state.audio.play();
   },
@@ -99,6 +110,28 @@ const actions = {
     state.audio.addEventListener("ended", () => {
       dispatch("next");
     });
+
+    if ("mediaSession" in navigator) {
+      // eslint-disable-next-line no-console
+      (navigator as any).mediaSession.setActionHandler("previoustrack", () => {
+        // eslint-disable-next-line no-console
+        console.log("previoustrack");
+      });
+      (navigator as any).mediaSession.setActionHandler("nexttrack", () => {
+        // eslint-disable-next-line no-console
+        console.log("nexttrack");
+      });
+      (navigator as any).mediaSession.setActionHandler("play", function() {
+        // eslint-disable-next-line no-console
+        console.log("play");
+      });
+
+      (navigator as any).mediaSession.setActionHandler("pause", () => {
+        // eslint-disable-next-line no-console
+        console.log("pause");
+      });
+      console.log("media session found", (navigator as any).mediaSession);
+    }
   },
 
   play({ dispatch, commit, state }, { song }) {
