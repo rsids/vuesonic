@@ -71,6 +71,9 @@ const mutations = {
     document.title = `${song.artist} - ${song.title} // VueSonic`;
   },
   [PAUSE](state: StreamState) {
+    if ("mediaSession" in navigator) {
+      (navigator as any).mediaSession.playbackState = "paused";
+    }
     state.paused = true;
     state.audio.pause();
   },
