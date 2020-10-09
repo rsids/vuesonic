@@ -60,8 +60,8 @@ const mutations = {
   [SONG](state, song: Song) {
     state.song = song;
 
-    if ("mediaSession" in navigator) {
-      (navigator as any).mediaSession.metadata = new MediaMetadata({
+    if (window.navigator.mediaSession) {
+      window.navigator.mediaSession.metadata = new MediaMetadata({
         title: song.title,
         artist: song.artist,
         album: song.album
@@ -71,15 +71,15 @@ const mutations = {
     document.title = `${song.artist} - ${song.title} // VueSonic`;
   },
   [PAUSE](state: StreamState) {
-    if ("mediaSession" in navigator) {
-      (navigator as any).mediaSession.playbackState = "paused";
+    if (window.navigator.mediaSession) {
+      window.navigator.mediaSession.playbackState = "paused";
     }
     state.paused = true;
     state.audio.pause();
   },
   [PLAY](state: StreamState) {
-    if ("mediaSession" in navigator) {
-      (navigator as any).mediaSession.playbackState = "playing";
+    if (window.navigator.mediaSession) {
+      window.navigator.mediaSession.playbackState = "playing";
     }
     state.paused = false;
     state.audio.play();
@@ -106,7 +106,7 @@ const actions = {
     });
   },
 
-  init({ state, dispatch }) {
+  init({ state, dispatch, commit }) {
     state.audio.addEventListener("timeupdate", () => {
       state.progress = state.audio.currentTime;
     });
@@ -114,26 +114,20 @@ const actions = {
       dispatch("next");
     });
 
-    if ("mediaSession" in navigator) {
-      // eslint-disable-next-line no-console
-      (navigator as any).mediaSession.setActionHandler("previoustrack", () => {
-        // eslint-disable-next-line no-console
-        console.log("previoustrack");
+    if (window.navigator.mediaSession) {
+      window.navigator.mediaSession.setActionHandler("previoustrack", () => {
+        dispatch("prev");
       });
-      (navigator as any).mediaSession.setActionHandler("nexttrack", () => {
-        // eslint-disable-next-line no-console
-        console.log("nexttrack");
+      window.navigator.mediaSession.setActionHandler("nexttrack", () => {
+        dispatch("next");
       });
-      (navigator as any).mediaSession.setActionHandler("play", function() {
-        // eslint-disable-next-line no-console
-        console.log("play");
+      window.navigator.mediaSession.setActionHandler("play", () => {
+        commit(PLAY);
       });
 
-      (navigator as any).mediaSession.setActionHandler("pause", () => {
-        // eslint-disable-next-line no-console
-        console.log("pause");
+      window.navigator.mediaSession.setActionHandler("pause", () => {
+        commit(PAUSE);
       });
-      console.log("media session found", (navigator as any).mediaSession);
     }
   },
 
