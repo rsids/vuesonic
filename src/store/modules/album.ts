@@ -5,7 +5,11 @@ import axios, { CancelTokenSource } from "axios";
 import { Module } from "vuex";
 import { Song } from "@/store/interfaces/song";
 import { duration } from "@/utils/generic";
-import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
+import {
+  AlbumListResponse,
+  SubsonicError,
+  SubsonicResponse
+} from "@/store/interfaces/subsonicResponse";
 import Vue from "vue";
 
 interface AlbumState {
@@ -98,14 +102,13 @@ const actions = {
   },
 
   getAlbum({ commit, state }, { id }) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       if (state.albumsDetailed.has(id)) {
         commit(SET_ALBUM, state.albumsDetailed.get(id));
         resolve(state.currentAlbum);
       } else {
-        Vue.prototype.axios
-          .get(`getAlbum?id=${id}`)
-          .then((response: SubsonicResponse) => {
+        Vue.prototype.axios.get(`getAlbum?id=${id}`).then(
+          (response: SubsonicResponse) => {
             if (response.album) {
               response.album.song = response.album.song.map(song => {
                 song.durationFormatted = duration(song.duration);
@@ -116,7 +119,9 @@ const actions = {
             }
             commit(SET_ALBUM, response.album);
             resolve(state.currentAlbum);
-          });
+          },
+          (err: SubsonicError) => reject(err)
+        );
       }
     });
   },
@@ -145,12 +150,13 @@ const actions = {
   getRecents({ commit, state }) {
     return Vue.prototype.axios
       .get(`getAlbumList?type=newest&size=20`)
-      .then((response: SubsonicResponse) => {
-        const albums = response.albumList?.album.map(album => {
-          album.musicDirectory = album.id;
-          album.id = undefined;
-          return album;
-        });
+      .then((response: AlbumListResponse) => {
+        const albums =
+          response.albumList.album?.map(album => {
+            album.musicDirectory = album.id;
+            album.id = undefined;
+            return album;
+          }) || [];
         commit(SET_RECENTS, albums);
         return state.recents;
       });
@@ -162,18 +168,19 @@ const actions = {
         `getAlbumList?type=alphabeticalByName&size=${ALBUMSET_SIZE +
           1}&offset=${start}`
       )
-      .then((response: SubsonicResponse) => {
-        let albums = response.albumList?.album;
+      .then((response: AlbumListResponse) => {
+        let albums = response.albumList.album || [];
         let hasMoreAlbums = true;
         if (albums && albums.length === ALBUMSET_SIZE + 1) {
-          albums = albums.slice(0, ALBUMSET_SIZE).map(album => {
-            album.musicDirectory = album.id;
-            album.id = undefined;
-            return album;
-          });
+          albums = albums.slice(0, ALBUMSET_SIZE);
         } else {
           hasMoreAlbums = false;
         }
+        albums = albums.map(album => {
+          album.musicDirectory = album.id;
+          album.id = undefined;
+          return album;
+        });
         commit(SET_ALBUMS, { albums: albums, hasMoreAlbums: hasMoreAlbums });
         return state.albums;
       });

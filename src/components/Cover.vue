@@ -74,10 +74,19 @@ export default {
     playIt() {
       if (this.type === "album") {
         if (this.entity.id) {
-          this.getAlbum(this.entity).then(album => {
-            this[PLAYLIST]({ playlist: album.song });
-            this.play({ song: album.song[0] });
-          });
+          this.getAlbum(this.entity).then(
+            album => {
+              this[PLAYLIST]({ playlist: album.song });
+              this.play({ song: album.song[0] });
+            },
+            error => {
+              if (error.error.code === 70) {
+                this.$dialog.notify.error("Album not found", {
+                  position: "bottom-left"
+                });
+              }
+            }
+          );
         } else {
           this.getAlbumFromMusicDirectory(this.entity).then(album => {
             this[PLAYLIST]({ playlist: album.song });

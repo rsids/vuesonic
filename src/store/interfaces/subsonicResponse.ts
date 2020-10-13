@@ -12,7 +12,6 @@ export interface SubsonicResponse {
   status: string;
   version?: string;
   user?: User;
-  albumList?: AlbumList;
   albumList2?: AlbumList;
   artist?: Artist;
   album?: Album;
@@ -33,6 +32,10 @@ export interface SearchResponse extends SubsonicResponse {
     album?: Album;
     song?: Song;
   };
+}
+
+export interface AlbumListResponse extends SubsonicResponse {
+  albumList: AlbumList;
 }
 
 export interface SubsonicError {
