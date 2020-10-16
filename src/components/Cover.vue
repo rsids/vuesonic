@@ -31,100 +31,112 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Intersect from "vue-intersect";
 import { mapActions, mapMutations } from "vuex";
 import { PLAYLIST } from "@/store/modules/stream";
+import { Component, Prop, Provide, Vue, Watch } from "vue-property-decorator";
+import { Album } from "@/store/interfaces/album";
+import { Artist } from "@/store/interfaces/artist";
+import { Playlist } from "@/store/interfaces/playlist";
+import { Song } from "@/store/interfaces/song";
 
-export default {
+interface PlayArgs {
+  song: Song;
+}
+interface CoverartArgs {
+  id: string;
+}
+
+@Component({
   name: "VSCover",
   components: { Intersect },
-  data() {
-    return {
-      cover: "",
-      hover: false,
-      request: null,
-      requested: false
-    };
-  },
-  props: {
-    size: Number,
-    entity: Object,
-    type: String
-  },
-  computed: {
-    icon() {
-      if (this.type === "artist") {
-        return "mdi-account";
-      } else if (this.type === "album") {
-        return "mdi-album";
-      }
-      return "mdi-playlist";
-    }
-  },
   methods: {
     ...mapActions("album", [
       "getCoverArt",
       "getAlbumFromMusicDirectory",
       "getAlbum"
     ]),
-    ...mapActions("stream", ["play"]),
-    ...mapMutations("stream", [PLAYLIST]),
+    ...mapActions("stream", ["play"])
+  }
+})
+export default class Cover extends Vue {
+  $dialog!: any;
 
-    playIt() {
-      if (this.type === "album") {
-        if (this.entity.id) {
-          this.getAlbum(this.entity).then(
-            album => {
-              this[PLAYLIST]({ playlist: album.song });
-              this.play({ song: album.song[0] });
-            },
-            error => {
-              if (error.error.code === 70) {
-                this.$dialog.notify.error("Album not found", {
-                  position: "bottom-left"
-                });
-              }
-            }
-          );
-        } else {
-          this.getAlbumFromMusicDirectory(this.entity).then(album => {
+  getCoverArt!: (c: CoverartArgs) => Promise<unknown>;
+  getAlbumFromMusicDirectory!: (album: Album) => Promise<Album>;
+  getAlbum!: (album: Album) => Promise<Album>;
+  play!: (p: PlayArgs) => void;
+
+  @Provide() cover = "";
+  @Provide() hover = false;
+  @Provide() request = null;
+  @Provide() requested = false;
+  @Prop() size!: number;
+  @Prop() entity!: Album | Artist | Playlist;
+  @Prop() type!: string;
+
+  get icon() {
+    if (this.type === "artist") {
+      return "mdi-account";
+    } else if (this.type === "album") {
+      return "mdi-album";
+    }
+    return "mdi-playlist";
+  }
+
+  playIt() {
+    if (this.type === "album") {
+      if (this.entity.id) {
+        this.getAlbum(this.entity as Album).then(
+          album => {
             this[PLAYLIST]({ playlist: album.song });
             this.play({ song: album.song[0] });
-          });
-        }
-      }
-    },
-    loadCover() {
-      if (!this.requested) {
-        this.requested = true;
-        this.getCover();
-      }
-    },
-    getCover() {
-      if (
-        this.requested &&
-        this.entity &&
-        this.entity.coverArt &&
-        this.entity.coverArt !== ""
-      ) {
-        this.getCoverArt({ id: this.entity.coverArt }).then(cover => {
-          this.cover = window.URL.createObjectURL(cover);
-        });
+          },
+          error => {
+            if (error.error.code === 70) {
+              this.$dialog.notify.error("Album not found", {
+                position: "bottom-left"
+              });
+            }
+          }
+        );
       } else {
-        this.cover = "";
-      }
-    }
-  },
-  watch: {
-    entity: {
-      immediate: true,
-      handler: function() {
-        this.getCover();
+        this.getAlbumFromMusicDirectory(this.entity as Album).then(album => {
+          this[PLAYLIST]({ playlist: album.song });
+          this.play({ song: album.song[0] });
+        });
       }
     }
   }
-};
+
+  loadCover() {
+    if (!this.requested) {
+      this.requested = true;
+      this.getCover();
+    }
+  }
+
+  getCover() {
+    if (
+      this.requested &&
+      this.entity &&
+      this.entity.coverArt &&
+      this.entity.coverArt !== ""
+    ) {
+      this.getCoverArt({ id: this.entity.coverArt }).then(cover => {
+        this.cover = window.URL.createObjectURL(cover);
+      });
+    } else {
+      this.cover = "";
+    }
+  }
+
+  @Watch("entity", { immediate: true })
+  onEntityChanged() {
+    this.getCover();
+  }
+}
 </script>
 
 <style scoped>

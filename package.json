@@ -6,109 +6,51 @@
     "start": "vue-cli-service serve",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test": "jest",
+    "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@types/jest": "^26.0.10",
-    "@types/wicg-mediasession": "^1.1.0",
-    "axios": "^0.19.2",
+    "@types/lodash": "^4.14.162",
+    "axios": "^0.20.0",
     "core-js": "^3.6.5",
-    "lodash": "^4.17.20",
     "qs": "^6.9.4",
-    "register-service-worker": "^1.7.1",
     "ts-md5": "^1.2.7",
-    "vue": "^2.6.12",
-    "vue-class-component": "^7.2.5",
+    "vue": "^2.6.11",
+    "vue-class-component": "^7.2.3",
     "vue-intersect": "^1.1.6",
-    "vue-property-decorator": "^9.0.0",
-    "vue-router": "^3.4.3",
+    "vue-property-decorator": "^8.4.2",
+    "vue-router": "^3.2.0",
     "vuelidate": "^0.7.5",
-    "vuetify": "^2.3.10",
-    "vuetify-dialog": "^2.0.10",
-    "vuex": "^3.5.1"
+    "vuetify": "^2.3.14",
+    "vuetify-dialog": "^2.0.12",
+    "vuex": "^3.4.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.34.0",
-    "@typescript-eslint/eslint-plugin-tslint": "^4.3.0",
-    "@typescript-eslint/parser": "^2.34.0",
-    "@vue/cli-plugin-babel": "^4.5.4",
-    "@vue/cli-plugin-e2e-cypress": "^4.5.4",
-    "@vue/cli-plugin-eslint": "^4.5.4",
-    "@vue/cli-plugin-pwa": "^4.5.4",
-    "@vue/cli-plugin-router": "^4.5.4",
-    "@vue/cli-plugin-typescript": "^4.5.4",
-    "@vue/cli-plugin-unit-jest": "^4.5.4",
-    "@vue/cli-plugin-vuex": "^4.5.4",
-    "@vue/cli-service": "^4.5.4",
+    "@types/jest": "^24.0.19",
+    "@typescript-eslint/eslint-plugin": "^2.33.0",
+    "@typescript-eslint/parser": "^2.33.0",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-typescript": "~4.5.0",
+    "@vue/cli-plugin-unit-jest": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
     "@vue/eslint-config-prettier": "^6.0.0",
-    "@vue/eslint-config-typescript": "^5.1.0",
-    "@vue/test-utils": "1.0.3",
-    "babel-core": "^7.0.0-bridge.0",
-    "babel-jest": "^26.3.0",
-    "eslint": "^6.8.0",
-    "eslint-plugin-prettier": "^3.1.4",
+    "@vue/eslint-config-typescript": "^5.0.2",
+    "@vue/test-utils": "^1.0.3",
+    "eslint": "^6.7.2",
+    "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-vue": "^6.2.2",
-    "jest": "^26.4.2",
+    "jest": "^26.5.3",
     "jest-mock-axios": "^4.2.1",
-    "jest-serializer-vue": "^2.0.2",
-    "lint-staged": "^9.5.0",
-    "node-sass": "^4.14.1",
-    "null-loader": "^4.0.0",
-    "nyc": "^15.1.0",
+    "lodash": "^4.17.20",
     "prettier": "^1.19.1",
-    "sass": "^1.26.10",
+    "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
-    "ts-jest": "^26.3.0",
-    "typescript": "~3.9.7",
-    "vue-cli-plugin-vuetify": "^2.0.7",
-    "vue-jest": "^3.0.6",
-    "vue-template-compiler": "^2.6.12",
-    "vuetify-loader": "^1.6.0"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "ts",
-      "js",
-      "json",
-      "vue"
-    ],
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "**/*.{ts,vue}",
-      "!**/node_modules/**"
-    ],
-    "modulePaths": [
-      "<rootDir>/src/",
-      "<rootDir>/node_modules/"
-    ],
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/src/$1"
-    },
-    "setupFiles": [
-      "<rootDir>/tests/unittests.ts"
-    ],
-    "testRegex": "((\\.|/)(test|spec))\\.(tsx?)$",
-    "transform": {
-      ".*\\.(vue)$": "vue-jest",
-      "^.+\\.tsx?$": "ts-jest",
-      "(vue-intersect).+\\.js$": "babel-jest"
-    },
-    "transformIgnorePatterns": [
-      "/node_modules/(?!vue-intersect)"
-    ],
-    "ts-jest": {
-      "babelConfig": true
-    }
-  },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
-  },
-  "lint-staged": {
-    "!(*spec).{js,jsx,vue,ts,tsx}": [
-      "vue-cli-service lint",
-      "git add"
-    ]
+    "typescript": "~3.9.3",
+    "vue-template-compiler": "^2.6.11",
+    "vuex-module-decorators": "^1.0.1"
   }
 }

@@ -1,5 +1,5 @@
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex, { StoreOptions } from "vuex";
 import { album } from "@/store/modules/album";
 import { annotation } from "@/store/modules/annotation";
 import { artist } from "@/store/modules/artist";
@@ -9,10 +9,11 @@ import { connection } from "@/store/modules/connection";
 import { user } from "@/store/modules/user";
 import { stream } from "@/store/modules/stream";
 import { ui } from "@/store/modules/ui";
+import { RootState } from "@/store/RootState";
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+const store: StoreOptions<RootState> = {
   state: {},
   mutations: {},
   actions: {},
@@ -28,4 +29,6 @@ export default new Vuex.Store({
     ui,
     user
   }
-});
+};
+
+export default new Vuex.Store(store);

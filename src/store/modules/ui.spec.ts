@@ -1,11 +1,11 @@
 import "jest";
-import { SET_TAB, SET_TABS, ui } from "@/store/modules/ui";
+import { SET_TAB, SET_TABS, ui, UiState } from "@/store/modules/ui";
 import { createLocalVue } from "@vue/test-utils";
-import Vuex from "vuex";
+import Vuex, { Store } from "vuex";
 import { cloneDeep } from "lodash";
 
 describe("ui store", () => {
-  let store;
+  let store: Store<UiState>;
 
   beforeEach(() => {
     const localVue = createLocalVue();

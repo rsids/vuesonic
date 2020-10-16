@@ -5,7 +5,7 @@ import { Index } from "@/store/interfaces";
 import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
 import Vue from "vue";
 
-interface ArtistState {
+export interface ArtistState {
   artists: Artist[];
   covers: Map<string, string>;
   currentArtist?: Artist;

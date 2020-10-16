@@ -2,7 +2,7 @@ import { RootState } from "@/store/RootState";
 import { Module } from "vuex";
 import Vue from "vue";
 
-interface AnnotationState {
+export interface AnnotationState {
   stars: number;
 }
 

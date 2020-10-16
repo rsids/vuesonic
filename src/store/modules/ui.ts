@@ -1,7 +1,7 @@
 import { RootState } from "@/store/RootState";
 import { Module } from "vuex";
 
-interface UiState {
+export interface UiState {
   drawer: boolean;
   tabs?: string[];
   tab: string | undefined;

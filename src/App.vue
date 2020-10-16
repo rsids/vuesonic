@@ -58,7 +58,7 @@ import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import VSToolbar from "@/components/Toolbar.vue";
 import { SET_DRAWER } from "@/store/modules/ui";
 
-let searchDelay;
+let searchDelay: number;
 const SEARCH_DELAY = 150;
 
 export default Vue.extend({
@@ -98,9 +98,9 @@ export default Vue.extend({
       },
       set(val) {
         clearTimeout(searchDelay);
-        searchDelay = setTimeout(() => {
+        searchDelay = (setTimeout(() => {
           this.query = val;
-        }, SEARCH_DELAY);
+        }, SEARCH_DELAY) as unknown) as number;
       }
     }
   },

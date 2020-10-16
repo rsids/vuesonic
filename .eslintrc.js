@@ -13,15 +13,16 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2020
   },
-  plugins: ["@typescript-eslint", "@typescript-eslint/tslint"],
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
-    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
-    "no-explicit-any": process.env.NODE_ENV === "production" ? "warn" : "off"
+    "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off"
   },
   overrides: [
     {
-      files: ["**/__tests__/*.{j,t}s?(x)", "**/*.spec.{j,t}s?(x)"]
+      files: ["**/__tests__/*.{j,t}s?(x)", "**/*.spec.{j,t}s?(x)"],
+      env: {
+        jest: true
+      }
     }
   ]
 };

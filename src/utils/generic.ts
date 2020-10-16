@@ -2,7 +2,7 @@ const noop = () => {
   /*empty by design*/
 };
 
-const duration = time => {
+const duration = (time: number) => {
   const hrs = ~~(time / 3600);
   let mins = (~~((time % 3600) / 60)).toString(10);
   let secs = (~~time % 60).toString(10);
@@ -29,7 +29,7 @@ const salt = () => {
  * Shuffles array in place.
  * @param {Array} a items An array containing the items.
  */
-const shuffle = a => {
+const shuffle = (a: unknown[]) => {
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];

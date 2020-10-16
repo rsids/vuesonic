@@ -15,12 +15,8 @@ export interface SubsonicResponse {
   albumList2?: AlbumList;
   artist?: Artist;
   album?: Album;
-  directory?: Directory;
   playlists?: PlaylistList;
   playlist?: Playlist;
-  starred2: {
-    song: Song[];
-  };
   artists?: {
     index: Index[];
   };
@@ -36,6 +32,16 @@ export interface SearchResponse extends SubsonicResponse {
 
 export interface AlbumListResponse extends SubsonicResponse {
   albumList: AlbumList;
+}
+
+export interface DirectoryResponse extends SubsonicResponse {
+  directory: Directory;
+}
+
+export interface StarredResponse extends SubsonicResponse {
+  starred2: {
+    song: Song[];
+  };
 }
 
 export interface SubsonicError {
