@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
-import { album } from "@/store/modules/album";
 import { annotation } from "@/store/modules/annotation";
 import { artist } from "@/store/modules/artist";
 import { search } from "@/store/modules/search";
@@ -10,6 +9,7 @@ import { user } from "@/store/modules/user";
 import { stream } from "@/store/modules/stream";
 import { ui } from "@/store/modules/ui";
 import { RootState } from "@/store/RootState";
+import AlbumStore from "@/store/modules/album";
 
 Vue.use(Vuex);
 
@@ -19,7 +19,7 @@ const store: StoreOptions<RootState> = {
   actions: {},
   getters: {},
   modules: {
-    album,
+    album: AlbumStore,
     annotation,
     artist,
     connection,

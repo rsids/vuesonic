@@ -90,7 +90,8 @@ export default class Cover extends Vue {
       if (this.entity.id) {
         this.getAlbum(this.entity as Album).then(
           album => {
-            this[PLAYLIST]({ playlist: album.song });
+            // @todo enable
+            // this[PLAYLIST]({ playlist: album.song });
             this.play({ song: album.song[0] });
           },
           error => {
@@ -103,7 +104,8 @@ export default class Cover extends Vue {
         );
       } else {
         this.getAlbumFromMusicDirectory(this.entity as Album).then(album => {
-          this[PLAYLIST]({ playlist: album.song });
+          // @todo enable
+          // this[PLAYLIST]({ playlist: album.song });
           this.play({ song: album.song[0] });
         });
       }

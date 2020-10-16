@@ -14,12 +14,17 @@ module.exports = {
     ecmaVersion: 2020
   },
   rules: {
+    "no-any": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off"
   },
   overrides: [
     {
-      files: ["**/__tests__/*.{j,t}s?(x)", "**/*.spec.{j,t}s?(x)"],
+      files: [
+        "**/__tests__/*.{j,t}s?(x)",
+        "**/tests/*.{j,t}s?(x)",
+        "**/*.spec.{j,t}s?(x)"
+      ],
       env: {
         jest: true
       }
