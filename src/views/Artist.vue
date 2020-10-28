@@ -3,9 +3,9 @@
     <v-container v-if="currentArtist">
       <div class="d-flex mb-8">
         <v-s-cover
-          type="artist"
-          :size="160"
           :entity="currentArtist"
+          :size="160"
+          type="artist"
         ></v-s-cover>
         <div class="pl-4 pt-4">
           <h1 class="title">
@@ -20,11 +20,11 @@
           </h2>
         </div>
       </div>
-      <v-row align-content="start" justify="start" v-if="currentArtist.album">
+      <v-row v-if="currentArtist.album" align-content="start" justify="start">
         <v-s-album-card
-          :album="album"
           v-for="(album, i) in currentArtist.album"
           :key="i"
+          :album="album"
         ></v-s-album-card>
       </v-row>
     </v-container>
@@ -42,7 +42,7 @@ import { mapActions, mapMutations, mapState } from "vuex";
 import VSCover from "@/components/Cover";
 import VSAlbumCard from "@/components/AlbumCard";
 import { noop } from "@/utils/generic";
-import { SET_ARTIST } from "@/store/modules/artist";
+
 export default {
   name: "Artist",
   components: { VSAlbumCard, VSCover, VSEmptyState },
@@ -61,11 +61,11 @@ export default {
     });
   },
   destroyed() {
-    this[SET_ARTIST](null);
+    this.setArtist(null);
   },
   methods: {
     ...mapActions("artist", ["getArtist"]),
-    ...mapMutations("artist", [SET_ARTIST])
+    ...mapMutations("artist", ["setArtist"])
   },
   computed: {
     ...mapState("artist", ["currentArtist"]),

@@ -1,20 +1,9 @@
-import { Module } from "vuex";
-import { RootState } from "@/store/RootState";
 import Vue from "vue";
 import { SearchResponse } from "@/store/interfaces/subsonicResponse";
 import { Artist } from "@/store/interfaces/artist";
 import { Album } from "@/store/interfaces/album";
 import { Song } from "@/store/interfaces/song";
-
-interface SearchState {
-  query: string;
-  artists?: Artist[];
-  albums?: Album[];
-  songs?: Song[];
-  hasMoreAlbums: boolean;
-  hasMoreArtists: boolean;
-  hasMoreSongs: boolean;
-}
+import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
 
 interface SearchParams {
   query: string;
@@ -26,126 +15,132 @@ interface SearchParams {
   songOffset?: number;
 }
 
-const MUTATE_ALBUMS = "mutateAlbums";
-const MUTATE_ARTISTS = "mutateArtists";
-const MUTATE_SONGS = "mutateSongs";
-
 const SEARCH_DEFAULTS = {
   ALBUM_COUNT: 4,
   ARTIST_COUNT: 4,
   SONG_COUNT: 10
 };
 
-const state: SearchState = {
-  hasMoreAlbums: false,
-  hasMoreArtists: false,
-  hasMoreSongs: false,
-  query: "",
-  albums: [],
-  artists: [],
-  songs: []
-};
-export const search: Module<SearchState, RootState> = {
-  namespaced: true,
-  state,
-  getters: {},
-  actions: {
-    search({ commit, state }, { query }) {
-      const params = {
-        query: query,
-        artistCount: SEARCH_DEFAULTS.ARTIST_COUNT + 1,
-        albumCount: SEARCH_DEFAULTS.ALBUM_COUNT + 1,
-        songCount: SEARCH_DEFAULTS.SONG_COUNT + 1
-      } as SearchParams;
-      state.albums = [];
-      state.artists = [];
-      state.songs = [];
-      state.query = query;
-      return Vue.prototype.axios
-        .get(`search3`, { params: params })
-        .then((response: SearchResponse) => {
-          commit(MUTATE_ARTISTS, {
-            artists: response.searchResult3.artist || []
-          });
-          commit(MUTATE_ALBUMS, { albums: response.searchResult3.album || [] });
-          commit(MUTATE_SONGS, { songs: response.searchResult3.song || [] });
-        });
-    },
+@Module({ namespaced: true })
+export default class SearchStore extends VuexModule {
+  query = "";
+  artists: Artist[] = [];
+  albums: Album[] = [];
+  songs: Song[] = [];
+  hasMoreAlbums = false;
+  hasMoreArtists = false;
+  hasMoreSongs = false;
 
-    searchMore({ commit, state }, { type }) {
-      const params = {
-        query: state.query,
-        artistCount: 0,
-        albumCount: 0,
-        songCount: 0
-      } as SearchParams;
-      switch (type) {
-        case "albums":
-          params.albumCount = 9999;
-          params.albumOffset = SEARCH_DEFAULTS.ALBUM_COUNT;
-          break;
-        case "artists":
-          params.artistCount = 9999;
-          params.artistOffset = SEARCH_DEFAULTS.ARTIST_COUNT;
-          break;
-        case "songs":
-          params.songCount = 9999;
-          params.songOffset = SEARCH_DEFAULTS.SONG_COUNT;
-          break;
-      }
-      return Vue.prototype.axios
-        .get(`search3`, { params: params })
-        .then((response: SearchResponse) => {
-          switch (type) {
-            case "artists":
-              commit(MUTATE_ARTISTS, {
-                artists: response.searchResult3.artist,
-                append: true
-              });
-              break;
-            case "albums":
-              commit(MUTATE_ALBUMS, {
-                albums: response.searchResult3.album,
-                append: true
-              });
-              break;
-            case "songs":
-              commit(MUTATE_SONGS, {
-                songs: response.searchResult3.song,
-                append: true
-              });
-              break;
-          }
-        });
-    }
-  },
-  mutations: {
-    [MUTATE_ALBUMS](state: SearchState, { albums, append = false }) {
-      if (append && state.albums) {
-        state.albums = ([] as Album[]).concat(state.albums, albums);
-        state.hasMoreAlbums = false;
-      } else {
-        state.hasMoreAlbums = albums.length > SEARCH_DEFAULTS.ALBUM_COUNT;
-        state.albums = albums.splice(0, SEARCH_DEFAULTS.ALBUM_COUNT);
-      }
-    },
-    [MUTATE_ARTISTS](state: SearchState, { artists, append = false }) {
-      if (append && state.artists) {
-        state.artists = ([] as Artist[]).concat(state.artists, artists);
-        state.hasMoreArtists = false;
-      } else {
-        state.hasMoreArtists = artists.length > SEARCH_DEFAULTS.ARTIST_COUNT;
-        state.artists = artists.splice(0, SEARCH_DEFAULTS.ARTIST_COUNT);
-      }
-    },
-    [MUTATE_SONGS](state: SearchState, { songs, append = false }) {
-      if (append && state.songs) {
-        state.songs = ([] as Song[]).concat(state.songs, songs);
-        state.hasMoreSongs = false;
-      } else {
-        state.hasMoreSongs = songs.length > SEARCH_DEFAULTS.SONG_COUNT;
-        state.songs = songs.splice(0, SEARCH_DEFAULTS.SONG_COUNT);
-      }
+  @Mutation
+  setAlbums({ albums, append = false }) {
+    if (append && this.albums) {
+      this.albums = ([] as Album[]).concat(this.albums, albums);
+      this.hasMoreAlbums = false;
+    } else {
+      this.hasMoreAlbums = albums.length > SEARCH_DEFAULTS.ALBUM_COUNT;
+      this.albums = albums.splice(0, SEARCH_DEFAULTS.ALBUM_COUNT);
     }
   }
-};
+
+  @Mutation
+  setArtists({ artists, append = false }) {
+    if (append && this.artists) {
+      this.artists = ([] as Artist[]).concat(this.artists, artists);
+      this.hasMoreArtists = false;
+    } else {
+      this.hasMoreArtists = artists.length > SEARCH_DEFAULTS.ARTIST_COUNT;
+      this.artists = artists.splice(0, SEARCH_DEFAULTS.ARTIST_COUNT);
+    }
+  }
+
+  @Mutation
+  setSongs({ songs, append = false }) {
+    if (append && this.songs) {
+      this.songs = ([] as Song[]).concat(this.songs, songs);
+      this.hasMoreSongs = false;
+    } else {
+      this.hasMoreSongs = songs.length > SEARCH_DEFAULTS.SONG_COUNT;
+      this.songs = songs.splice(0, SEARCH_DEFAULTS.SONG_COUNT);
+    }
+  }
+
+  @Mutation
+  resetSearch(query) {
+    this.albums = [];
+    this.artists = [];
+    this.songs = [];
+    this.query = query;
+  }
+
+  @Action
+  async search({ query }) {
+    const params = {
+      query: query,
+      artistCount: SEARCH_DEFAULTS.ARTIST_COUNT + 1,
+      albumCount: SEARCH_DEFAULTS.ALBUM_COUNT + 1,
+      songCount: SEARCH_DEFAULTS.SONG_COUNT + 1
+    } as SearchParams;
+    this.context.commit("resetSearch", query);
+    const response: SearchResponse = await Vue.prototype.axios.get(`search3`, {
+      params: params
+    });
+
+    this.context.commit("setArtists", {
+      artists: response.searchResult3.artist || []
+    });
+    this.context.commit("setAlbums", {
+      albums: response.searchResult3.album || []
+    });
+    this.context.commit("setSongs", {
+      songs: response.searchResult3.song || []
+    });
+  }
+
+  @Action
+  async searchMore({ type }) {
+    const params = {
+      query: this.context.getters["query"],
+      artistCount: 0,
+      albumCount: 0,
+      songCount: 0
+    } as SearchParams;
+    switch (type) {
+      case "albums":
+        params.albumCount = 9999;
+        params.albumOffset = SEARCH_DEFAULTS.ALBUM_COUNT;
+        break;
+      case "artists":
+        params.artistCount = 9999;
+        params.artistOffset = SEARCH_DEFAULTS.ARTIST_COUNT;
+        break;
+      case "songs":
+        params.songCount = 9999;
+        params.songOffset = SEARCH_DEFAULTS.SONG_COUNT;
+        break;
+    }
+    const response: SearchResponse = await Vue.prototype.axios.get(`search3`, {
+      params: params
+    });
+
+    switch (type) {
+      case "artists":
+        this.context.commit("setArtists", {
+          artists: response.searchResult3.artist,
+          append: true
+        });
+        break;
+      case "albums":
+        this.context.commit("setAlbums", {
+          albums: response.searchResult3.album,
+          append: true
+        });
+        break;
+      case "songs":
+        this.context.commit("setSongs", {
+          songs: response.searchResult3.song,
+          append: true
+        });
+        break;
+    }
+  }
+}

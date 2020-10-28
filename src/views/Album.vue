@@ -2,18 +2,18 @@
   <div>
     <v-container v-if="currentAlbum">
       <div class="d-flex mb-8">
-        <v-s-cover type="artist" :size="160" :entity="currentAlbum"></v-s-cover>
+        <v-s-cover :entity="currentAlbum" :size="160" type="artist"></v-s-cover>
         <div class="pl-4 pt-4">
           <h1 class="title">
             <span class="album-title" v-text="currentAlbum.name"></span>
-            <v-btn fab small outlined color="dark-grey" @click="playAlbum()"
-              ><v-icon>mdi-play</v-icon></v-btn
-            >
+            <v-btn color="dark-grey" fab outlined small @click="playAlbum()">
+              <v-icon>mdi-play</v-icon>
+            </v-btn>
           </h1>
           <h2
             class="subtitle-1"
-            v-text="currentAlbum.artist"
             @click="gotoArtist()"
+            v-text="currentAlbum.artist"
           ></h2>
           <span class="subtitle-2">{{ metaData }}</span>
           <div class="d-flex justify-lg-space-between">
@@ -24,7 +24,7 @@
             <v-spacer></v-spacer>
             <v-menu bottom right>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn icon v-bind="attrs" v-on="on">
+                <v-btn v-bind="attrs" v-on="on" icon>
                   <v-icon>mdi-dots-vertical</v-icon>
                 </v-btn>
               </template>
@@ -64,7 +64,6 @@ import VSSonglist from "@/components/Songlist";
 import VSCover from "@/components/Cover";
 import VSPlaylistMenu from "@/components/PlaylistMenu";
 import VSQueueMenu from "@/components/QueueMenu";
-import { PLAYLIST } from "@/store/modules/stream";
 
 export default {
   name: "Album",
@@ -109,13 +108,13 @@ export default {
     });
   },
   destroyed() {
-    // this[SET_ALBUM](null);
+    this.setAlbum(null);
   },
   methods: {
     ...mapActions("album", ["getAlbum", "getCoverArt"]),
     ...mapActions("stream", ["shuffleAndPlay", "play"]),
-    // ...mapMutations("album", [SET_ALBUM]),
-    ...mapMutations("stream", [PLAYLIST]),
+    ...mapMutations("album", ["setAlbum"]),
+    ...mapMutations("stream", ["setPlaylist"]),
 
     gotoArtist() {
       const artist = encodeURIComponent(
@@ -128,7 +127,7 @@ export default {
     },
 
     playAlbum() {
-      this[PLAYLIST]({ playlist: this.currentAlbum.song });
+      this.setPlaylist({ playlist: this.currentAlbum.song });
       this.play({ song: this.currentAlbum.song[0] });
     },
 
@@ -139,13 +138,15 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .btn-shuffle {
   padding-left: 0 !important;
+
   .v-icon {
     padding-right: 8px;
   }
 }
+
 .album-title {
   display: inline-block;
   padding-right: 16px;

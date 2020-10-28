@@ -7,14 +7,14 @@
         ><span>Current queue</span>
         <v-spacer></v-spacer>
         <v-btn text @click="onClear()">Clear</v-btn>
-        <v-s-save-playlist label="Save" :songs="playlist"></v-s-save-playlist>
+        <v-s-save-playlist :songs="playlist" label="Save"></v-s-save-playlist>
       </v-card-title>
 
       <v-s-songlist
-        :songs="playlist"
-        full
-        dense
         :elevation="0"
+        :songs="playlist"
+        dense
+        full
         numbering="none"
       ></v-s-songlist>
     </v-card>
@@ -24,8 +24,8 @@
 <script>
 import VSSonglist from "@/components/Songlist";
 import { mapMutations, mapState } from "vuex";
-import { PLAYLIST } from "@/store/modules/stream";
 import VSSavePlaylist from "@/components/SavePlaylist";
+
 export default {
   name: "VSQueueList",
   components: { VSSavePlaylist, VSSonglist },
@@ -35,9 +35,9 @@ export default {
   },
 
   methods: {
-    ...mapMutations("stream", [PLAYLIST]),
+    ...mapMutations("stream", ["setPlaylist"]),
     onClear() {
-      this[PLAYLIST]({ playlist: [], resetHistory: true });
+      this.setPlaylist({ playlist: [], resetHistory: true });
     }
   }
 };

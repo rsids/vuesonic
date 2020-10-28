@@ -2,25 +2,26 @@
   <div>
     <v-container v-if="currentPlaylist">
       <div class="d-flex mb-8">
-        <v-img max-width="160" max-height="160" :src="cover"></v-img>
+        <v-img :src="cover" max-height="160" max-width="160"></v-img>
         <div class="pl-4 pt-4">
           <h1 class="title">
             <span class="album-title" v-text="currentPlaylist.name"></span>
             <v-btn
-              fab
-              small
-              outlined
-              color="dark-grey"
-              @click="playIt()"
               v-if="currentPlaylist.songCount > 0"
-              ><v-icon>mdi-play</v-icon></v-btn
+              color="dark-grey"
+              fab
+              outlined
+              small
+              @click="playIt()"
             >
+              <v-icon>mdi-play</v-icon>
+            </v-btn>
           </h1>
           <span class="subtitle-2">{{ metaData }}</span>
           <v-btn
+            :disabled="currentPlaylist.songCount === 0"
             class="d-block btn-text-with-icon"
             text
-            :disabled="currentPlaylist.songCount === 0"
           >
             <v-icon>mdi-shuffle</v-icon>
             shuffle
@@ -41,9 +42,9 @@
         <v-col cols="12">
           <v-s-songlist
             v-if="currentPlaylist.songCount > 0"
-            :songs="currentPlaylist.entry"
             :full="true"
             :numbering="'index'"
+            :songs="currentPlaylist.entry"
           >
             <template v-slot:menuoptions="slotProps">
               <v-list-item @click.stop="removeFromPlaylist(slotProps)">
@@ -72,7 +73,6 @@ import { mapActions, mapMutations, mapState } from "vuex";
 import VSEmptyState from "@/components/EmptyState";
 import { duration } from "@/utils/generic";
 import VSSonglist from "@/components/Songlist";
-import { PLAYLIST } from "@/store/modules/stream";
 
 export default {
   name: "Playlist",
@@ -122,11 +122,11 @@ export default {
       "deletePlaylist",
       "updatePlaylist"
     ]),
-    ...mapMutations("stream", [PLAYLIST]),
+    ...mapMutations("stream", ["setPlaylist"]),
     ...mapActions("stream", ["play"]),
 
     playIt() {
-      this[PLAYLIST]({ playlist: this.currentPlaylist.entry });
+      this.setPlaylist({ playlist: this.currentPlaylist.entry });
       this.play({ song: this.currentPlaylist.entry[0] });
     },
 
@@ -164,13 +164,15 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .btn-text-with-icon {
   padding-left: 0 !important;
+
   .v-icon {
     padding-right: 8px;
   }
 }
+
 .album-title {
   display: inline-block;
   padding-right: 16px;

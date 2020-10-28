@@ -1,64 +1,38 @@
-import { Module } from "vuex";
-import { RootState } from "@/store/RootState";
 import { Song } from "@/store/interfaces/song";
 import { shuffle } from "@/utils/generic";
+import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
 
-export const PAUSE = "mutatePause";
-export const PLAY = "mutatePlay";
-export const PREV = "mutatePrev";
-export const NEXT = "mutateNext";
-export const HAS_PREV = "mutateHasPrev";
-export const HAS_NEXT = "mutateHasNext";
-export const REPEAT = "mutateRepeat";
-export const SEEK = "mutateSeek";
-export const SONG = "mutateSong";
-export const PLAYLIST = "mutatePlaylist";
-export const ADD_TO_PLAYLIST = "mutateAddPlaylist";
+@Module({ namespaced: true })
+export default class StreamStore extends VuexModule {
+  audio: HTMLAudioElement = document.createElement("audio");
+  hasNext = false;
+  hasPrev = false;
+  history: Song[] = [];
+  paused = true;
+  progress = 0;
+  playmode = -1;
+  playlist: Song[] = [];
+  repeat = false;
+  song?: Song = undefined;
 
-export const PLAYMODE = {
-  ALBUM: 0,
-  PLAYLIST: 1,
-  SEARCH: 2
-};
+  @Mutation
+  setHasNext(has) {
+    this.hasNext = has;
+  }
 
-interface StreamState {
-  audio: HTMLAudioElement;
-  hasNext: boolean;
-  hasPrev: boolean;
-  song?: Song;
-  repeat: boolean;
-  paused: boolean;
-  progress: number;
-  playmode: number;
-  playlist: Song[];
-  history: Song[];
-}
+  @Mutation
+  setHasPrev(has) {
+    this.hasPrev = has;
+  }
 
-const state: StreamState = {
-  audio: document.createElement("audio"),
-  hasNext: false,
-  hasPrev: false,
-  history: [],
-  paused: true,
-  progress: 0,
-  playmode: -1,
-  playlist: [],
-  repeat: false,
-  song: undefined
-};
+  @Mutation
+  setRepeat(repeat) {
+    this.repeat = repeat;
+  }
 
-const mutations = {
-  [HAS_NEXT](state: StreamState, has) {
-    state.hasNext = has;
-  },
-  [HAS_PREV](state: StreamState, has) {
-    state.hasPrev = has;
-  },
-  [REPEAT](state: StreamState, repeat) {
-    state.repeat = repeat;
-  },
-  [SONG](state, song: Song) {
-    state.song = song;
+  @Mutation
+  setSong(song: Song) {
+    this.song = song;
 
     if (window.navigator.mediaSession) {
       window.navigator.mediaSession.metadata = new MediaMetadata({
@@ -67,134 +41,151 @@ const mutations = {
         album: song.album
       });
     }
-    state.progress = 0;
+    this.progress = 0;
     document.title = `${song.artist} - ${song.title} // VueSonic`;
-  },
-  [PAUSE](state: StreamState) {
+  }
+
+  @Mutation
+  setPaused() {
     if (window.navigator.mediaSession) {
       window.navigator.mediaSession.playbackState = "paused";
     }
-    state.paused = true;
-    state.audio.pause();
-  },
-  [PLAY](state: StreamState) {
+    this.paused = true;
+    this.audio.pause();
+  }
+
+  @Mutation
+  setPlaying() {
     if (window.navigator.mediaSession) {
       window.navigator.mediaSession.playbackState = "playing";
     }
-    state.paused = false;
-    state.audio.play();
-  },
-  [SEEK](state: StreamState, seek) {
-    state.audio.currentTime = seek;
-  },
-  [PLAYLIST](state: StreamState, { playlist, resetHistory = true }) {
-    if (resetHistory) {
-      state.history = [];
-    }
-    state.playlist = [...playlist];
-  },
-  [ADD_TO_PLAYLIST](state: StreamState, playlist: Song[]) {
-    state.playlist = [...state.playlist, ...playlist];
+    this.paused = false;
+    this.audio.play();
   }
-};
 
-const actions = {
-  addToQueue({ state, commit }, { songs }) {
-    commit(PLAYLIST, {
-      playlist: [...state.playlist, songs],
+  @Mutation
+  seek(seek) {
+    this.audio.currentTime = seek;
+  }
+
+  @Mutation
+  setPlaylist({ playlist, resetHistory = true }) {
+    if (resetHistory) {
+      this.history = [];
+    }
+    this.playlist = [...playlist];
+  }
+
+  @Mutation
+  addToPlaylist(playlist: Song[]) {
+    this.playlist = [...this.playlist, ...playlist];
+  }
+
+  @Mutation
+  setProgress(value: number) {
+    this.progress = value;
+  }
+
+  @Action
+  addToQueue({ songs }) {
+    this.context.commit("setPlaylist", {
+      playlist: [...this.playlist, songs],
       resetHistory: false
     });
-  },
+  }
 
-  init({ state, dispatch, commit }) {
-    state.audio.addEventListener("timeupdate", () => {
-      state.progress = state.audio.currentTime;
+  @Action
+  init() {
+    this.audio.addEventListener("timeupdate", () => {
+      this.context.commit("setProgress", this.audio.currentTime);
     });
-    state.audio.addEventListener("ended", () => {
-      dispatch("next");
+    this.audio.addEventListener("ended", () => {
+      this.next();
     });
 
     if (window.navigator.mediaSession) {
       window.navigator.mediaSession.setActionHandler("previoustrack", () => {
-        dispatch("prev");
+        this.prev();
       });
       window.navigator.mediaSession.setActionHandler("nexttrack", () => {
-        dispatch("next");
+        this.next();
       });
       window.navigator.mediaSession.setActionHandler("play", () => {
-        commit(PLAY);
+        this.context.commit("setPlaying");
       });
 
       window.navigator.mediaSession.setActionHandler("pause", () => {
-        commit(PAUSE);
+        this.context.commit("setPaused");
       });
     }
-  },
+  }
 
-  play({ dispatch, commit, state }, { song }) {
-    commit(PAUSE);
-    dispatch(
+  @Action
+  async play({ song }) {
+    this.context.commit("setPaused");
+    const url = await this.context.dispatch(
       "connection/getUrl",
       { url: `stream?id=${song.id}` },
       { root: true }
-    ).then(url => {
-      state.audio.src = url;
-      try {
-        commit(SONG, song);
-        commit(PLAY);
-        const idx = state.playlist.findIndex(s => s.id === song.id);
-        commit(HAS_NEXT, idx + 1 !== state.playlist.length || state.repeat);
-        commit(HAS_PREV, idx > 0);
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.log(e);
-      }
-    });
-  },
+    );
+    this.audio.src = url;
+    try {
+      this.context.commit("setSong", song);
+      this.context.commit("setPlaying");
+      const idx = this.playlist.findIndex(s => s.id === song.id);
+      this.context.commit(
+        "setHasNext",
+        idx + 1 !== this.playlist.length || this.repeat
+      );
+      this.context.commit("setHasPrev", idx > 0);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
+    }
+  }
 
-  next({ state, dispatch }) {
-    if (state.playlist && state.song) {
-      let idx = state.playlist.findIndex(song => song.id === state.song.id);
-      if (idx >= 0 && idx < state.playlist.length - 1) {
+  @Action
+  next() {
+    if (this.playlist && this.song) {
+      const id = this.song.id;
+      let idx = this.playlist.findIndex(song => song.id === id);
+      if (idx >= 0 && idx < this.playlist.length - 1) {
         idx++;
-        dispatch("play", { song: state.playlist[idx] });
+        this.play({ song: this.playlist[idx] });
       }
     }
-  },
+  }
 
-  playNext({ state, dispatch, commit }, { songs }) {
+  @Action
+  playNext({ songs }) {
     let idx = 0;
-    if (state.song) {
-      idx = state.playlist.indexOf(state.song) + 1;
+    if (this.song) {
+      idx = this.playlist.indexOf(this.song) + 1;
     }
-    const arr = [...state.playlist];
+    const arr = [...this.playlist];
     arr.splice(idx, 0, ...songs);
-    commit(PLAYLIST, { playlist: arr, resetHistory: false });
-    if (!state.song) {
-      dispatch("play", { song: state.playlist[0] });
+    this.context.commit("setPlaylist", { playlist: arr, resetHistory: false });
+    if (!this.song) {
+      this.play({ song: this.playlist[0] });
     }
-  },
+  }
 
-  prev({ state, dispatch }) {
-    if (state.playlist && state.song) {
-      let idx = state.playlist.findIndex(song => song.id === state.song.id);
+  @Action
+  prev() {
+    if (this.playlist && this.song) {
+      const id = this.song.id;
+      let idx = this.playlist.findIndex(song => song.id === id);
       if (idx >= 0) {
         idx--;
-        idx = idx < 0 ? state.playlist.length - 1 : idx;
-        dispatch("play", { song: state.playlist[idx] });
+        idx = idx < 0 ? this.playlist.length - 1 : idx;
+        this.play({ song: this.playlist[idx] });
       }
     }
-  },
-
-  shuffleAndPlay({ state, commit, dispatch }, { songs }) {
-    commit(PLAYLIST, { playlist: shuffle(songs) });
-    dispatch("play", { song: state.playlist[0] });
   }
-};
-export const stream: Module<StreamState, RootState> = {
-  namespaced: true,
-  state,
-  getters: {},
-  actions,
-  mutations
-};
+
+  @Action
+  shuffleAndPlay({ songs }) {
+    this.context.commit("setPlaylist", { playlist: shuffle(songs) });
+    this.play({ song: this.playlist[0] });
+  }
+}

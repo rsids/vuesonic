@@ -4,7 +4,7 @@ import { Action, Module, VuexModule } from "vuex-module-decorators";
 @Module({ namespaced: true })
 export default class AnnotationStore extends VuexModule {
   @Action
-  async star({ commit }, { id, albumId, artistId, toggle }) {
+  async star({ id, albumId, artistId, toggle }) {
     const params: string[] = [];
     const action = toggle ? "star" : "unstar";
     if (id) {

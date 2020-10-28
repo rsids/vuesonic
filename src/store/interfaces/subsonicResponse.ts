@@ -38,6 +38,14 @@ export interface DirectoryResponse extends SubsonicResponse {
   directory: Directory;
 }
 
+export interface PlaylistsResponse extends SubsonicResponse {
+  playlists: PlaylistList;
+}
+
+export interface PlaylistResponse extends SubsonicResponse {
+  playlist: Playlist;
+}
+
 export interface StarredResponse extends SubsonicResponse {
   starred2: {
     song: Song[];

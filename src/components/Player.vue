@@ -1,14 +1,14 @@
 <template>
-  <v-footer fixed height="90" elevation="4" padless>
+  <v-footer elevation="4" fixed height="90" padless>
     <v-slider
-      class="progress-slider"
       v-if="!!song"
+      :max="song.duration"
       :value="playhead"
-      @change="changePlayhead($event)"
-      @mousedown="startSeeking()"
+      class="progress-slider"
       min="0"
       step="0.1"
-      :max="song.duration"
+      @change="changePlayhead($event)"
+      @mousedown="startSeeking()"
     ></v-slider>
     <div class="player">
       <div class="player__song">
@@ -18,11 +18,11 @@
         </span>
         <div>
           <div v-if="!!song" class="d-flex align-center">
-            <v-s-cover :size="90" type="album" :entity="song"></v-s-cover>
+            <v-s-cover :entity="song" :size="90" type="album"></v-s-cover>
             <div class="ma-3">
               <div
-                v-text="song.title"
                 class="body-1 font-weight-medium text-no-wrap text-truncate"
+                v-text="song.title"
               ></div>
               <div class="body-2 text-no-wrap text-truncate">
                 <span v-text="song.artist"></span> -
@@ -33,27 +33,33 @@
         </div>
       </div>
       <div class="player__controls">
-        <v-btn icon><v-icon>mdi-repeat</v-icon></v-btn>
-        <v-btn icon @click="skipPrev()"
-          ><v-icon>mdi-skip-previous</v-icon></v-btn
-        >
-        <v-btn fab :disabled="!song" @click="togglePlay()" color="primary">
+        <v-btn icon>
+          <v-icon>mdi-repeat</v-icon>
+        </v-btn>
+        <v-btn icon @click="skipPrev()">
+          <v-icon>mdi-skip-previous</v-icon>
+        </v-btn>
+        <v-btn :disabled="!song" color="primary" fab @click="togglePlay()">
           <v-icon v-if="!playing">mdi-play</v-icon>
           <v-icon v-if="playing">mdi-pause</v-icon>
         </v-btn>
-        <v-btn icon @click="skipNext()" :disabled="!hasNext"
-          ><v-icon>mdi-skip-next</v-icon></v-btn
-        >
-        <v-btn icon color="#ff6600"><v-icon>mdi-shuffle</v-icon></v-btn>
+        <v-btn :disabled="!hasNext" icon @click="skipNext()">
+          <v-icon>mdi-skip-next</v-icon>
+        </v-btn>
+        <v-btn color="#ff6600" icon>
+          <v-icon>mdi-shuffle</v-icon>
+        </v-btn>
       </div>
       <div class="player__sound">
-        <v-btn icon><v-icon>mdi-volume-high</v-icon></v-btn>
-        <v-btn icon @click.stop="queue = true"
-          ><v-icon>mdi-playlist-music</v-icon></v-btn
-        >
+        <v-btn icon>
+          <v-icon>mdi-volume-high</v-icon>
+        </v-btn>
+        <v-btn icon @click.stop="queue = true">
+          <v-icon>mdi-playlist-music</v-icon>
+        </v-btn>
       </div>
     </div>
-    <v-dialog content-class="queueList" origin="bottom right" v-model="queue">
+    <v-dialog v-model="queue" content-class="queueList" origin="bottom right">
       <v-s-queue-list></v-s-queue-list>
     </v-dialog>
   </v-footer>
@@ -61,7 +67,6 @@
 
 <script>
 import { mapActions, mapMutations, mapState } from "vuex";
-import { PAUSE, PLAY, SEEK } from "@/store/modules/stream";
 import { duration } from "@/utils/generic";
 import VSCover from "@/components/Cover";
 import VSQueueList from "@/components/QueueList";
@@ -82,11 +87,11 @@ export default {
   },
   methods: {
     ...mapActions("stream", ["next", "prev"]),
-    ...mapMutations("stream", [PLAY, PAUSE, SEEK]),
+    ...mapMutations("stream", ["setPlaying", "setPaused", "seek"]),
 
     changePlayhead($event) {
       this.seeking = false;
-      this[SEEK]($event);
+      this.seek($event);
     },
     startSeeking() {
       this.seeking = true;
@@ -98,7 +103,7 @@ export default {
 
     skipPrev() {
       if (this.songProgress < 2 && this.prevMode === PREV_MODE_SEEK) {
-        this[SEEK](0);
+        this.seek(0);
         this.prevMode = PREV_MODE_PREV;
         this.prevClick = setTimeout(() => {
           this.prevMode = PREV_MODE_SEEK;
@@ -133,7 +138,7 @@ export default {
         return !this.paused;
       },
       set(val) {
-        val ? this[PLAY]() : this[PAUSE]();
+        val ? this.setPlaying() : this.setPaused();
       }
     }
   },
@@ -189,6 +194,7 @@ $playerWidth: 256px;
   flex-shrink: 0;
   flex-grow: 1;
 }
+
 .progress-slider {
   position: absolute;
   left: 82px;
@@ -196,6 +202,7 @@ $playerWidth: 256px;
   top: -15px;
   z-index: 1;
 }
+
 .progress-text {
   position: absolute;
   top: 4px;

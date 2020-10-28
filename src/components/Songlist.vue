@@ -1,10 +1,10 @@
 <template>
   <v-data-table
+    :headers="headers"
     :hide-default-footer="true"
+    :items="songs"
     class="elevation-1 fixed-table"
     disable-pagination
-    :headers="headers"
-    :items="songs"
   >
     <template #header.durationFormatted="">
       <v-icon size="medium">mdi-clock-time-four-outline</v-icon>
@@ -17,21 +17,21 @@
     </template>
     <template #item="item">
       <tr
-        @mouseover="onMouseOver(item.item.id)"
         @click="playSong(item.item)"
         @mouseleave="hovered = null"
+        @mouseover="onMouseOver(item.item.id)"
       >
-        <td class="px-0 text-center" v-if="numbering !== 'none'">
+        <td v-if="numbering !== 'none'" class="px-0 text-center">
           <span v-if="hovered !== item.item.id">
             <span v-if="numbering === 'track'" v-text="item.item.track"></span>
             <span v-else v-text="songs.indexOf(item.item) + 1"></span>
           </span>
-          <v-icon size="28" v-if="hovered === item.item.id">mdi-play</v-icon>
+          <v-icon v-if="hovered === item.item.id" size="28">mdi-play</v-icon>
         </td>
         <td>
           <div class="d-flex align-center">
             <div class="d-flex flex-column text-truncate">
-              <span v-text="item.item.title" class="text-no-wrap"></span>
+              <span class="text-no-wrap" v-text="item.item.title"></span>
               <span v-if="dense" class="caption text-no-wrap"
                 >{{ item.item.artist }} - {{ item.item.album }}</span
               >
@@ -39,7 +39,7 @@
             <v-spacer></v-spacer>
             <v-menu bottom right>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn icon v-bind="attrs" v-on="on">
+                <v-btn v-bind="attrs" v-on="on" icon>
                   <v-icon>mdi-dots-vertical</v-icon>
                 </v-btn>
               </template>
@@ -50,8 +50,8 @@
                 <v-divider v-if="hasMenuOptions"></v-divider>
                 <slot
                   name="menuoptions"
-                  v-bind:song="item.item"
                   v-bind:index="songs.indexOf(item.item)"
+                  v-bind:song="item.item"
                 ></slot>
               </v-list>
             </v-menu>
@@ -62,8 +62,8 @@
         </td>
         <td v-if="full && !dense">
           <span
-            v-text="item.item.artist"
             class="text-no-wrap d-inline-block text-truncate"
+            v-text="item.item.artist"
           ></span>
         </td>
         <td
@@ -78,11 +78,11 @@
           <v-icon
             v-if="!item.item.starred && hovered === item.item.id"
             @click.stop="addStar(item.item)"
-            >mdi-star-outline</v-icon
-          >
+            >mdi-star-outline
+          </v-icon>
           <v-icon v-if="!!item.item.starred" @click.stop="removeStar(item.item)"
-            >mdi-star</v-icon
-          >
+            >mdi-star
+          </v-icon>
         </td>
       </tr>
     </template>
@@ -91,7 +91,6 @@
 
 <script>
 import { mapActions, mapMutations, mapState } from "vuex";
-import { PLAYLIST } from "@/store/modules/stream";
 import VSPlaylistMenu from "@/components/PlaylistMenu";
 import VSQueueMenu from "@/components/QueueMenu";
 
@@ -110,7 +109,7 @@ export default {
     };
   },
   methods: {
-    ...mapMutations("stream", [PLAYLIST]),
+    ...mapMutations("stream", ["setPlaylist"]),
     ...mapActions("stream", ["play"]),
     ...mapActions("annotation", ["star"]),
 
@@ -126,7 +125,7 @@ export default {
       }
     },
     playSong(item) {
-      this[PLAYLIST]({ playlist: this.songs });
+      this.setPlaylist({ playlist: this.songs });
       this.play({ song: item });
     }
   },
@@ -211,6 +210,7 @@ export default {
   min-width: 60px;
   max-width: 100%;
 }
+
 .fixed-table table {
   table-layout: fixed;
 }
