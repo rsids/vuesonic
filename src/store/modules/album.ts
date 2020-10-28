@@ -116,7 +116,7 @@ export default class AlbumStore extends VuexModule {
   getAlbum({ id }: { id: number }) {
     return new Promise((resolve, reject) => {
       if (this.albumsDetailed.has(id)) {
-        this.setAlbum(this.albumsDetailed.get(id) as Album);
+        this.context.commit("setAlbum", this.albumsDetailed.get(id) as Album);
         resolve(this.currentAlbum);
       } else {
         Vue.prototype.axios.get(`getAlbum?id=${id}`).then(
@@ -129,7 +129,7 @@ export default class AlbumStore extends VuexModule {
               });
               this.albumsDetailed.set(id, response.album);
             }
-            this.setAlbum(response.album);
+            this.context.commit("setAlbum", response.album);
             resolve(this.currentAlbum);
           },
           (err: SubsonicError) => reject(err)
@@ -142,7 +142,7 @@ export default class AlbumStore extends VuexModule {
   getAlbumFromMusicDirectory({ musicDirectory }: { musicDirectory: number }) {
     return new Promise(resolve => {
       const getAlbum = (albumId: number) => {
-        return this.getAlbum({ id: albumId }).then(resolve);
+        return this.context.dispatch("getAlbum", { id: albumId }).then(resolve);
       };
       if (this.musicDirectoryAlbumAdapter.has(musicDirectory)) {
         return getAlbum(

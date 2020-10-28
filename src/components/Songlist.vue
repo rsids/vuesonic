@@ -64,12 +64,14 @@
           <span
             class="text-no-wrap d-inline-block text-truncate"
             v-text="item.item.artist"
+            @click.stop="gotoArtist(item.item)"
           ></span>
         </td>
         <td
           v-if="full && !dense"
           class="text-no-wrap text-truncate"
           v-text="item.item.album"
+          @click.stop="gotoAlbum(item.item)"
         ></td>
         <td class="px-2">
           <span v-text="item.item.playCount"></span>
@@ -127,6 +129,16 @@ export default {
     playSong(item) {
       this.setPlaylist({ playlist: this.songs });
       this.play({ song: item });
+    },
+
+    gotoArtist(artist) {
+      // eslint-disable-next-line no-console
+      console.log(artist);
+    },
+
+    gotoAlbum(album) {
+      // eslint-disable-next-line no-console
+      console.log(album);
     }
   },
   computed: {
