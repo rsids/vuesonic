@@ -13,19 +13,20 @@ import {
 import Vue from "vue";
 import { HttpResponse } from "jest-mock-axios/dist/lib/mock-axios-types";
 import {
-  VuexModule,
+  Action,
   Module,
   Mutation,
-  Action,
-  MutationAction
+  MutationAction,
+  VuexModule
 } from "vuex-module-decorators";
 
-interface IUpdateStar {
+interface UpdateStar {
   id: number;
   albumId: number;
   toggle: boolean;
 }
-interface ISetAlbums {
+
+interface SetAlbums {
   albums: Album[];
   hasMoreAlbums: boolean;
 }
@@ -37,7 +38,7 @@ interface Cancelable {
 const ALBUMSET_SIZE = 30;
 const requests: CancelTokenSource[] = [];
 
-@Module
+@Module({ namespaced: true })
 export default class AlbumStore extends VuexModule {
   albums: Album[] = [];
   albumsDetailed = new Map<number, Album>();
@@ -59,7 +60,7 @@ export default class AlbumStore extends VuexModule {
   }
 
   @Mutation
-  setAlbums({ albums, hasMoreAlbums }: ISetAlbums) {
+  setAlbums({ albums, hasMoreAlbums }: SetAlbums) {
     this.albums = ([] as Album[]).concat(this.albums, albums);
     this.hasMoreAlbums = hasMoreAlbums;
   }
@@ -75,7 +76,7 @@ export default class AlbumStore extends VuexModule {
   }
 
   @Mutation
-  updateStar({ id, albumId, toggle }: IUpdateStar) {
+  updateStar({ id, albumId, toggle }: UpdateStar) {
     if (this.currentAlbum) {
       if (id) {
         this.currentAlbum.song = this.currentAlbum.song.map((song: Song) => {
@@ -175,32 +176,36 @@ export default class AlbumStore extends VuexModule {
     return { recents: albums };
   }
 
+  /**
+   * Get a list of albums, by fetching ALBUMSET_SIZE + 1, we can determine
+   * if there are more albums to fetch
+   * @param start
+   */
   @Action
-  getAlbums({ start }: { start: number }) {
-    return Vue.prototype.axios
-      .get(
-        `getAlbumList?type=alphabeticalByName&size=${ALBUMSET_SIZE +
-          1}&offset=${start}`
-      )
-      .then((response: AlbumListResponse) => {
-        let albums = response.albumList.album || [];
-        let hasMoreAlbums = true;
-        if (albums && albums.length === ALBUMSET_SIZE + 1) {
-          albums = albums.slice(0, ALBUMSET_SIZE);
-        } else {
-          hasMoreAlbums = false;
-        }
-        albums = albums.map(album => {
-          album.musicDirectory = album.id;
-          album.id = undefined;
-          return album;
-        });
-        this.setAlbums({ albums: albums, hasMoreAlbums: hasMoreAlbums });
-      });
+  async getAlbums({ start }: { start: number }) {
+    const response: AlbumListResponse = await Vue.prototype.axios.get(
+      `getAlbumList?type=alphabeticalByName&size=${ALBUMSET_SIZE +
+        1}&offset=${start}`
+    );
+
+    let albums = response.albumList.album || [];
+    let hasMoreAlbums = true;
+    if (albums && albums.length === ALBUMSET_SIZE + 1) {
+      albums = albums.slice(0, ALBUMSET_SIZE);
+    } else {
+      hasMoreAlbums = false;
+    }
+    albums = albums.map(album => {
+      album.musicDirectory = album.id;
+      album.id = undefined;
+      return album;
+    });
+
+    this.context.commit("setAlbums", { albums, hasMoreAlbums });
   }
 
-  @Action
-  getCoverArt({ id, size }: { id: string; size?: string }) {
+  @Action({ rawError: true })
+  async getCoverArt({ id, size }: { id: string; size?: string }) {
     const params = [`id=${encodeURIComponent(id)}`];
     let coverId = id;
     if (size) {
@@ -208,34 +213,34 @@ export default class AlbumStore extends VuexModule {
       params.push(`size=${px}`);
       coverId += `|${size}`;
     }
-    return new Promise((resolve, reject) => {
-      if (this.covers.has(coverId)) {
-        resolve(this.covers.get(coverId));
-      } else {
-        const request = axios.CancelToken.source();
-        requests.push(request);
-        return Vue.prototype.axios
-          .get(`getCoverArt?${params.join("&")}`, {
-            responseType: "blob",
-            cancelToken: request.token
-          })
-          .then((response: HttpResponse) => {
-            if (response) {
-              this.setCover({
-                id: coverId,
-                cover: response.data
-              });
-              resolve(this.covers.get(coverId));
-            } else {
-              reject();
-            }
-          })
-          .catch(() => {
-            // cancelled
+    if (this.covers.has(coverId)) {
+      return this.covers.get(coverId);
+    }
+
+    const cover = await new Promise((resolve, reject) => {
+      const request = axios.CancelToken.source();
+      requests.push(request);
+      Vue.prototype.axios
+        .get(`getCoverArt?${params.join("&")}`, {
+          responseType: "blob",
+          cancelToken: request.token
+        })
+        .then((response: HttpResponse) => {
+          if (response) {
+            resolve(response.data);
+          } else {
             reject();
-          });
-      }
+          }
+        })
+        .catch(() => {
+          // cancelled
+          reject();
+        });
     });
+
+    this.covers.set(coverId, cover as string);
+
+    return cover;
   }
 
   @MutationAction

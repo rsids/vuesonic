@@ -6,15 +6,22 @@
     "jsx": "preserve",
     "importHelpers": true,
     "moduleResolution": "node",
+    "noImplicitAny": false,
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types/"
+    ],
     "types": [
       "webpack-env",
-      "jest"
+      "jest",
+      "wicg-mediasession",
+      "vuetify"
     ],
     "paths": {
       "@/*": [

@@ -5,6 +5,9 @@ import { Cover } from "@/store/interfaces/cover";
 
 import { Song } from "@/store/interfaces/song";
 import AlbumStore from "@/store/modules/album";
+import Mock = jest.Mock;
+import Vue from "vue";
+jest.mock("@/plugins/axios");
 
 describe("album store", () => {
   let album: Album;
@@ -300,10 +303,10 @@ describe("album store", () => {
   });
 
   describe("mutations", () => {
-    it("should set the recent albums", () => {
-      store.commit("setRecents", [album]);
-      expect(store.state.album.recents).toEqual([album]);
-    });
+    // it("should set the recent albums", () => {
+    //   store.commit("setRecents", [album]);
+    //   expect(store.state.album.recents).toEqual([album]);
+    // });
     //
     // it("should set the current album", () => {
     //   mutations[SET_ALBUM](state, album);
@@ -343,23 +346,24 @@ describe("album store", () => {
     // });
   });
 
-  // describe("actions", () => {
-  //   describe("getRecents", () => {
-  //     it("should get the recent albums", async () => {
-  //       (Vue.prototype.axios["get"] as Mock).mockImplementationOnce(() =>
-  //         Promise.resolve({
-  //           albumList: {
-  //             album: [album]
-  //           }
-  //         })
-  //       );
-  //
-  //       const promise = actions.getRecents(state);
-  //       await promise;
-  //       expect(state.recents).toEqual([album]);
-  //       // request.done();
-  //     });
-  //   });
+  describe("actions", () => {
+    describe("getRecents", () => {
+      it("should get the recent albums", async () => {
+        (Vue.prototype.axios["get"] as Mock).mockImplementationOnce(() =>
+          Promise.resolve({
+            albumList: {
+              album: [album]
+            }
+          })
+        );
+
+        const promise = store.dispatch("getRecents");
+        await promise;
+        expect(store.state.recents).toEqual([album]);
+        // request.done();
+      });
+    });
+  });
   //
   //   describe("getAlbums", () => {
   //     it("should get an alfabetical list of albums", async () => {

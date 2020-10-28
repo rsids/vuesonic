@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapMutations, mapState } from "vuex";
 import { SET_DRAWER } from "@/store/modules/ui";
 
 export default {

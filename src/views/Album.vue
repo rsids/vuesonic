@@ -62,7 +62,6 @@ import VSEmptyState from "@/components/EmptyState";
 import { duration, noop } from "@/utils/generic";
 import VSSonglist from "@/components/Songlist";
 import VSCover from "@/components/Cover";
-import { SET_ALBUM } from "@/store/modules/album";
 import VSPlaylistMenu from "@/components/PlaylistMenu";
 import VSQueueMenu from "@/components/QueueMenu";
 import { PLAYLIST } from "@/store/modules/stream";
@@ -110,12 +109,12 @@ export default {
     });
   },
   destroyed() {
-    this[SET_ALBUM](null);
+    // this[SET_ALBUM](null);
   },
   methods: {
     ...mapActions("album", ["getAlbum", "getCoverArt"]),
     ...mapActions("stream", ["shuffleAndPlay", "play"]),
-    ...mapMutations("album", [SET_ALBUM]),
+    // ...mapMutations("album", [SET_ALBUM]),
     ...mapMutations("stream", [PLAYLIST]),
 
     gotoArtist() {

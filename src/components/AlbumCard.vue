@@ -19,14 +19,14 @@
 import { Album } from "@/store/interfaces/album";
 import { mapActions } from "vuex";
 import { Component, Prop, Provide, Vue } from "vue-property-decorator";
-import { Cover } from "@/store/interfaces/cover";
+import VSCover from "@/components/Cover.vue";
 
 @Component({
   methods: {
     ...mapActions("album", ["getAlbumFromMusicDirectory", "cancelAllRequests"])
   },
   name: "VSAlbumCard",
-  components: { Cover }
+  components: { VSCover }
 })
 export default class AlbumCard extends Vue {
   @Prop() album!: Album;

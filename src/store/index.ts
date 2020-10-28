@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
-import { annotation } from "@/store/modules/annotation";
+import AnnotationStore from "@/store/modules/annotation";
 import { artist } from "@/store/modules/artist";
 import { search } from "@/store/modules/search";
 import { playlist } from "@/store/modules/playlist";
@@ -20,7 +20,7 @@ const store: StoreOptions<RootState> = {
   getters: {},
   modules: {
     album: AlbumStore,
-    annotation,
+    annotation: AnnotationStore,
     artist,
     connection,
     playlist,
@@ -31,4 +31,4 @@ const store: StoreOptions<RootState> = {
   }
 };
 
-export default new Vuex.Store(store);
+export default new Vuex.Store(store)

@@ -33,13 +33,13 @@
 
 <script lang="ts">
 import Intersect from "vue-intersect";
-import { mapActions, mapMutations } from "vuex";
-import { PLAYLIST } from "@/store/modules/stream";
+import { mapActions } from "vuex";
 import { Component, Prop, Provide, Vue, Watch } from "vue-property-decorator";
 import { Album } from "@/store/interfaces/album";
 import { Artist } from "@/store/interfaces/artist";
 import { Playlist } from "@/store/interfaces/playlist";
 import { Song } from "@/store/interfaces/song";
+import { VuetifyDialog } from "vuetify-dialog";
 
 interface PlayArgs {
   song: Song;
@@ -60,8 +60,8 @@ interface CoverartArgs {
     ...mapActions("stream", ["play"])
   }
 })
-export default class Cover extends Vue {
-  $dialog!: any;
+export default class VSCover extends Vue {
+  $dialog!: VuetifyDialog;
 
   getCoverArt!: (c: CoverartArgs) => Promise<unknown>;
   getAlbumFromMusicDirectory!: (album: Album) => Promise<Album>;
