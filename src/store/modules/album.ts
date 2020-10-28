@@ -5,10 +5,9 @@ import { Song } from "@/store/interfaces/song";
 import { duration } from "@/utils/generic";
 import {
   AlbumListResponse,
+  AlbumResponse,
   DirectoryResponse,
-  StarredResponse,
-  SubsonicError,
-  SubsonicResponse
+  StarredResponse
 } from "@/store/interfaces/subsonicResponse";
 import Vue from "vue";
 import { HttpResponse } from "jest-mock-axios/dist/lib/mock-axios-types";
@@ -113,51 +112,39 @@ export default class AlbumStore extends VuexModule {
   }
 
   @Action
-  getAlbum({ id }: { id: number }) {
-    return new Promise((resolve, reject) => {
-      if (this.albumsDetailed.has(id)) {
-        this.context.commit("setAlbum", this.albumsDetailed.get(id) as Album);
-        resolve(this.currentAlbum);
-      } else {
-        Vue.prototype.axios.get(`getAlbum?id=${id}`).then(
-          (response: SubsonicResponse) => {
-            if (response.album) {
-              response.album.song = response.album.song.map(song => {
-                song.durationFormatted = duration(song.duration);
-                song.starred = !!song.starred;
-                return song;
-              });
-              this.albumsDetailed.set(id, response.album);
-            }
-            this.context.commit("setAlbum", response.album);
-            resolve(this.currentAlbum);
-          },
-          (err: SubsonicError) => reject(err)
-        );
+  async getAlbum({ id }: { id: number }) {
+    if (!this.albumsDetailed.has(id)) {
+      const response: AlbumResponse = await Vue.prototype.axios.get(
+        `getAlbum?id=${id}`
+      );
+      if (response.album) {
+        response.album.song = response.album.song.map(song => {
+          song.durationFormatted = duration(song.duration);
+          song.starred = !!song.starred;
+          return song;
+        });
+        this.albumsDetailed.set(id, response.album);
       }
-    });
+    }
+
+    this.context.commit("setAlbum", this.albumsDetailed.get(id));
+    return this.albumsDetailed.get(id);
   }
 
   @Action
-  getAlbumFromMusicDirectory({ musicDirectory }: { musicDirectory: number }) {
-    return new Promise(resolve => {
-      const getAlbum = (albumId: number) => {
-        return this.context.dispatch("getAlbum", { id: albumId }).then(resolve);
-      };
-      if (this.musicDirectoryAlbumAdapter.has(musicDirectory)) {
-        return getAlbum(
-          this.musicDirectoryAlbumAdapter.get(musicDirectory) || 0
-        );
-      }
-      Vue.prototype.axios
-        .get(`getMusicDirectory?id=${musicDirectory}`)
-        .then((response: DirectoryResponse) => {
-          this.musicDirectoryAlbumAdapter.set(
-            musicDirectory,
-            response.directory.child[0].albumId
-          );
-          return getAlbum(response.directory.child[0].albumId);
-        });
+  async getAlbumFromMusicDirectory({ musicDirectory }) {
+    if (!this.musicDirectoryAlbumAdapter.has(musicDirectory)) {
+      const response: DirectoryResponse = await Vue.prototype.axios.get(
+        `getMusicDirectory?id=${musicDirectory}`
+      );
+
+      this.musicDirectoryAlbumAdapter.set(
+        musicDirectory,
+        response.directory.child[0].albumId
+      );
+    }
+    return this.context.dispatch("getAlbum", {
+      id: this.musicDirectoryAlbumAdapter.get(musicDirectory) || 0
     });
   }
 

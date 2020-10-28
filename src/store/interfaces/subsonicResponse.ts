@@ -30,6 +30,10 @@ export interface SearchResponse extends SubsonicResponse {
   };
 }
 
+export interface AlbumResponse extends SubsonicResponse {
+  album: Album;
+}
+
 export interface AlbumListResponse extends SubsonicResponse {
   albumList: AlbumList;
 }
