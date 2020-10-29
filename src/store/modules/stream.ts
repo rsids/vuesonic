@@ -151,7 +151,7 @@ export default class StreamStore extends VuexModule {
       let idx = this.playlist.findIndex(song => song.id === id);
       if (idx >= 0 && idx < this.playlist.length - 1) {
         idx++;
-        this.play({ song: this.playlist[idx] });
+        this.context.dispatch("play", { song: this.playlist[idx] });
       }
     }
   }
@@ -166,7 +166,7 @@ export default class StreamStore extends VuexModule {
     arr.splice(idx, 0, ...songs);
     this.context.commit("setPlaylist", { playlist: arr, resetHistory: false });
     if (!this.song) {
-      this.play({ song: this.playlist[0] });
+      this.context.dispatch("play", { song: this.playlist[0] });
     }
   }
 
@@ -178,7 +178,7 @@ export default class StreamStore extends VuexModule {
       if (idx >= 0) {
         idx--;
         idx = idx < 0 ? this.playlist.length - 1 : idx;
-        this.play({ song: this.playlist[idx] });
+        this.context.dispatch("play", { song: this.playlist[idx] });
       }
     }
   }
@@ -186,6 +186,6 @@ export default class StreamStore extends VuexModule {
   @Action
   shuffleAndPlay({ songs }) {
     this.context.commit("setPlaylist", { playlist: shuffle(songs) });
-    this.play({ song: this.playlist[0] });
+    this.context.dispatch("play", { song: this.playlist[0] });
   }
 }

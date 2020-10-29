@@ -37,4 +37,14 @@ const shuffle = (a: unknown[]) => {
   return a;
 };
 
-export { noop, duration, salt, shuffle };
+const getArtistUrl = ({ artistId, id, artist, name }) => {
+  if (artistId || id) {
+    const aId = artistId || id;
+    let artistName = artist || name;
+    artistName = encodeURIComponent(artistName.split(" ").join("-"));
+    return `/library/artists/${aId}/${artistName}`;
+  }
+  return undefined;
+};
+
+export { noop, duration, salt, shuffle, getArtistUrl };

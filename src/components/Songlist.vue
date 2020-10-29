@@ -95,6 +95,7 @@
 import { mapActions, mapMutations, mapState } from "vuex";
 import VSPlaylistMenu from "@/components/PlaylistMenu";
 import VSQueueMenu from "@/components/QueueMenu";
+import { getArtistUrl } from "@/utils/generic";
 
 export default {
   name: "VSSonglist",
@@ -118,27 +119,32 @@ export default {
     addStar(item) {
       this.star({ id: item.id, toggle: true });
     },
+
     removeStar(item) {
       this.star({ id: item.id, toggle: false });
     },
+
     onMouseOver(id) {
       if (!this.currentSong || this.currentSong.id !== id) {
         this.hovered = id;
       }
     },
+
     playSong(item) {
       this.setPlaylist({ playlist: this.songs });
       this.play({ song: item });
     },
 
     gotoArtist(artist) {
-      // eslint-disable-next-line no-console
-      console.log(artist);
+      const url = getArtistUrl(artist);
+      this.$router.push(url);
     },
 
-    gotoAlbum(album) {
-      // eslint-disable-next-line no-console
-      console.log(album);
+    gotoAlbum(song) {
+      const artist = encodeURIComponent(song.artist.split(" ").join("-"));
+      const album = encodeURIComponent(song.album.split(" ").join("-"));
+      const url = `/library/albums/${song.albumId}/${artist}/${album}`.toLowerCase();
+      this.$router.push(url);
     }
   },
   computed: {

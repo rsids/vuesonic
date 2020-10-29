@@ -42,15 +42,15 @@ export default class AlbumStore extends VuexModule {
   albums: Album[] = [];
   albumsDetailed = new Map<number, Album>();
   covers = new Map<string, string>();
-  currentAlbum!: Album | undefined;
+  currentAlbum: Album | null = null;
   hasMoreAlbums = true;
   musicDirectoryAlbumAdapter = new Map<number, number>();
   recents: Album[] = [];
   starred!: Song[];
 
   @Mutation
-  setAlbum(value?: Album) {
-    this.currentAlbum = value;
+  setAlbum(value: Album) {
+    this.currentAlbum = value || null;
   }
 
   @Mutation

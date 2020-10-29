@@ -15,6 +15,7 @@
 import { Artist } from "@/store/interfaces/artist";
 import VSCover from "@/components/Cover";
 import { mapActions } from "vuex";
+import { getArtistUrl } from "@/utils/generic";
 
 export default {
   name: "VSArtistCard",
@@ -33,13 +34,7 @@ export default {
 
   computed: {
     artistUrl() {
-      if (this.artist) {
-        const artist = encodeURIComponent(
-          this.artist.name.split(" ").join("-")
-        );
-        return `/library/artists/${this.artist.id}/${artist}`;
-      }
-      return undefined;
+      return getArtistUrl(this.artist);
     }
   }
 };

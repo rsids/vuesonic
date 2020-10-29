@@ -11,7 +11,7 @@ import {
 @Module({ namespaced: true })
 export default class ArtistStore extends VuexModule {
   artists: Artist[] = [];
-  currentArtist!: Artist;
+  currentArtist: Artist | null = null;
 
   @Mutation
   setArtist(value: Artist) {
