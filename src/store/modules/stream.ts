@@ -100,15 +100,15 @@ export default class StreamStore extends VuexModule {
       this.context.commit("setProgress", this.audio.currentTime);
     });
     this.audio.addEventListener("ended", () => {
-      this.next();
+      this.context.dispatch("next");
     });
 
     if (window.navigator.mediaSession) {
       window.navigator.mediaSession.setActionHandler("previoustrack", () => {
-        this.prev();
+        this.context.dispatch("prev");
       });
       window.navigator.mediaSession.setActionHandler("nexttrack", () => {
-        this.next();
+        this.context.dispatch("next");
       });
       window.navigator.mediaSession.setActionHandler("play", () => {
         this.context.commit("setPlaying");
@@ -185,7 +185,7 @@ export default class StreamStore extends VuexModule {
 
   @Action
   shuffleAndPlay({ songs }) {
-    this.context.commit("setPlaylist", { playlist: shuffle(songs) });
+    this.context.commit("setPlaylist", { playlist: shuffle([].concat(songs)) });
     this.context.dispatch("play", { song: this.playlist[0] });
   }
 }
