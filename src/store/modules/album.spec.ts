@@ -1,12 +1,10 @@
 import { createLocalVue } from "@vue/test-utils";
 import Vuex, { Store } from "vuex";
 import { Album } from "@/store/interfaces/album";
-import { Cover } from "@/store/interfaces/cover";
-
-import { Song } from "@/store/interfaces/song";
 import AlbumStore from "@/store/modules/album";
-import Mock = jest.Mock;
 import Vue from "vue";
+// import Mock = jest.Mock;
+
 jest.mock("@/plugins/axios");
 
 describe("album store", () => {
@@ -349,7 +347,7 @@ describe("album store", () => {
   describe("actions", () => {
     describe("getRecents", () => {
       it("should get the recent albums", async () => {
-        (Vue.prototype.axios["get"] as Mock).mockImplementationOnce(() =>
+        Vue.prototype.axios["get"].mockImplementationOnce(() =>
           Promise.resolve({
             albumList: {
               album: [album]
