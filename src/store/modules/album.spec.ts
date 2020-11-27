@@ -5,7 +5,7 @@ import AlbumStore from "@/store/modules/album";
 import Vue from "vue";
 // import Mock = jest.Mock;
 
-jest.mock("@/plugins/axios");
+// jest.mock("@/plugins/axios");
 
 describe("album store", () => {
   let album: Album;
@@ -301,10 +301,10 @@ describe("album store", () => {
   });
 
   describe("mutations", () => {
-    // it("should set the recent albums", () => {
-    //   store.commit("setRecents", [album]);
-    //   expect(store.state.album.recents).toEqual([album]);
-    // });
+    it("should set the recent albums", () => {
+      store.commit("setRecents", [album]);
+      expect(store.state.recents).toEqual([album]);
+    });
     //
     // it("should set the current album", () => {
     //   mutations[SET_ALBUM](state, album);
