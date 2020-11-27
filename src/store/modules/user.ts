@@ -23,7 +23,7 @@ export default class UserStore extends VuexModule {
         })
         .catch(() => {
           reject({
-            code: 70
+            code: 70,
           });
         });
     });

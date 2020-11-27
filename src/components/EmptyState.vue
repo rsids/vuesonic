@@ -6,11 +6,16 @@
   </v-layout>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { Component, Prop, Vue } from "vue-property-decorator";
+
+@Component({
   name: "VSEmptyState",
-  props: ["icon", "description"],
-};
+})
+export default class EmptyState extends Vue {
+  @Prop() icon!: string;
+  @Prop() description!: string;
+}
 </script>
 
 <style scoped>

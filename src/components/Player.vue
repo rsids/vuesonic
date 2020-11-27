@@ -65,7 +65,7 @@
   </v-footer>
 </template>
 
-<script lang="ts">
+<script>
 import { mapActions, mapMutations, mapState } from "vuex";
 import { duration } from "@/utils/generic";
 import VSCover from "@/components/Cover";
@@ -76,7 +76,7 @@ const PREV_MODE_SEEK = 1;
 export default {
   name: "VSPlayer",
   components: { VSQueueList, VSCover },
-  data(): unknown {
+  data() {
     return {
       prevClick: 0,
       prevMode: PREV_MODE_PREV,
@@ -89,19 +89,19 @@ export default {
     ...mapActions("stream", ["next", "prev"]),
     ...mapMutations("stream", ["setPlaying", "setPaused", "seek"]),
 
-    changePlayhead($event: unknown): void {
+    changePlayhead($event) {
       this.seeking = false;
       this.seek($event);
     },
-    startSeeking(): void {
+    startSeeking() {
       this.seeking = true;
     },
 
-    skipNext(): void {
+    skipNext() {
       this.next();
     },
 
-    skipPrev(): void {
+    skipPrev() {
       if (this.songProgress < 2 && this.prevMode === PREV_MODE_SEEK) {
         this.seek(0);
         this.prevMode = PREV_MODE_PREV;
@@ -113,7 +113,7 @@ export default {
       }
     },
 
-    togglePlay(): void {
+    togglePlay() {
       this.playing = !this.playing;
     },
   },
@@ -121,35 +121,35 @@ export default {
     ...mapState("stream", ["song", "paused", "progress", "hasNext", "hasPrev"]),
 
     playhead: {
-      get(): number {
+      get() {
         return this.songProgress;
       },
-      set(val: number): void {
+      set(val) {
         this.songProgress = val;
       },
     },
 
-    progressFormatted(): string {
+    progressFormatted() {
       return duration(this.songProgress);
     },
 
     playing: {
-      get(): boolean {
+      get() {
         return !this.paused;
       },
-      set(val: boolean): void {
+      set(val) {
         val ? this.setPlaying() : this.setPaused();
       },
     },
   },
   watch: {
-    progress: function (val: number): void {
+    progress: function (val) {
       if (!this.seeking) {
         this.songProgress = val;
       }
     },
 
-    song: function (): void {
+    song: function () {
       this.prevMode = PREV_MODE_SEEK;
     },
   },

@@ -12,14 +12,14 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { mapActions, mapState } from "vuex";
 import VSArtistCard from "@/components/ArtistCard";
 
 export default {
   name: "Artists",
   components: { VSArtistCard },
-  mounted(): void {
+  mounted() {
     this.getArtists();
   },
   computed: {

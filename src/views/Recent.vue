@@ -14,21 +14,23 @@
 </template>
 
 <script lang="ts">
-import { mapActions, mapState } from "vuex";
-import VSAlbumCard from "@/components/AlbumCard";
+import VSAlbumCard from "@/components/AlbumCard.vue";
 import { noop } from "@/utils/generic";
+import { Component, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
 
-export default {
+const album = namespace("album");
+
+@Component({
   name: "VSRecent",
   components: { VSAlbumCard },
-  computed: {
-    ...mapState("album", ["recents"]),
-  },
-  methods: {
-    ...mapActions("album", ["getRecents"]),
-  },
+})
+export default class Recent extends Vue {
+  @album.State recents;
+  @album.Action getRecents;
+
   mounted(): void {
     this.getRecents().then(noop);
-  },
-};
+  }
+}
 </script>

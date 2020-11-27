@@ -56,7 +56,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { mapActions, mapMutations, mapState } from "vuex";
 import VSEmptyState from "@/components/EmptyState";
 import { duration, noop } from "@/utils/generic";
@@ -74,7 +74,7 @@ export default {
     VSSonglist,
     VSEmptyState,
   },
-  data(): unknown {
+  data() {
     return {
       cover: "",
       notFound: false,
@@ -82,7 +82,7 @@ export default {
   },
   computed: {
     ...mapState("album", ["currentAlbum"]),
-    metaData(): string {
+    metaData() {
       const data = [];
       if (this?.currentAlbum.year) {
         data.push(this.currentAlbum.year);
@@ -99,7 +99,7 @@ export default {
       return data.join(" • ");
     },
   },
-  mounted(): void {
+  mounted() {
     this.getAlbum(this.$route.params).then(noop, (err) => {
       if (err.error.code === 70) {
         // 404
@@ -107,7 +107,7 @@ export default {
       }
     });
   },
-  destroyed(): void {
+  destroyed() {
     this.setAlbum(null);
   },
   methods: {
@@ -116,7 +116,7 @@ export default {
     ...mapMutations("album", ["setAlbum"]),
     ...mapMutations("stream", ["setPlaylist"]),
 
-    gotoArtist(): void {
+    gotoArtist() {
       const artist = encodeURIComponent(
         this.currentAlbum.artist.split(" ").join("-")
       );
@@ -126,12 +126,12 @@ export default {
       );
     },
 
-    playAlbum(): void {
+    playAlbum() {
       this.setPlaylist({ playlist: this.currentAlbum.song });
       this.play({ song: this.currentAlbum.song[0] });
     },
 
-    shuffleAlbum(): void {
+    shuffleAlbum() {
       this.shuffleAndPlay({ songs: this.currentAlbum.song });
     },
   },

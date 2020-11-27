@@ -68,7 +68,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { mapActions, mapMutations, mapState } from "vuex";
 import VSEmptyState from "@/components/EmptyState";
 import { duration } from "@/utils/generic";
@@ -77,7 +77,7 @@ import VSSonglist from "@/components/Songlist";
 export default {
   name: "Playlist",
   components: { VSSonglist, VSEmptyState },
-  data(): unknown {
+  data() {
     return {
       cover: "",
       notFound: false,
@@ -85,7 +85,7 @@ export default {
   },
   computed: {
     ...mapState("playlist", ["currentPlaylist"]),
-    metaData(): string {
+    metaData() {
       const data = [];
       if (this?.currentPlaylist.songCount) {
         data.push(`${this.currentPlaylist.songCount} songs`);
@@ -96,7 +96,7 @@ export default {
       return data.join(" • ");
     },
   },
-  mounted(): void {
+  mounted() {
     this.getPlaylist(this.$route.params).then(
       (playlist) => {
         if (playlist.coverArt) {
@@ -125,12 +125,12 @@ export default {
     ...mapMutations("stream", ["setPlaylist"]),
     ...mapActions("stream", ["play"]),
 
-    playIt(): void {
+    playIt() {
       this.setPlaylist({ playlist: this.currentPlaylist.entry });
       this.play({ song: this.currentPlaylist.entry[0] });
     },
 
-    async deleteIt(): void {
+    async deleteIt() {
       const res = await this.$dialog.confirm({
         text: "Are you sure you want to delete this playlist?",
         title: "Warning",
@@ -143,7 +143,7 @@ export default {
       }
     },
 
-    removeFromPlaylist({ index }: { index: number }): void {
+    removeFromPlaylist({ index }) {
       this.updatePlaylist({
         playlistId: this.currentPlaylist.id,
         songIndexToRemove: index,
@@ -153,7 +153,7 @@ export default {
           {
             position: "bottom-left",
           },
-          (e: unknown) => {
+          (e) => {
             // eslint-disable-next-line no-console
             console.log("E", e);
           }

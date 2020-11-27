@@ -3,6 +3,7 @@
     class="ma-3 album-card"
     max-width="200px"
     width="200px"
+    v-if="album"
     @click="gotoAlbum()"
   >
     <v-s-cover type="album" :size="200" :entity="album"></v-s-cover>
@@ -10,7 +11,11 @@
       <div class="text-no-wrap text-truncate" v-text="albumName"></div>
     </v-card-title>
     <v-card-subtitle>
-      <div class="text-no-wrap text-truncate" v-text="album.artist"></div>
+      <div
+        x-cy="artist"
+        class="text-no-wrap text-truncate"
+        v-text="album.artist"
+      ></div>
     </v-card-subtitle>
   </v-card>
 </template>
@@ -56,9 +61,9 @@ export default class AlbumCard extends Vue {
   }
 
   get albumName(): string {
-    if (this.album.album) {
+    if (this.album?.album) {
       return this.album.album;
-    } else if (this.album.name) {
+    } else if (this.album?.name) {
       return this.album.name;
     }
     return "";

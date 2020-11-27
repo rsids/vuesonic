@@ -92,136 +92,136 @@
 </template>
 
 <script lang="ts">
-import { mapActions, mapMutations, mapState } from "vuex";
-import VSPlaylistMenu from "@/components/PlaylistMenu";
-import VSQueueMenu from "@/components/QueueMenu";
+import VSPlaylistMenu from "@/components/PlaylistMenu.vue";
+import VSQueueMenu from "@/components/QueueMenu.vue";
 import { getArtistUrl } from "@/utils/generic";
 import { Song } from "@/store/interfaces/song";
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
 
-export default {
+const streamModule = namespace("stream");
+const annotationModule = namespace("annotation");
+@Component({
   name: "VSSonglist",
   components: { VSQueueMenu, VSPlaylistMenu },
-  props: {
-    songs: Array,
-    dense: Boolean,
-    full: Boolean,
-    numbering: String,
-  },
-  data(): unknown {
-    return {
-      hovered: null,
-    };
-  },
-  methods: {
-    ...mapMutations("stream", ["setPlaylist"]),
-    ...mapActions("stream", ["play"]),
-    ...mapActions("annotation", ["star"]),
+})
+export default class Songlist extends Vue {
+  @Prop() songs!: Song[];
+  @Prop() dense!: boolean;
+  @Prop() full!: boolean;
+  @Prop() numbering!: string;
 
-    addStar({ id }: { id: number }): void {
-      this.star({ id, toggle: true });
-    },
+  @annotationModule.Action star;
+  @streamModule.Action play;
+  @streamModule.Mutation setPlaylist;
+  @streamModule.State("song") currentSong!: Song;
 
-    removeStar({ id }: { id: number }): void {
-      this.star({ id, toggle: false });
-    },
+  hovered: unknown;
 
-    onMouseOver(id: number): void {
-      if (!this.currentSong || this.currentSong.id !== id) {
-        this.hovered = id;
-      }
-    },
+  addStar({ id }) {
+    this.star({ id, toggle: true });
+  }
 
-    playSong(item: Song): void {
-      this.setPlaylist({ playlist: this.songs });
-      this.play({ song: item });
-    },
+  removeStar({ id }) {
+    this.star({ id, toggle: false });
+  }
 
-    gotoArtist(song: Song): void {
-      const url = getArtistUrl(song);
+  onMouseOver(id) {
+    if (!this.currentSong || this.currentSong.id !== id) {
+      this.hovered = id;
+    }
+  }
+
+  playSong(item) {
+    this.setPlaylist({ playlist: this.songs });
+    this.play({ song: item });
+  }
+
+  gotoArtist(song) {
+    const url = getArtistUrl(song);
+    if (url) {
       this.$router.push(url);
-    },
+    }
+  }
 
-    gotoAlbum(song: Song): void {
-      const artist = encodeURIComponent(song.artist.split(" ").join("-"));
-      const album = encodeURIComponent(song.album.split(" ").join("-"));
-      const url = `/library/albums/${song.albumId}/${artist}/${album}`.toLowerCase();
-      this.$router.push(url);
-    },
-  },
-  computed: {
-    ...mapState("stream", [{ currentSong: "song" }]),
-    hasMenuOptions(): boolean {
-      return !!this.$slots["menuoptions"];
-    },
-    headers(): unknown[] {
-      const headers = [
-        {
-          text: "#",
-          sortable: true,
-          class: "px-0 text-center",
-          align: "center",
-          value: "track",
-          width: 40,
-        },
-        {
-          text: "NAME",
-          sortable: true,
-          value: "title",
-          class: "sizeable-col",
-        },
-        {
-          text: "Duration",
-          sortable: true,
-          align: "center",
-          class: "px-0",
-          value: "durationFormatted",
-          width: 60,
-        },
-        {
-          text: "Play count",
-          sortable: true,
-          value: "playCount",
-          class: "px-2",
-          align: "center",
-          width: 40,
-        },
-        {
-          text: "stars",
-          sortable: true,
-          class: "px-0",
-          align: "center",
-          value: "star",
-          width: 50,
-        },
-      ];
-      if (this.full && !this.dense) {
-        headers.splice(
-          3,
-          0,
-          ...[
-            {
-              text: "ARTIST",
-              sortable: true,
-              value: "artist",
-              class: "sizeable-col",
-            },
-            {
-              text: "ALBUM",
-              sortable: true,
-              value: "album",
-              class: "sizeable-col",
-            },
-          ]
-        );
-      }
+  gotoAlbum(song) {
+    const artist = encodeURIComponent(song.artist.split(" ").join("-"));
+    const album = encodeURIComponent(song.album.split(" ").join("-"));
+    const url = `/library/albums/${song.albumId}/${artist}/${album}`.toLowerCase();
+    this.$router.push(url);
+  }
+  get hasMenuOptions() {
+    return !!this.$slots["menuoptions"];
+  }
 
-      if (this.numbering === "none") {
-        headers.splice(0, 1);
-      }
-      return headers;
-    },
-  },
-};
+  get headers() {
+    const headers = [
+      {
+        text: "#",
+        sortable: true,
+        class: "px-0 text-center",
+        align: "center",
+        value: "track",
+        width: 40,
+      },
+      {
+        text: "NAME",
+        sortable: true,
+        value: "title",
+        class: "sizeable-col",
+      },
+      {
+        text: "Duration",
+        sortable: true,
+        align: "center",
+        class: "px-0",
+        value: "durationFormatted",
+        width: 60,
+      },
+      {
+        text: "Play count",
+        sortable: true,
+        value: "playCount",
+        class: "px-2",
+        align: "center",
+        width: 40,
+      },
+      {
+        text: "stars",
+        sortable: true,
+        class: "px-0",
+        align: "center",
+        value: "star",
+        width: 50,
+      },
+    ];
+    if (this.full && !this.dense) {
+      headers.splice(
+        3,
+        0,
+        ...[
+          {
+            text: "ARTIST",
+            sortable: true,
+            value: "artist",
+            class: "sizeable-col",
+          },
+          {
+            text: "ALBUM",
+            sortable: true,
+            value: "album",
+            class: "sizeable-col",
+          },
+        ]
+      );
+    }
+
+    if (this.numbering === "none") {
+      headers.splice(0, 1);
+    }
+    return headers;
+  }
+}
 </script>
 
 <style>

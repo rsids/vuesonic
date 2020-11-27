@@ -26,28 +26,29 @@
 <script lang="ts">
 import { mapActions, mapState } from "vuex";
 import { noop } from "@/utils/generic";
-import VSEmptyState from "@/components/EmptyState";
-import VSSonglist from "@/components/Songlist";
-import VSSavePlaylist from "@/components/SavePlaylist";
+import VSSonglist from "@/components/Songlist.vue";
+import VSSavePlaylist from "@/components/SavePlaylist.vue";
+import { Component, Vue } from "vue-property-decorator";
+import EmptyState from "@/components/EmptyState.vue";
 
-export default {
+@Component({
   name: "Playlist",
-  components: { VSSavePlaylist, VSSonglist, VSEmptyState },
-  data(): unknown {
-    return {
-      cover: "",
-    };
+  components: { VSSavePlaylist, VSSonglist, EmptyState },
+  methods: {
+    ...mapActions("album", ["getStarred"]),
   },
   computed: {
     ...mapState("album", ["starred"]),
   },
+})
+export default class Starred extends Vue {
+  cover = "";
+  getStarred!: () => Promise<unknown>;
+
   mounted(): void {
     this.getStarred().then(noop);
-  },
-  methods: {
-    ...mapActions("album", ["getStarred"]),
-  },
-};
+  }
+}
 </script>
 
 <style scoped lang="scss">

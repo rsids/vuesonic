@@ -1,13 +1,11 @@
 import AlbumCard from "@/components/AlbumCard.vue";
-// import "jest";
 import { createLocalVue, mount } from "@vue/test-utils";
 import Vuetify from "vuetify";
-// import Vuex from "vuex";
-//
-// localVue.use(Vuex);
-//
+import Vuex from "vuex";
+
 describe("AlbumCard", () => {
   const localVue = createLocalVue();
+  localVue.use(Vuex);
   let vuetify;
 
   const mountFunction = (options) => {
@@ -20,37 +18,73 @@ describe("AlbumCard", () => {
 
   it("should return the album name from the prop album", () => {
     const wrapper = mountFunction({
-      album: { album: "TestName", name: "Unused" },
+      stubs: {
+        Cover: true,
+      },
+      propsData: {
+        album: { album: "TestName", name: "Unused", artist: "Joe Artist" },
+      },
     });
 
-    expect(wrapper["$vm"].albumName).toEqual("TestName");
+    const title = wrapper.find(".subtitle-1 div");
+    const artist = wrapper.find("[x-cy=artist]");
+
+    expect(title.text()).toEqual("TestName");
+    expect(artist.text()).toEqual("Joe Artist");
   });
-  //
-  //   it("should return the album name from the prop album", () => {
-  //     expect(
-  //       AlbumCard["computed"].albumName.call({
-  //         album: { album: "TestName", name: "Unused" }
-  //       })
-  //     ).toEqual("TestName");
-  //   });
-  //
-  //   it("should return the album name from the prop name", () => {
-  //     expect(
-  //       AlbumCard["computed"].albumName.call({ album: { name: "TestName" } })
-  //     ).toEqual("TestName");
-  //   });
-  //
-  //   it("should fetch the album url", () => {
-  //     const album = {
-  //       artist: "Foo Fighters",
-  //       name: "The Colour And the Shape",
-  //       id: 42
-  //     };
-  //     // @todo Add correct type
-  //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //     const wrapper = mountFunction({ propsData: { album: album } }) as any;
-  //     expect(wrapper.vm.getAlbumUrl(42)).toEqual(
-  //       `/library/albums/42/foo-fighters/the-colour-and-the-shape`
-  //     );
-  //   });
+
+  it("should return the album name from the prop name", () => {
+    const wrapper = mountFunction({
+      stubs: {
+        Cover: true,
+      },
+      propsData: {
+        album: { name: "TestName", artist: "Joe Artist" },
+      },
+    });
+    const title = wrapper.find(".subtitle-1 div");
+
+    expect(title.text()).toEqual("TestName");
+  });
+
+  it("should fetch the album url", async () => {
+    const mockRouter = {
+      push: jest.fn(),
+    };
+
+    const mockStore = new Vuex.Store({
+      modules: {
+        album: {
+          actions: {
+            cancelAllRequests: jest.fn(),
+          },
+          namespaced: true,
+        },
+      },
+    });
+
+    const album = {
+      artist: "Foo Fighters",
+      name: "The Colour And the Shape",
+      id: 42,
+    };
+
+    const wrapper = mountFunction({
+      stubs: {
+        Cover: true,
+      },
+      mocks: {
+        $store: mockStore,
+        $router: mockRouter,
+      },
+      propsData: {
+        album,
+      },
+    });
+    await wrapper.find(".album-card").trigger("click");
+
+    expect(mockRouter.push).toHaveBeenCalledWith(
+      `/library/albums/42/foo-fighters/the-colour-and-the-shape`
+    );
+  });
 });

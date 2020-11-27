@@ -91,12 +91,12 @@
   </v-container>
 </template>
 
-<script lang="ts">
+<script>
 import { mapActions, mapState } from "vuex";
-import VSArtistCard from "@/components/ArtistCard";
-import VSAlbumCard from "@/components/AlbumCard";
-import VSSavePlaylist from "@/components/SavePlaylist";
-import VSSonglist from "@/components/Songlist";
+import VSArtistCard from "@/components/ArtistCard.vue";
+import VSAlbumCard from "@/components/AlbumCard.vue";
+import VSSavePlaylist from "@/components/SavePlaylist.vue";
+import VSSonglist from "@/components/Songlist.vue";
 
 export default {
   name: "Search",
@@ -110,7 +110,7 @@ export default {
       "hasMoreArtists",
       "hasMoreSongs",
     ]),
-    query(): string {
+    query() {
       return this.$route.params.query;
     },
   },
@@ -118,12 +118,12 @@ export default {
   methods: {
     ...mapActions("search", ["search", "searchMore"]),
 
-    seeAll(type: string): void {
+    seeAll(type) {
       this.searchMore({ type });
     },
   },
 
-  mounted(): void {
+  mounted() {
     this.search({ query: this.query });
   },
 };

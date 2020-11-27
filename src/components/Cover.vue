@@ -4,22 +4,20 @@
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
-    <intersect @enter.once="loadCover()">
-      <div>
-        <v-icon :size="size" v-if="cover === ''" class="no-cover"
-          >{{ icon }}
-        </v-icon>
-        <v-img
-          v-if="cover !== ''"
-          aspect-ratio="1"
-          :max-width="size"
-          :width="size"
-          :max-height="size"
-          :height="size"
-          :src="cover"
-        ></v-img>
-      </div>
-    </intersect>
+    <div v-intersect:once="loadCover">
+      <v-icon :size="size" v-if="cover === ''" class="no-cover"
+        >{{ icon }}
+      </v-icon>
+      <v-img
+        v-if="cover !== ''"
+        aspect-ratio="1"
+        :max-width="size"
+        :width="size"
+        :max-height="size"
+        :height="size"
+        :src="cover"
+      ></v-img>
+    </div>
     <v-btn
       small
       class="btn--play"
@@ -32,7 +30,6 @@
 </template>
 
 <script lang="ts">
-import Intersect from "vue-intersect";
 import { mapActions } from "vuex";
 import { Component, Prop, Provide, Vue, Watch } from "vue-property-decorator";
 import { Album } from "@/store/interfaces/album";
@@ -50,7 +47,6 @@ interface CoverartArgs {
 
 @Component({
   name: "VSCover",
-  components: { Intersect },
   methods: {
     ...mapActions("album", [
       "getCoverArt",

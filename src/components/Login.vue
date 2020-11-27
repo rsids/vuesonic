@@ -80,123 +80,124 @@
 </template>
 
 <script lang="ts">
-import { mapActions, mapMutations } from "vuex";
 import { validationMixin } from "vuelidate";
 import { required, minLength } from "vuelidate/lib/validators";
-export default {
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
+import { Validations } from "vuelidate-property-decorators";
+
+const connection = namespace("connection");
+const user = namespace("user");
+@Component({
   name: "VSLogin",
   mixins: [validationMixin],
-  props: ["active"],
-  data(): unknown {
-    return {
-      invalidCredentials: false,
-      invalidCredentialsCls: false,
-      saveLogin: false,
-      loggingIn: false,
-      form: {
-        user: null,
-        server: null,
-        password: null
-      }
-    };
-  },
+})
+export default class Login extends Vue {
+  @Prop() active!: boolean;
 
-  validations: {
+  @connection.Mutation storeCredentials;
+  @connection.Action clearCredentials;
+  @user.Action getUser;
+
+  invalidCredentials = false;
+  invalidCredentialsCls = false;
+  saveLogin = false;
+  loggingIn = false;
+  form = {
+    user: null,
+    server: null,
+    password: null,
+  };
+
+  @Validations()
+  validations = {
     form: {
       user: {
-        required
+        required,
       },
       password: {
         required,
-        minLength: minLength(3)
+        minLength: minLength(3),
       },
       server: {
-        required
+        required,
       },
-      saveLogin: {}
-    }
-  },
-
-  computed: {
-    isActive: {
-      get(): boolean {
-        return this.active;
-      },
-
-      set(): void {
-        // nothing
-      }
+      saveLogin: {},
     },
+  };
 
-    userErrors(): string[] {
-      const errors = [];
-      if (!this.$v.form.user.$dirty) {
-        return errors;
-      }
-      !this.$v.form.user.required && errors.push("Username is required");
-
-      return errors;
-    },
-
-    passwordErrors(): string[] {
-      const errors = [];
-      if (!this.$v.form.password.$dirty) {
-        return errors;
-      }
-      !this.$v.form.password.required && errors.push("Password is required");
-
-      return errors;
-    },
-
-    serverErrors(): string[] {
-      const errors = [];
-      if (!this.$v.form.server.$dirty) {
-        return errors;
-      }
-      !this.$v.form.server.required && errors.push("Server is required");
-      // !this.$v.form.server.url && errors.push("Invalid server url")
-
+  get userErrors(): string[] {
+    const errors: string[] = [];
+    if (!this.$v.form.user!.$dirty) {
       return errors;
     }
-  },
+    !this.$v.form.user!.required && errors.push("Username is required");
 
-  methods: {
-    ...mapMutations("connection", ["storeCredentials"]),
-    ...mapActions("connection", ["clearCredentials"]),
-    ...mapActions("user", ["getUser"]),
+    return errors;
+  }
 
-    doLogin(): void {
-      if (this.loggingIn) {
-        return;
+  get passwordErrors(): string[] {
+    const errors: string[] = [];
+    if (!this.$v.form.password!.$dirty) {
+      return errors;
+    }
+    !this.$v.form.password!.required && errors.push("Password is required");
+
+    return errors;
+  }
+
+  get serverErrors(): string[] {
+    const errors: string[] = [];
+    if (!this.$v.form.server!.$dirty) {
+      return errors;
+    }
+    !this.$v.form.server!.required && errors.push("Server is required");
+    // !this.$v.form.server.url && errors.push("Invalid server url")
+
+    return errors;
+  }
+
+  get isActive(): boolean {
+    return this.active;
+  }
+
+  set isActive(_) {
+    // nothing
+  }
+
+  doLogin(): void {
+    if (this.loggingIn) {
+      return;
+    }
+    // eslint-disable-next-line no-console
+    console.log(this.form);
+    this.loggingIn = true;
+    this.storeCredentials(this.form);
+    this.getUser(this.form).then(
+      () => {
+        // this.getUser().then(() => {
+        //   this.$router.replace("/");
+        // });
+      },
+      () => {
+        this.clearCredentials();
+        this.loggingIn = false;
+        this.invalidCredentials = true;
+        this.invalidCredentialsCls = true;
+        setTimeout(() => {
+          this.invalidCredentialsCls = false;
+        }, 300);
       }
-      this.loggingIn = true;
-      this.storeCredentials(this.form);
-      this.getUser(this.form).then(
-        () => {
-          // this.getUser().then(() => {
-          //   this.$router.replace("/");
-          // });
-        },
-        () => {
-          this.clearCredentials();
-          this.loggingIn = false;
-          this.invalidCredentials = true;
-          this.invalidCredentialsCls = true;
-          setTimeout(() => {
-            this.invalidCredentialsCls = false;
-          }, 300);
-        }
-      );
-    },
+    );
+  }
 
-    validateLogin(): void {
-      this.$v.$touch();
-      if (!this.$v.$invalid) {
-        this.doLogin();
-      }
+  validateLogin(): void {
+    this.$v.$touch();
+    if (!this.$v.$invalid) {
+      this.doLogin();
     }
   }
-};
+}
 </script>
 
 <style scoped></style>

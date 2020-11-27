@@ -11,7 +11,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { Artist } from "@/store/interfaces/artist";
 import VSCover from "@/components/Cover";
 import { mapActions } from "vuex";
@@ -21,19 +21,19 @@ export default {
   name: "VSArtistCard",
   components: { VSCover },
   props: {
-    artist: Artist,
+    artist,
   },
 
   methods: {
     ...mapActions("album", ["cancelAllRequests"]),
-    gotoArtist(): void {
+    gotoArtist() {
       this.cancelAllRequests();
       this.$router.push(this.artistUrl);
     },
   },
 
   computed: {
-    artistUrl(): string {
+    artistUrl() {
       return getArtistUrl(this.artist);
     },
   },

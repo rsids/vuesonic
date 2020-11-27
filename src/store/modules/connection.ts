@@ -33,7 +33,7 @@ export default class ConnectionStore extends VuexModule {
   storeCredentials({
     user,
     password,
-    server
+    server,
   }: {
     user: string;
     password: string;
@@ -46,6 +46,7 @@ export default class ConnectionStore extends VuexModule {
     this.password = password;
     this._server = server;
     this.hasCredentials = true;
+
     sessionStorage.setItem("username", user);
     sessionStorage.setItem("password", password);
     sessionStorage.setItem("server", server);
@@ -53,20 +54,18 @@ export default class ConnectionStore extends VuexModule {
 
   getUrl(url: string): string {
     const fullUrl = new URL(`${this._server}/rest/${url}`);
-    const params = this.params();
-    // eslint-disable-next-line no-console
-    console.log(params);
+    const params = this.params;
     for (const paramsKey in params) {
       fullUrl.searchParams.append(paramsKey, params[paramsKey]);
     }
     return fullUrl.toString();
   }
 
-  server() {
+  get server(): string {
     return this._server;
   }
 
-  params(): ConnectionParams {
+  get params(): ConnectionParams {
     const salted = salt();
     const token = new Md5()
       .appendStr(this.password)
@@ -79,7 +78,7 @@ export default class ConnectionStore extends VuexModule {
       s: salted,
       c: "vuesonic",
       f: "json",
-      v: "1.15.0"
+      v: "1.15.0",
     };
   }
 }

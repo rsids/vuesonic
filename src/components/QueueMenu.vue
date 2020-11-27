@@ -3,7 +3,7 @@
     <v-list-item @click="addToPlayingNext()">
       <v-list-item-title>Play {{ itemtype }} next</v-list-item-title>
     </v-list-item>
-    <v-list-item @click="addToQueue()">
+    <v-list-item @click="addItemToQueue()">
       <v-list-item-title>Add {{ itemtype }} to queue</v-list-item-title>
     </v-list-item>
   </div>
@@ -11,31 +11,33 @@
 
 <script lang="ts">
 import { mapActions } from "vuex";
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { Song } from "@/store/interfaces/song";
 
-export default {
+@Component({
   name: "VSQueueMenu",
-  props: {
-    songs: Array,
-    type: String,
-  },
-  computed: {
-    itemtype(): string {
-      if (this.type === "album") {
-        return "album";
-      }
-      return "";
-    },
-  },
-  methods: {
-    ...mapActions("stream", ["playNext", "addToQueue"]),
+  ...mapActions("stream", ["playNext", "addToQueue"]),
+})
+export default class QueueMenu extends Vue {
+  @Prop() songs!: Song[];
+  @Prop() type!: string;
 
-    addToPlayingNext(): void {
-      this.playNext({ songs: this.songs });
-    },
+  playNext!: (s) => void;
+  addToQueue!: (s) => void;
 
-    addToQueue(): void {
-      this.addToQueue({ songs: this.songs });
-    },
-  },
-};
+  itemtype() {
+    if (this.type === "album") {
+      return "album";
+    }
+    return "";
+  }
+
+  addToPlayingNext() {
+    this.playNext({ songs: this.songs });
+  }
+
+  addItemToQueue() {
+    this.addToQueue({ songs: this.songs });
+  }
+}
 </script>

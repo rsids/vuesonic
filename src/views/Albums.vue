@@ -15,19 +15,19 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { mapActions, mapState } from "vuex";
 import VSAlbumCard from "@/components/AlbumCard";
 
 export default {
   name: "Albums",
   components: { VSAlbumCard },
-  data(): unknown {
+  data() {
     return {
       loading: true,
     };
   },
-  mounted(): void {
+  mounted() {
     if (this.albums.length === 0) {
       this.getAlbumSet();
     } else {
@@ -43,18 +43,14 @@ export default {
   methods: {
     ...mapActions("album", ["getAlbums"]),
 
-    getAlbumSet(): void {
+    getAlbumSet() {
       this.loading = true;
       this.getAlbums({ start: this.albums.length }).then(() => {
         this.loading = false;
       });
     },
 
-    onIntersect(
-      _entries: unknown,
-      _observer: IntersectionObserver,
-      isIntersecting: boolean
-    ): void {
+    onIntersect(_entries, _observer, isIntersecting) {
       if (!this.loading && isIntersecting) {
         this.getAlbumSet();
       }

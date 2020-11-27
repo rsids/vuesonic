@@ -32,13 +32,13 @@
   </v-app-bar>
 </template>
 
-<script lang="ts">
+<script>
 import { mapMutations, mapState } from "vuex";
 import { SET_DRAWER } from "@/store/modules/ui";
 
 export default {
   name: "VSToolbar",
-  data(): unknown {
+  data() {
     return {
       searchQuery: "",
       tab: "",
@@ -47,15 +47,15 @@ export default {
   computed: {
     ...mapState("ui", ["tabs", "drawer"]),
     toolbarTabs: {
-      get(): string[] {
+      get() {
         return this.tabs;
       },
     },
     showDrawer: {
-      get(): boolean {
+      get() {
         return this.drawer;
       },
-      set(val: boolean): void {
+      set(val) {
         this[SET_DRAWER](val);
       },
     },
@@ -63,7 +63,7 @@ export default {
   methods: {
     ...mapMutations("ui", [SET_DRAWER]),
 
-    doSearch(): void {
+    doSearch() {
       this.$router.push({
         name: "search",
         params: { query: this.searchQuery },

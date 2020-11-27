@@ -37,7 +37,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { mapActions, mapState } from "vuex";
 import { Playlist } from "@/store/interfaces/playlist";
 
@@ -46,7 +46,7 @@ export default {
   props: {
     songs: Array,
   },
-  data(): unknown {
+  data() {
     return {
       fetchingPlaylists: false,
     };
@@ -61,7 +61,7 @@ export default {
       "updatePlaylist",
     ]),
 
-    async addToNewPlaylist(): Promise<string> {
+    async addToNewPlaylist() {
       const title = await this.$dialog.prompt({
         title: "New Playlist",
         text: "Name",
@@ -84,11 +84,11 @@ export default {
       return title;
     },
 
-    addToPlaylist(playlist: Playlist): void {
+    addToPlaylist(playlist) {
       this.updatePlaylist({
         playlistId: playlist.id,
         songsToAdd: this.songs,
-      }).then((): void => {
+      }).then(() => {
         this.$dialog.message.info(
           `${this.songs.length} song(s) added to playlist`,
           {
@@ -98,7 +98,7 @@ export default {
       });
     },
 
-    triggerGetPlaylists(): void {
+    triggerGetPlaylists() {
       if (!this.fetchingPlaylists) {
         this.fetchingPlaylists = true;
         this.getPlaylists();

@@ -2,7 +2,7 @@ import axios, {
   AxiosError,
   AxiosRequestConfig,
   AxiosResponse,
-  AxiosStatic
+  AxiosStatic,
 } from "axios";
 import Vue from "vue";
 import store from "../store";
@@ -16,7 +16,7 @@ $axios.interceptors.request.use(
     config.baseURL = `${server}/rest/`;
     config.params = {
       ...config.params,
-      ...store.getters["connection/params"]
+      ...store.getters["connection/params"],
     };
     return config;
   },
@@ -38,16 +38,16 @@ $axios.interceptors.response.use(
     }
     return response;
   },
-  err => {
+  (err) => {
     Promise.reject(err);
   }
 );
 
-Vue.use({
+export default {
   install() {
     Vue.prototype.axios = $axios;
-  }
-});
+  },
+};
 
 declare module "vue/types/vue" {
   interface Vue {
