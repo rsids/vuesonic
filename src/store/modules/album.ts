@@ -7,7 +7,7 @@ import {
   AlbumListResponse,
   AlbumResponse,
   DirectoryResponse,
-  StarredResponse
+  StarredResponse,
 } from "@/store/interfaces/subsonicResponse";
 import Vue from "vue";
 import { HttpResponse } from "jest-mock-axios/dist/lib/mock-axios-types";
@@ -16,7 +16,7 @@ import {
   Module,
   Mutation,
   MutationAction,
-  VuexModule
+  VuexModule,
 } from "vuex-module-decorators";
 
 interface UpdateStar {
@@ -31,7 +31,7 @@ interface SetAlbums {
 }
 
 interface Cancelable {
-  cancel: Function;
+  cancel: () => void;
 }
 
 const ALBUMSET_SIZE = 30;
@@ -49,33 +49,33 @@ export default class AlbumStore extends VuexModule {
   starred!: Song[];
 
   @Mutation
-  setAlbum(value: Album) {
+  setAlbum(value: Album): void {
     this.currentAlbum = value || null;
   }
 
   @Mutation
-  setCover(value: Cover) {
+  setCover(value: Cover): void {
     this.covers.set(value.id, value.cover);
   }
 
   @Mutation
-  setAlbums({ albums, hasMoreAlbums }: SetAlbums) {
+  setAlbums({ albums, hasMoreAlbums }: SetAlbums): void {
     this.albums = ([] as Album[]).concat(this.albums, albums);
     this.hasMoreAlbums = hasMoreAlbums;
   }
 
   @Mutation
-  setRecents(recents: Album[]) {
+  setRecents(recents: Album[]): void {
     this.recents = recents;
   }
 
   @Mutation
-  setStarred(value: Song[]) {
+  setStarred(value: Song[]): void {
     this.starred = ([] as Song[]).concat(value);
   }
 
   @Mutation
-  updateStar({ id, albumId, toggle }: UpdateStar) {
+  updateStar({ id, albumId, toggle }: UpdateStar): void {
     if (this.currentAlbum) {
       if (id) {
         this.currentAlbum.song = this.currentAlbum.song.map((song: Song) => {
@@ -89,8 +89,8 @@ export default class AlbumStore extends VuexModule {
             this.starred = this.starred.concat(this.currentAlbum.song);
           } else {
             this.starred = this.starred.filter(
-              song =>
-                this.currentAlbum?.song.find(s => s.id === song.id) ===
+              (song) =>
+                this.currentAlbum?.song.find((s) => s.id === song.id) ===
                 undefined
             );
           }
@@ -105,20 +105,20 @@ export default class AlbumStore extends VuexModule {
   }
 
   @Action
-  cancelAllRequests() {
+  cancelAllRequests(): void {
     while (requests.length > 0) {
-      (requests.pop() as Cancelable).cancel();
+      ((requests.pop() as unknown) as Cancelable).cancel();
     }
   }
 
   @Action
-  async getAlbum({ id }: { id: number }) {
+  async getAlbum({ id }: { id: number }): Promise<unknown> {
     if (!this.albumsDetailed.has(id)) {
       const response: AlbumResponse = await Vue.prototype.axios.get(
         `getAlbum?id=${id}`
       );
       if (response.album) {
-        response.album.song = response.album.song.map(song => {
+        response.album.song = response.album.song.map((song) => {
           song.durationFormatted = duration(song.duration);
           song.starred = !!song.starred;
           return song;
@@ -132,7 +132,11 @@ export default class AlbumStore extends VuexModule {
   }
 
   @Action
-  async getAlbumFromMusicDirectory({ musicDirectory }) {
+  async getAlbumFromMusicDirectory({
+    musicDirectory,
+  }: {
+    musicDirectory: number;
+  }): Promise<unknown> {
     if (!this.musicDirectoryAlbumAdapter.has(musicDirectory)) {
       const response: DirectoryResponse = await Vue.prototype.axios.get(
         `getMusicDirectory?id=${musicDirectory}`
@@ -144,12 +148,12 @@ export default class AlbumStore extends VuexModule {
       );
     }
     return this.context.dispatch("getAlbum", {
-      id: this.musicDirectoryAlbumAdapter.get(musicDirectory) || 0
+      id: this.musicDirectoryAlbumAdapter.get(musicDirectory) || 0,
     });
   }
 
   @MutationAction
-  async getRecents() {
+  async getRecents(): Promise<unknown> {
     const response: AlbumListResponse = await Vue.prototype.axios.get(
       `getAlbumList?type=newest&size=20`
     );
@@ -169,10 +173,11 @@ export default class AlbumStore extends VuexModule {
    * @param start
    */
   @Action
-  async getAlbums({ start }: { start: number }) {
+  async getAlbums({ start }: { start: number }): Promise<AlbumListResponse> {
     const response: AlbumListResponse = await Vue.prototype.axios.get(
-      `getAlbumList?type=alphabeticalByName&size=${ALBUMSET_SIZE +
-        1}&offset=${start}`
+      `getAlbumList?type=alphabeticalByName&size=${
+        ALBUMSET_SIZE + 1
+      }&offset=${start}`
     );
 
     let albums = response.albumList.album || [];
@@ -182,17 +187,24 @@ export default class AlbumStore extends VuexModule {
     } else {
       hasMoreAlbums = false;
     }
-    albums = albums.map(album => {
+    albums = albums.map((album) => {
       album.musicDirectory = album.id;
       album.id = undefined;
       return album;
     });
 
     this.context.commit("setAlbums", { albums, hasMoreAlbums });
+    return response;
   }
 
   @Action({ rawError: true })
-  async getCoverArt({ id, size }: { id: string; size?: string }) {
+  async getCoverArt({
+    id,
+    size,
+  }: {
+    id: string;
+    size?: string;
+  }): Promise<unknown> {
     const params = [`id=${encodeURIComponent(id)}`];
     let coverId = id;
     if (size) {
@@ -210,7 +222,7 @@ export default class AlbumStore extends VuexModule {
       Vue.prototype.axios
         .get(`getCoverArt?${params.join("&")}`, {
           responseType: "blob",
-          cancelToken: request.token
+          cancelToken: request.token,
         })
         .then((response: HttpResponse) => {
           if (response) {
@@ -231,46 +243,14 @@ export default class AlbumStore extends VuexModule {
   }
 
   @MutationAction
-  async getStarred() {
+  async getStarred(): Promise<unknown> {
     const response: StarredResponse = await Vue.prototype.axios.get(
       `getStarred2`
     );
-    const songs = ([] as Song[]).concat(response.starred2.song).map(song => {
+    const songs = ([] as Song[]).concat(response.starred2.song).map((song) => {
       song.durationFormatted = duration(song.duration);
       return song;
     });
     return { starred: songs };
   }
 }
-
-// export interface AlbumState {
-//   albums: Album[];
-//   albumsDetailed: Map<number, Album>;
-//   covers: Map<string, string>;
-//   currentAlbum?: Album;
-//   hasMoreAlbums: boolean;
-//   musicDirectoryAlbumAdapter: Map<number, number>;
-//   recents: Album[];
-//   starred?: Song[];
-// }
-//
-// interface Cancelable {
-//   cancel: Function;
-// }
-//
-// interface AlbumStore {
-//   state: AlbumState;
-//   commit: Commit;
-//   dispatch: Dispatch;
-// }
-//
-// const state: AlbumState = {
-//   albums: [],
-//   albumsDetailed: new Map<number, Album>(),
-//   covers: new Map<string, string>(),
-//   currentAlbum: undefined,
-//   hasMoreAlbums: true,
-//   musicDirectoryAlbumAdapter: new Map<number, number>(),
-//   recents: [],
-//   starred: undefined
-// };

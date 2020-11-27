@@ -2,7 +2,7 @@
   <v-btn text @click="saveAsPlaylist()">{{ label }}</v-btn>
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions } from "vuex";
 
 export default {
@@ -10,19 +10,20 @@ export default {
   props: ["label", "songs"],
   methods: {
     ...mapActions("playlist", ["createPlaylist"]),
-    async saveAsPlaylist() {
+    async saveAsPlaylist(): Promise<string> {
       const name = await this.$dialog.prompt({
         text: "Save as",
-        title: "Enter the name of the playlist"
+        title: "Enter the name of the playlist",
       });
       if (name) {
         this.createPlaylist({ title: name, songs: this.songs }).then(() => {
           this.$router.push({ name: "playlists" });
-          this.$emit("playlistCreate");
+          this.$emit("playlist-create");
         });
       }
-    }
-  }
+      return name;
+    },
+  },
 };
 </script>
 

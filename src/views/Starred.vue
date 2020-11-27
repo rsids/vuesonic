@@ -23,7 +23,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions, mapState } from "vuex";
 import { noop } from "@/utils/generic";
 import VSEmptyState from "@/components/EmptyState";
@@ -33,20 +33,20 @@ import VSSavePlaylist from "@/components/SavePlaylist";
 export default {
   name: "Playlist",
   components: { VSSavePlaylist, VSSonglist, VSEmptyState },
-  data() {
+  data(): unknown {
     return {
-      cover: ""
+      cover: "",
     };
   },
   computed: {
-    ...mapState("album", ["starred"])
+    ...mapState("album", ["starred"]),
   },
-  mounted() {
+  mounted(): void {
     this.getStarred().then(noop);
   },
   methods: {
-    ...mapActions("album", ["getStarred"])
-  }
+    ...mapActions("album", ["getStarred"]),
+  },
 };
 </script>
 

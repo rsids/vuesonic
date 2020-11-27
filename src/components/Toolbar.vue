@@ -8,9 +8,7 @@
     <v-app-bar-nav-icon
       @click.stop="showDrawer = !showDrawer"
     ></v-app-bar-nav-icon>
-    <div class="d-flex align-center">
-      VueSonic
-    </div>
+    <div class="d-flex align-center">VueSonic</div>
 
     <v-spacer></v-spacer>
     <v-text-field
@@ -34,43 +32,43 @@
   </v-app-bar>
 </template>
 
-<script>
+<script lang="ts">
 import { mapMutations, mapState } from "vuex";
 import { SET_DRAWER } from "@/store/modules/ui";
 
 export default {
   name: "VSToolbar",
-  data() {
+  data(): unknown {
     return {
       searchQuery: "",
-      tab: ""
+      tab: "",
     };
   },
   computed: {
     ...mapState("ui", ["tabs", "drawer"]),
     toolbarTabs: {
-      get() {
+      get(): string[] {
         return this.tabs;
-      }
+      },
     },
     showDrawer: {
-      get() {
+      get(): boolean {
         return this.drawer;
       },
-      set(val) {
+      set(val: boolean): void {
         this[SET_DRAWER](val);
-      }
-    }
+      },
+    },
   },
   methods: {
     ...mapMutations("ui", [SET_DRAWER]),
 
-    doSearch() {
+    doSearch(): void {
       this.$router.push({
         name: "search",
-        params: { query: this.searchQuery }
+        params: { query: this.searchQuery },
       });
-    }
-  }
+    },
+  },
 };
 </script>

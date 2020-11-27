@@ -5,7 +5,7 @@ import {
   Module,
   Mutation,
   MutationAction,
-  VuexModule
+  VuexModule,
 } from "vuex-module-decorators";
 
 @Module({ namespaced: true })
@@ -14,12 +14,12 @@ export default class ArtistStore extends VuexModule {
   currentArtist: Artist | null = null;
 
   @Mutation
-  setArtist(value: Artist) {
+  setArtist(value: Artist): void {
     this.currentArtist = value;
   }
 
   @MutationAction
-  async getArtists() {
+  async getArtists(): Promise<unknown> {
     const response = await Vue.prototype.axios.get(`getArtists`);
 
     const artists: Artist[] = [];
@@ -32,7 +32,7 @@ export default class ArtistStore extends VuexModule {
   }
 
   @MutationAction
-  async getArtist({ id }) {
+  async getArtist({ id }: { id: number }): Promise<unknown> {
     const response = await Vue.prototype.axios.get(`getArtist?id=${id}`);
     if (response?.artist) {
       return { currentArtist: response.artist };

@@ -3,7 +3,7 @@ import {
   mount,
   ThisTypedMountOptions,
   VueClass,
-  Wrapper
+  Wrapper,
 } from "@vue/test-utils";
 import { Vue } from "vue-property-decorator";
 import Vuex from "vuex";

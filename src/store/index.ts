@@ -4,8 +4,8 @@ import AnnotationStore from "@/store/modules/annotation";
 import ArtistStore from "@/store/modules/artist";
 import SearchStore from "@/store/modules/search";
 import PlaylistStore from "@/store/modules/playlist";
-import { connection } from "@/store/modules/connection";
-import { user } from "@/store/modules/user";
+import ConnectionStore from "@/store/modules/connection";
+import UserStore from "@/store/modules/user";
 import StreamStore from "@/store/modules/stream";
 import { ui } from "@/store/modules/ui";
 import { RootState } from "@/store/RootState";
@@ -22,13 +22,13 @@ const store: StoreOptions<RootState> = {
     album: AlbumStore,
     annotation: AnnotationStore,
     artist: ArtistStore,
-    connection,
+    connection: ConnectionStore,
     playlist: PlaylistStore,
     search: SearchStore,
     stream: StreamStore,
     ui,
-    user
-  }
+    user: UserStore,
+  },
 };
 
 export default new Vuex.Store(store);

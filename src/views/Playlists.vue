@@ -18,7 +18,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions, mapState } from "vuex";
 import VSPlaylistCard from "@/components/PlaylistCard";
 import VSEmptyState from "@/components/EmptyState";
@@ -26,18 +26,18 @@ import VSEmptyState from "@/components/EmptyState";
 export default {
   name: "Playlists",
   components: { VSEmptyState, VSPlaylistCard },
-  data() {
+  data(): unknown {
     return {};
   },
-  mounted() {
+  mounted(): void {
     this.getPlaylists();
   },
 
   computed: {
-    ...mapState("playlist", ["playlists"])
+    ...mapState("playlist", ["playlists"]),
   },
   methods: {
-    ...mapActions("playlist", ["getPlaylists"])
-  }
+    ...mapActions("playlist", ["getPlaylists"]),
+  },
 };
 </script>

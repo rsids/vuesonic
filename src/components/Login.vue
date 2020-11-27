@@ -2,7 +2,7 @@
   <v-dialog
     id="dialog-login"
     :disabled="loggingIn"
-    v-model="active"
+    v-model="isActive"
     max-width="400px"
     persistent
   >
@@ -60,7 +60,7 @@
 
         <v-divider></v-divider>
         <v-progress-linear indeterminate v-if="loggingIn"></v-progress-linear>
-        <div v-if="!loggingIn" style="height:4px"></div>
+        <div v-if="!loggingIn" style="height: 4px"></div>
 
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -79,15 +79,15 @@
   </v-dialog>
 </template>
 
-<script>
-import { mapActions } from "vuex";
+<script lang="ts">
+import { mapActions, mapMutations } from "vuex";
 import { validationMixin } from "vuelidate";
 import { required, minLength } from "vuelidate/lib/validators";
 export default {
   name: "VSLogin",
   mixins: [validationMixin],
   props: ["active"],
-  data() {
+  data(): unknown {
     return {
       invalidCredentials: false,
       invalidCredentialsCls: false,
@@ -118,7 +118,17 @@ export default {
   },
 
   computed: {
-    userErrors() {
+    isActive: {
+      get(): boolean {
+        return this.active;
+      },
+
+      set(): void {
+        // nothing
+      }
+    },
+
+    userErrors(): string[] {
       const errors = [];
       if (!this.$v.form.user.$dirty) {
         return errors;
@@ -128,7 +138,7 @@ export default {
       return errors;
     },
 
-    passwordErrors() {
+    passwordErrors(): string[] {
       const errors = [];
       if (!this.$v.form.password.$dirty) {
         return errors;
@@ -138,7 +148,7 @@ export default {
       return errors;
     },
 
-    serverErrors() {
+    serverErrors(): string[] {
       const errors = [];
       if (!this.$v.form.server.$dirty) {
         return errors;
@@ -151,10 +161,11 @@ export default {
   },
 
   methods: {
-    ...mapActions("connection", ["storeCredentials", "clearCredentials"]),
+    ...mapMutations("connection", ["storeCredentials"]),
+    ...mapActions("connection", ["clearCredentials"]),
     ...mapActions("user", ["getUser"]),
 
-    doLogin() {
+    doLogin(): void {
       if (this.loggingIn) {
         return;
       }
@@ -178,7 +189,7 @@ export default {
       );
     },
 
-    validateLogin() {
+    validateLogin(): void {
       this.$v.$touch();
       if (!this.$v.$invalid) {
         this.doLogin();

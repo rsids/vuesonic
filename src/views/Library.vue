@@ -11,7 +11,7 @@ import { mapMutations } from "vuex";
 export default {
   name: "VSLibrary",
   methods: {
-    ...mapMutations("ui", [SET_TABS])
-  }
+    ...mapMutations("ui", [SET_TABS]),
+  },
 };
 </script>

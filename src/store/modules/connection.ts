@@ -1,64 +1,80 @@
-import { RootState } from "@/store/RootState";
-import { Module } from "vuex";
 import { salt } from "@/utils/generic";
 import { Md5 } from "ts-md5";
+import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
 
-interface ConnectionState {
-  username: string;
-  password: string;
-  server: string;
-  hasCredentials: boolean;
+interface ConnectionParams {
+  u: string;
+  t: string;
+  s: string;
+  c: string;
+  f: string;
+  v: string;
 }
 
-export const state: ConnectionState = {
-  password: sessionStorage.getItem("password") || "",
-  server: sessionStorage.getItem("server") || "",
-  username: sessionStorage.getItem("username") || "",
-  hasCredentials: !!sessionStorage.getItem("server")
-};
+@Module({ namespaced: true })
+export default class ConnectionStore extends VuexModule {
+  password = sessionStorage.getItem("password") || "";
+  _server = sessionStorage.getItem("server") || "";
+  username = sessionStorage.getItem("username") || "";
+  hasCredentials = !!sessionStorage.getItem("server");
 
-const actions = {
-  clearCredentials() {
+  @Mutation
+  setHasCredentials(value: boolean): void {
+    this.hasCredentials = value;
+  }
+
+  @Action
+  clearCredentials(): void {
     sessionStorage.clear();
-    state.hasCredentials = false;
-  },
+    this.context.commit("setHasCredentials", false);
+  }
 
-  storeCredentials({ state }, { user, password, server }) {
+  @Mutation
+  storeCredentials({
+    user,
+    password,
+    server
+  }: {
+    user: string;
+    password: string;
+    server: string;
+  }): void {
     if (server.endsWith("/")) {
       server = server.substr(0, server.length - 1);
     }
-    state.username = user;
-    state.password = password;
-    state.server = server;
-    state.hasCredentials = true;
+    this.username = user;
+    this.password = password;
+    this._server = server;
+    this.hasCredentials = true;
     sessionStorage.setItem("username", user);
     sessionStorage.setItem("password", password);
     sessionStorage.setItem("server", server);
-  },
+  }
 
-  getUrl({ state, getters }, { url }) {
-    const fullUrl = new URL(`${state.server}/rest/${url}`);
-    for (const paramsKey in getters.params) {
-      fullUrl.searchParams.append(paramsKey, getters.params[paramsKey]);
+  getUrl(url: string): string {
+    const fullUrl = new URL(`${this._server}/rest/${url}`);
+    const params = this.params();
+    // eslint-disable-next-line no-console
+    console.log(params);
+    for (const paramsKey in params) {
+      fullUrl.searchParams.append(paramsKey, params[paramsKey]);
     }
     return fullUrl.toString();
   }
-};
 
-const getters = {
-  server: (state: ConnectionState) => state.server,
-  password: (state: ConnectionState) => state.password,
-  username: (state: ConnectionState) => state.username,
-  hasCredentials: (state: ConnectionState) => state.hasCredentials,
-  params: (state: ConnectionState) => {
+  server() {
+    return this._server;
+  }
+
+  params(): ConnectionParams {
     const salted = salt();
     const token = new Md5()
-      .appendStr(state.password)
+      .appendStr(this.password)
       .appendStr(salted)
       .end()
       .toString();
     return {
-      u: state.username,
+      u: this.username,
       t: token,
       s: salted,
       c: "vuesonic",
@@ -66,12 +82,4 @@ const getters = {
       v: "1.15.0"
     };
   }
-};
-
-export const connection: Module<ConnectionState, RootState> = {
-  namespaced: true,
-  state,
-  getters,
-  actions,
-  mutations: {}
-};
+}

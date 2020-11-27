@@ -18,7 +18,7 @@ interface SearchParams {
 const SEARCH_DEFAULTS = {
   ALBUM_COUNT: 4,
   ARTIST_COUNT: 4,
-  SONG_COUNT: 10
+  SONG_COUNT: 10,
 };
 
 @Module({ namespaced: true })
@@ -32,7 +32,13 @@ export default class SearchStore extends VuexModule {
   hasMoreSongs = false;
 
   @Mutation
-  setAlbums({ albums, append = false }) {
+  setAlbums({
+    albums,
+    append = false,
+  }: {
+    albums: Album[];
+    append: boolean;
+  }): void {
     if (append && this.albums) {
       this.albums = ([] as Album[]).concat(this.albums, albums);
       this.hasMoreAlbums = false;
@@ -43,7 +49,13 @@ export default class SearchStore extends VuexModule {
   }
 
   @Mutation
-  setArtists({ artists, append = false }) {
+  setArtists({
+    artists,
+    append = false,
+  }: {
+    artists: Artist[];
+    append: boolean;
+  }): void {
     if (append && this.artists) {
       this.artists = ([] as Artist[]).concat(this.artists, artists);
       this.hasMoreArtists = false;
@@ -54,7 +66,13 @@ export default class SearchStore extends VuexModule {
   }
 
   @Mutation
-  setSongs({ songs, append = false }) {
+  setSongs({
+    songs,
+    append = false,
+  }: {
+    songs: Song[];
+    append: boolean;
+  }): void {
     if (append && this.songs) {
       this.songs = ([] as Song[]).concat(this.songs, songs);
       this.hasMoreSongs = false;
@@ -65,7 +83,7 @@ export default class SearchStore extends VuexModule {
   }
 
   @Mutation
-  resetSearch(query) {
+  resetSearch(query: string): void {
     this.albums = [];
     this.artists = [];
     this.songs = [];
@@ -73,36 +91,37 @@ export default class SearchStore extends VuexModule {
   }
 
   @Action
-  async search({ query }) {
+  async search({ query }: { query: string }): Promise<SearchResponse> {
     const params = {
       query: query,
       artistCount: SEARCH_DEFAULTS.ARTIST_COUNT + 1,
       albumCount: SEARCH_DEFAULTS.ALBUM_COUNT + 1,
-      songCount: SEARCH_DEFAULTS.SONG_COUNT + 1
+      songCount: SEARCH_DEFAULTS.SONG_COUNT + 1,
     } as SearchParams;
     this.context.commit("resetSearch", query);
     const response: SearchResponse = await Vue.prototype.axios.get(`search3`, {
-      params: params
+      params: params,
     });
 
     this.context.commit("setArtists", {
-      artists: response.searchResult3.artist || []
+      artists: response.searchResult3.artist || [],
     });
     this.context.commit("setAlbums", {
-      albums: response.searchResult3.album || []
+      albums: response.searchResult3.album || [],
     });
     this.context.commit("setSongs", {
-      songs: response.searchResult3.song || []
+      songs: response.searchResult3.song || [],
     });
+    return response;
   }
 
   @Action
-  async searchMore({ type }) {
+  async searchMore({ type }: { type: string }): Promise<SearchResponse> {
     const params = {
       query: this.context.getters["query"],
       artistCount: 0,
       albumCount: 0,
-      songCount: 0
+      songCount: 0,
     } as SearchParams;
     switch (type) {
       case "albums":
@@ -119,28 +138,29 @@ export default class SearchStore extends VuexModule {
         break;
     }
     const response: SearchResponse = await Vue.prototype.axios.get(`search3`, {
-      params: params
+      params: params,
     });
 
     switch (type) {
       case "artists":
         this.context.commit("setArtists", {
           artists: response.searchResult3.artist,
-          append: true
+          append: true,
         });
         break;
       case "albums":
         this.context.commit("setAlbums", {
           albums: response.searchResult3.album,
-          append: true
+          append: true,
         });
         break;
       case "songs":
         this.context.commit("setSongs", {
           songs: response.searchResult3.song,
-          append: true
+          append: true,
         });
         break;
     }
+    return response;
   }
 }

@@ -13,7 +13,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions, mapState } from "vuex";
 import VSAlbumCard from "@/components/AlbumCard";
 import { noop } from "@/utils/generic";
@@ -22,13 +22,13 @@ export default {
   name: "VSRecent",
   components: { VSAlbumCard },
   computed: {
-    ...mapState("album", ["recents"])
+    ...mapState("album", ["recents"]),
   },
   methods: {
-    ...mapActions("album", ["getRecents"])
+    ...mapActions("album", ["getRecents"]),
   },
-  mounted() {
+  mounted(): void {
     this.getRecents().then(noop);
-  }
+  },
 };
 </script>

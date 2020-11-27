@@ -22,71 +22,62 @@ const routes: Array<RouteConfig> = [
         path: "recents",
         name: "recents",
         alias: ["", "/recents"],
-        component: Recent
+        component: Recent,
       },
       {
         path: "artists",
         name: "artists",
-        component: Artists
+        component: Artists,
       },
       {
         path: "playlists",
         name: "playlists",
         alias: "",
-        component: Playlists
+        component: Playlists,
       },
       {
         path: "albums",
         name: "albums",
-        component: Albums
-      }
-    ]
+        component: Albums,
+      },
+    ],
   },
   {
     path: "/library/albums/:id",
     name: "album",
     alias: ["/library/albums/:id/*", "/library/albums/:id/*/*"],
-    component: Album
+    component: Album,
   },
   {
     path: "/library/artists/:id",
     name: "artist",
     alias: "/library/artists/:id/*",
-    component: Artist
+    component: Artist,
   },
   {
     path: "/library/playlists/:id",
     name: "playlist",
     alias: "/library/playlists/:id/*",
-    component: Playlist
+    component: Playlist,
   },
   {
     path: "/library/starred",
     name: "starred",
     component: () =>
-      import(/* webpackChunkName: "starred" */ "../views/Starred.vue")
+      import(/* webpackChunkName: "starred" */ "../views/Starred.vue"),
   },
   {
     path: "/search/:query",
     name: "search",
     component: () =>
-      import(/* webpackChunkName: "search" */ "../views/Search.vue")
+      import(/* webpackChunkName: "search" */ "../views/Search.vue"),
   },
-  {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue")
-  }
 ];
 
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
-  routes
+  routes,
 });
 
 export default router;

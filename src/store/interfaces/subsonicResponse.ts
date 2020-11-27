@@ -11,12 +11,8 @@ import { Song } from "@/store/interfaces/song";
 export interface SubsonicResponse {
   status: string;
   version?: string;
-  user?: User;
   albumList2?: AlbumList;
   artist?: Artist;
-  album?: Album;
-  playlists?: PlaylistList;
-  playlist?: Playlist;
   artists?: {
     index: Index[];
   };
@@ -54,6 +50,10 @@ export interface StarredResponse extends SubsonicResponse {
   starred2: {
     song: Song[];
   };
+}
+
+export interface UserResponse extends SubsonicResponse {
+  user: User;
 }
 
 export interface SubsonicError {

@@ -68,7 +68,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions, mapMutations, mapState } from "vuex";
 import VSEmptyState from "@/components/EmptyState";
 import { duration } from "@/utils/generic";
@@ -77,15 +77,15 @@ import VSSonglist from "@/components/Songlist";
 export default {
   name: "Playlist",
   components: { VSSonglist, VSEmptyState },
-  data() {
+  data(): unknown {
     return {
       cover: "",
-      notFound: false
+      notFound: false,
     };
   },
   computed: {
     ...mapState("playlist", ["currentPlaylist"]),
-    metaData() {
+    metaData(): string {
       const data = [];
       if (this?.currentPlaylist.songCount) {
         data.push(`${this.currentPlaylist.songCount} songs`);
@@ -94,18 +94,18 @@ export default {
         data.push(duration(this.currentPlaylist.duration));
       }
       return data.join(" • ");
-    }
+    },
   },
-  mounted() {
+  mounted(): void {
     this.getPlaylist(this.$route.params).then(
-      playlist => {
+      (playlist) => {
         if (playlist.coverArt) {
-          this.getCoverArt({ id: playlist.coverArt }).then(cover => {
+          this.getCoverArt({ id: playlist.coverArt }).then((cover) => {
             this.cover = window.URL.createObjectURL(cover);
           });
         }
       },
-      err => {
+      (err) => {
         // eslint-disable-next-line no-console
         console.log("ERR STATE", err);
         if (err.error.code === 70) {
@@ -120,20 +120,20 @@ export default {
     ...mapActions("playlist", [
       "getPlaylist",
       "deletePlaylist",
-      "updatePlaylist"
+      "updatePlaylist",
     ]),
     ...mapMutations("stream", ["setPlaylist"]),
     ...mapActions("stream", ["play"]),
 
-    playIt() {
+    playIt(): void {
       this.setPlaylist({ playlist: this.currentPlaylist.entry });
       this.play({ song: this.currentPlaylist.entry[0] });
     },
 
-    async deleteIt() {
+    async deleteIt(): void {
       const res = await this.$dialog.confirm({
         text: "Are you sure you want to delete this playlist?",
-        title: "Warning"
+        title: "Warning",
       });
 
       if (res) {
@@ -143,24 +143,24 @@ export default {
       }
     },
 
-    removeFromPlaylist({ index }) {
+    removeFromPlaylist({ index }: { index: number }): void {
       this.updatePlaylist({
         playlistId: this.currentPlaylist.id,
-        songIndexToRemove: index
+        songIndexToRemove: index,
       }).then(() => {
         this.$dialog.message.info(
           "1 song removed from playlist",
           {
-            position: "bottom-left"
+            position: "bottom-left",
           },
-          e => {
+          (e: unknown) => {
             // eslint-disable-next-line no-console
             console.log("E", e);
           }
         );
       });
-    }
-  }
+    },
+  },
 };
 </script>
 

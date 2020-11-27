@@ -10,7 +10,7 @@ export interface UiState {
 const state: UiState = {
   drawer: false,
   tabs: ["recents", "playlists", "artists", "albums", "starred"],
-  tab: undefined
+  tab: undefined,
 };
 
 export const SET_DRAWER = "setDrawerMutation";
@@ -18,15 +18,15 @@ export const SET_TAB = "setTabMutation";
 export const SET_TABS = "setTabsMutation";
 
 const mutations = {
-  [SET_DRAWER](state: UiState, value: boolean) {
+  [SET_DRAWER](state: UiState, value: boolean): void {
     state.drawer = value;
   },
-  [SET_TAB](state: UiState, value: string) {
+  [SET_TAB](state: UiState, value: string): void {
     state.tab = value;
   },
-  [SET_TABS](state: UiState, value: string[]) {
+  [SET_TABS](state: UiState, value: string[]): void {
     state.tabs = ([] as string[]).concat(value);
-  }
+  },
 };
 
 const actions = {};
@@ -36,5 +36,5 @@ export const ui: Module<UiState, RootState> = {
   state,
   getters: {},
   actions,
-  mutations
+  mutations,
 };

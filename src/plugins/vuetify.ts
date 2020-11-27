@@ -5,7 +5,7 @@ import colors from "vuetify/es5/util/colors";
 Vue.use(Vuetify);
 export default new Vuetify({
   options: {
-    customProperties: true
+    customProperties: true,
   },
   theme: {
     themes: {
@@ -16,8 +16,8 @@ export default new Vuetify({
         error: colors.red.base,
         warning: colors.amber.base,
         info: colors.lightBlue.base,
-        success: colors.lime.base
-      }
-    }
-  }
+        success: colors.lime.base,
+      },
+    },
+  },
 });

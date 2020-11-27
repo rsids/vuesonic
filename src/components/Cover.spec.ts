@@ -7,16 +7,16 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe("Cover", () => {
-  const mountFunction = options => {
+  const mountFunction = (options) => {
     return mount(Cover, { localVue, ...options });
   };
 
-  it("should show a play button if the entity is not an artist", done => {
+  it("should show a play button if the entity is not an artist", (done) => {
     const wrapper = mountFunction({
       propsData: {
         type: "album",
-        entity: {}
-      }
+        entity: {},
+      },
     });
     wrapper.find(".cover-container").trigger("mouseover");
     wrapper.vm.$nextTick(() => {
@@ -25,12 +25,12 @@ describe("Cover", () => {
     });
   });
 
-  it("should not show a play button if the entity is an artist", done => {
+  it("should not show a play button if the entity is an artist", (done) => {
     const wrapper = mountFunction({
       propsData: {
         type: "artist",
-        entity: {}
-      }
+        entity: {},
+      },
     });
     wrapper.find(".cover-container").trigger("mouseover");
     wrapper.vm.$nextTick(() => {

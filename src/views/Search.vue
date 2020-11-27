@@ -91,7 +91,7 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions, mapState } from "vuex";
 import VSArtistCard from "@/components/ArtistCard";
 import VSAlbumCard from "@/components/AlbumCard";
@@ -108,23 +108,23 @@ export default {
       "songs",
       "hasMoreAlbums",
       "hasMoreArtists",
-      "hasMoreSongs"
+      "hasMoreSongs",
     ]),
-    query() {
+    query(): string {
       return this.$route.params.query;
-    }
+    },
   },
 
   methods: {
     ...mapActions("search", ["search", "searchMore"]),
 
-    seeAll(type) {
+    seeAll(type: string): void {
       this.searchMore({ type });
-    }
+    },
   },
 
-  mounted() {
+  mounted(): void {
     this.search({ query: this.query });
-  }
+  },
 };
 </script>

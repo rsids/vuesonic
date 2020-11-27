@@ -23,10 +23,10 @@ import VSCover from "@/components/Cover.vue";
 
 @Component({
   methods: {
-    ...mapActions("album", ["getAlbumFromMusicDirectory", "cancelAllRequests"])
+    ...mapActions("album", ["getAlbumFromMusicDirectory", "cancelAllRequests"]),
   },
   name: "VSAlbumCard",
-  components: { VSCover }
+  components: { VSCover },
 })
 export default class AlbumCard extends Vue {
   @Prop() album!: Album;
@@ -34,7 +34,7 @@ export default class AlbumCard extends Vue {
   cancelAllRequests!: () => void;
   getAlbumFromMusicDirectory!: (album: Album) => Promise<Album>;
 
-  gotoAlbum() {
+  gotoAlbum(): void {
     this.cancelAllRequests();
     if (this.album.musicDirectory) {
       this.getAlbumFromMusicDirectory(this.album).then((album: Album) => {
@@ -55,7 +55,7 @@ export default class AlbumCard extends Vue {
     return "";
   }
 
-  get albumName() {
+  get albumName(): string {
     if (this.album.album) {
       return this.album.album;
     } else if (this.album.name) {

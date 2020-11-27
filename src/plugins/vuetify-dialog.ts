@@ -5,6 +5,6 @@ import "vuetify-dialog/dist/vuetify-dialog.css";
 
 Vue.use(VuetifyDialog, {
   context: {
-    vuetify
-  }
+    vuetify,
+  },
 });

@@ -11,9 +11,7 @@
             <v-icon>mdi-home</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>
-              Home
-            </v-list-item-title>
+            <v-list-item-title> Home </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link to="/library">
@@ -21,9 +19,7 @@
             <v-icon>mdi-music-box-multiple</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>
-              Music Library
-            </v-list-item-title>
+            <v-list-item-title> Music Library </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item link to="/settings">
@@ -31,9 +27,7 @@
             <v-icon>mdi-cog</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>
-              Settings
-            </v-list-item-title>
+            <v-list-item-title> Settings </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -54,7 +48,7 @@
 import VSLogin from "@/components/Login.vue";
 import VSPlayer from "@/components/Player.vue";
 import Vue from "vue";
-import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 import VSToolbar from "@/components/Toolbar.vue";
 import { SET_DRAWER } from "@/store/modules/ui";
 
@@ -70,18 +64,18 @@ export default Vue.extend({
     VSPlayer
   },
 
-  data: () => ({
+  data: (): unknown => ({
     dialog: false,
     tab: null,
     items: ["web", "shopping", "videos", "images", "news"]
   }),
 
-  mounted() {
+  mounted(): void {
     this.init();
   },
 
   computed: {
-    ...mapGetters("connection", ["hasCredentials"]),
+    ...mapState("connection", ["hasCredentials"]),
     ...mapState("search", ["query"]),
     ...mapState("ui", ["drawer"]),
     showDrawer: {

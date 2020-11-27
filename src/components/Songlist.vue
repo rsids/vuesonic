@@ -6,13 +6,13 @@
     class="elevation-1 fixed-table"
     disable-pagination
   >
-    <template #header.durationFormatted="">
+    <template v-slot:[`header.durationFormatted`]="">
       <v-icon size="medium">mdi-clock-time-four-outline</v-icon>
     </template>
-    <template #header.playCount="">
+    <template v-slot:[`header.playCount`]="">
       <v-icon size="medium">mdi-music-note</v-icon>
     </template>
-    <template #header.star="">
+    <template v-slot:[`header.star`]="">
       <v-icon size="medium">mdi-star</v-icon>
     </template>
     <template #item="item">
@@ -91,11 +91,12 @@
   </v-data-table>
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions, mapMutations, mapState } from "vuex";
 import VSPlaylistMenu from "@/components/PlaylistMenu";
 import VSQueueMenu from "@/components/QueueMenu";
 import { getArtistUrl } from "@/utils/generic";
+import { Song } from "@/store/interfaces/song";
 
 export default {
   name: "VSSonglist",
@@ -104,11 +105,11 @@ export default {
     songs: Array,
     dense: Boolean,
     full: Boolean,
-    numbering: String
+    numbering: String,
   },
-  data() {
+  data(): unknown {
     return {
-      hovered: null
+      hovered: null,
     };
   },
   methods: {
@@ -116,43 +117,43 @@ export default {
     ...mapActions("stream", ["play"]),
     ...mapActions("annotation", ["star"]),
 
-    addStar(item) {
-      this.star({ id: item.id, toggle: true });
+    addStar({ id }: { id: number }): void {
+      this.star({ id, toggle: true });
     },
 
-    removeStar(item) {
-      this.star({ id: item.id, toggle: false });
+    removeStar({ id }: { id: number }): void {
+      this.star({ id, toggle: false });
     },
 
-    onMouseOver(id) {
+    onMouseOver(id: number): void {
       if (!this.currentSong || this.currentSong.id !== id) {
         this.hovered = id;
       }
     },
 
-    playSong(item) {
+    playSong(item: Song): void {
       this.setPlaylist({ playlist: this.songs });
       this.play({ song: item });
     },
 
-    gotoArtist(artist) {
-      const url = getArtistUrl(artist);
+    gotoArtist(song: Song): void {
+      const url = getArtistUrl(song);
       this.$router.push(url);
     },
 
-    gotoAlbum(song) {
+    gotoAlbum(song: Song): void {
       const artist = encodeURIComponent(song.artist.split(" ").join("-"));
       const album = encodeURIComponent(song.album.split(" ").join("-"));
       const url = `/library/albums/${song.albumId}/${artist}/${album}`.toLowerCase();
       this.$router.push(url);
-    }
+    },
   },
   computed: {
     ...mapState("stream", [{ currentSong: "song" }]),
-    hasMenuOptions() {
+    hasMenuOptions(): boolean {
       return !!this.$slots["menuoptions"];
     },
-    headers() {
+    headers(): unknown[] {
       const headers = [
         {
           text: "#",
@@ -160,13 +161,13 @@ export default {
           class: "px-0 text-center",
           align: "center",
           value: "track",
-          width: 40
+          width: 40,
         },
         {
           text: "NAME",
           sortable: true,
           value: "title",
-          class: "sizeable-col"
+          class: "sizeable-col",
         },
         {
           text: "Duration",
@@ -174,7 +175,7 @@ export default {
           align: "center",
           class: "px-0",
           value: "durationFormatted",
-          width: 60
+          width: 60,
         },
         {
           text: "Play count",
@@ -182,7 +183,7 @@ export default {
           value: "playCount",
           class: "px-2",
           align: "center",
-          width: 40
+          width: 40,
         },
         {
           text: "stars",
@@ -190,8 +191,8 @@ export default {
           class: "px-0",
           align: "center",
           value: "star",
-          width: 50
-        }
+          width: 50,
+        },
       ];
       if (this.full && !this.dense) {
         headers.splice(
@@ -202,14 +203,14 @@ export default {
               text: "ARTIST",
               sortable: true,
               value: "artist",
-              class: "sizeable-col"
+              class: "sizeable-col",
             },
             {
               text: "ALBUM",
               sortable: true,
               value: "album",
-              class: "sizeable-col"
-            }
+              class: "sizeable-col",
+            },
           ]
         );
       }
@@ -218,8 +219,8 @@ export default {
         headers.splice(0, 1);
       }
       return headers;
-    }
-  }
+    },
+  },
 };
 </script>
 

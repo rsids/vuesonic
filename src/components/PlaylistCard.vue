@@ -10,7 +10,7 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 import { Playlist } from "@/store/interfaces/playlist";
 import VSCover from "@/components/Cover";
 
@@ -18,16 +18,16 @@ export default {
   name: "VSPlaylistCard",
   components: { VSCover },
   props: {
-    playlist: Playlist
+    playlist: Playlist,
   },
-  data() {
+  data(): unknown {
     return {
-      cover: ""
+      cover: "",
     };
   },
 
   computed: {
-    playlistUrl() {
+    playlistUrl(): string | undefined {
       if (this.playlist) {
         const name = encodeURIComponent(
           this.playlist.name.split(" ").join("-")
@@ -35,7 +35,7 @@ export default {
         return `/library/playlists/${this.playlist.id}/${name}`;
       }
       return undefined;
-    }
-  }
+    },
+  },
 };
 </script>

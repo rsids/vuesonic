@@ -65,7 +65,7 @@
   </v-footer>
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions, mapMutations, mapState } from "vuex";
 import { duration } from "@/utils/generic";
 import VSCover from "@/components/Cover";
@@ -76,32 +76,32 @@ const PREV_MODE_SEEK = 1;
 export default {
   name: "VSPlayer",
   components: { VSQueueList, VSCover },
-  data() {
+  data(): unknown {
     return {
       prevClick: 0,
       prevMode: PREV_MODE_PREV,
       queue: false,
       seeking: false,
-      songProgress: 0
+      songProgress: 0,
     };
   },
   methods: {
     ...mapActions("stream", ["next", "prev"]),
     ...mapMutations("stream", ["setPlaying", "setPaused", "seek"]),
 
-    changePlayhead($event) {
+    changePlayhead($event: unknown): void {
       this.seeking = false;
       this.seek($event);
     },
-    startSeeking() {
+    startSeeking(): void {
       this.seeking = true;
     },
 
-    skipNext() {
+    skipNext(): void {
       this.next();
     },
 
-    skipPrev() {
+    skipPrev(): void {
       if (this.songProgress < 2 && this.prevMode === PREV_MODE_SEEK) {
         this.seek(0);
         this.prevMode = PREV_MODE_PREV;
@@ -113,46 +113,46 @@ export default {
       }
     },
 
-    togglePlay() {
+    togglePlay(): void {
       this.playing = !this.playing;
-    }
+    },
   },
   computed: {
     ...mapState("stream", ["song", "paused", "progress", "hasNext", "hasPrev"]),
 
     playhead: {
-      get() {
+      get(): number {
         return this.songProgress;
       },
-      set(val) {
+      set(val: number): void {
         this.songProgress = val;
-      }
+      },
     },
 
-    progressFormatted() {
+    progressFormatted(): string {
       return duration(this.songProgress);
     },
 
     playing: {
-      get() {
+      get(): boolean {
         return !this.paused;
       },
-      set(val) {
+      set(val: boolean): void {
         val ? this.setPlaying() : this.setPaused();
-      }
-    }
+      },
+    },
   },
   watch: {
-    progress: function(val) {
+    progress: function (val: number): void {
       if (!this.seeking) {
         this.songProgress = val;
       }
     },
 
-    song: function() {
+    song: function (): void {
       this.prevMode = PREV_MODE_SEEK;
-    }
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

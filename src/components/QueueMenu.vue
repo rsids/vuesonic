@@ -9,33 +9,33 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions } from "vuex";
 
 export default {
   name: "VSQueueMenu",
   props: {
     songs: Array,
-    type: String
+    type: String,
   },
   computed: {
-    itemtype() {
+    itemtype(): string {
       if (this.type === "album") {
         return "album";
       }
       return "";
-    }
+    },
   },
   methods: {
     ...mapActions("stream", ["playNext", "addToQueue"]),
 
-    addToPlayingNext() {
+    addToPlayingNext(): void {
       this.playNext({ songs: this.songs });
     },
 
-    addToQueue() {
+    addToQueue(): void {
       this.addToQueue({ songs: this.songs });
-    }
-  }
+    },
+  },
 };
 </script>

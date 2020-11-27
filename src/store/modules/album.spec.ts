@@ -9,15 +9,15 @@ jest.mock("@/plugins/axios");
 
 describe("album store", () => {
   let album: Album;
-  let store: Store<any>;
+  let store: Store<AlbumStore>;
 
   beforeEach(() => {
     const localVue = createLocalVue();
     localVue.use(Vuex);
     store = new Vuex.Store({
       modules: {
-        album: AlbumStore
-      }
+        album: AlbumStore,
+      },
     });
     album = {
       album: "Origin of Symmetry",
@@ -49,7 +49,7 @@ describe("album store", () => {
           created: "2014-04-08T20:17:33.000Z",
           albumId: 73,
           artistId: 36,
-          type: "music"
+          type: "music",
         },
         {
           id: 1305,
@@ -73,7 +73,7 @@ describe("album store", () => {
           created: "2014-04-08T20:17:33.000Z",
           albumId: 73,
           artistId: 36,
-          type: "music"
+          type: "music",
         },
         {
           id: 1312,
@@ -97,7 +97,7 @@ describe("album store", () => {
           created: "2014-04-08T20:17:33.000Z",
           albumId: 73,
           artistId: 36,
-          type: "music"
+          type: "music",
         },
         {
           id: 1308,
@@ -121,7 +121,7 @@ describe("album store", () => {
           created: "2014-04-08T20:17:33.000Z",
           albumId: 73,
           artistId: 36,
-          type: "music"
+          type: "music",
         },
         {
           id: 1306,
@@ -145,7 +145,7 @@ describe("album store", () => {
           created: "2014-04-08T20:17:33.000Z",
           albumId: 73,
           artistId: 36,
-          type: "music"
+          type: "music",
         },
         {
           id: 1315,
@@ -169,7 +169,7 @@ describe("album store", () => {
           created: "2014-04-08T20:17:33.000Z",
           albumId: 73,
           artistId: 36,
-          type: "music"
+          type: "music",
         },
         {
           id: 1314,
@@ -193,7 +193,7 @@ describe("album store", () => {
           created: "2014-04-08T20:17:33.000Z",
           albumId: 73,
           artistId: 36,
-          type: "music"
+          type: "music",
         },
         {
           id: 1311,
@@ -217,7 +217,7 @@ describe("album store", () => {
           created: "2014-04-08T20:17:33.000Z",
           albumId: 73,
           artistId: 36,
-          type: "music"
+          type: "music",
         },
         {
           id: 1310,
@@ -241,7 +241,7 @@ describe("album store", () => {
           created: "2014-04-08T20:17:33.000Z",
           albumId: 73,
           artistId: 36,
-          type: "music"
+          type: "music",
         },
         {
           id: 1307,
@@ -265,7 +265,7 @@ describe("album store", () => {
           created: "2014-04-08T20:17:33.000Z",
           albumId: 73,
           artistId: 36,
-          type: "music"
+          type: "music",
         },
         {
           id: 1313,
@@ -289,14 +289,14 @@ describe("album store", () => {
           created: "2014-04-08T20:17:33.000Z",
           albumId: 73,
           artistId: 36,
-          type: "music"
-        }
+          type: "music",
+        },
       ],
       songCount: 11,
       starred: false,
       year: 2001,
       artist: "Muse",
-      name: "Origin of Symmetry"
+      name: "Origin of Symmetry",
     };
   });
 
@@ -350,8 +350,8 @@ describe("album store", () => {
         Vue.prototype.axios["get"].mockImplementationOnce(() =>
           Promise.resolve({
             albumList: {
-              album: [album]
-            }
+              album: [album],
+            },
           })
         );
 

@@ -9,13 +9,13 @@
       :headers="headers"
       :items="songs"
     >
-      <template #header.durationFormatted="">
+      <template v-slot:[`header.durationFormatted`]="">
         <v-icon size="medium">mdi-clock-time-four-outline</v-icon>
       </template>
-      <template #header.playCount="">
+      <template v-slot:[`header.playCount`]="">
         <v-icon size="medium">mdi-music-note</v-icon>
       </template>
-      <template #header.star="">
+      <template v-slot:[`header.star`]="">
         <v-icon size="medium">mdi-star</v-icon>
       </template>
       <template #item="item">
@@ -70,7 +70,7 @@
 
 <script>
 export default {
-  name: "ActivePlaylist"
+  name: "ActivePlaylist",
 };
 </script>
 

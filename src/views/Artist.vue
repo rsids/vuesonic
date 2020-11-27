@@ -36,7 +36,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import VSEmptyState from "@/components/EmptyState";
 import { mapActions, mapMutations, mapState } from "vuex";
 import VSCover from "@/components/Cover";
@@ -46,33 +46,33 @@ import { noop } from "@/utils/generic";
 export default {
   name: "Artist",
   components: { VSAlbumCard, VSCover, VSEmptyState },
-  data() {
+  data(): unknown {
     return {
       cover: "",
-      notFound: false
+      notFound: false,
     };
   },
-  mounted() {
-    this.getArtist(this.$route.params).then(noop, err => {
+  mounted(): void {
+    this.getArtist(this.$route.params).then(noop, (err) => {
       if (err.error.code === 70) {
         // 404
         this.notFound = true;
       }
     });
   },
-  destroyed() {
+  destroyed(): void {
     this.setArtist(null);
   },
   methods: {
     ...mapActions("artist", ["getArtist"]),
-    ...mapMutations("artist", ["setArtist"])
+    ...mapMutations("artist", ["setArtist"]),
   },
   computed: {
     ...mapState("artist", ["currentArtist"]),
 
-    metaData() {
+    metaData(): string {
       return "";
-    }
-  }
+    },
+  },
 };
 </script>

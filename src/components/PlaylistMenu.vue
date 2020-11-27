@@ -37,71 +37,73 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions, mapState } from "vuex";
+import { Playlist } from "@/store/interfaces/playlist";
 
 export default {
   name: "VSPlaylistMenu",
   props: {
-    songs: Array
+    songs: Array,
   },
-  data() {
+  data(): unknown {
     return {
-      fetchingPlaylists: false
+      fetchingPlaylists: false,
     };
   },
   computed: {
-    ...mapState("playlist", ["playlists"])
+    ...mapState("playlist", ["playlists"]),
   },
   methods: {
     ...mapActions("playlist", [
       "createPlaylist",
       "getPlaylists",
-      "updatePlaylist"
+      "updatePlaylist",
     ]),
 
-    async addToNewPlaylist() {
+    async addToNewPlaylist(): Promise<string> {
       const title = await this.$dialog.prompt({
         title: "New Playlist",
         text: "Name",
         actions: {
           false: "Cancel",
-          true: "Create playlist"
-        }
+          true: "Create playlist",
+        },
       });
       this.createPlaylist({
         title: title,
-        songs: this.songs
+        songs: this.songs,
       }).then(() => {
         this.$dialog.message.info(
           `${this.songs.length} song(s) added to new playlist`,
           {
-            position: "bottom-left"
+            position: "bottom-left",
           }
         );
       });
+      return title;
     },
 
-    addToPlaylist(playlist) {
+    addToPlaylist(playlist: Playlist): void {
       this.updatePlaylist({
         playlistId: playlist.id,
-        songsToAdd: this.songs
-      }).then(() => {
+        songsToAdd: this.songs,
+      }).then((): void => {
         this.$dialog.message.info(
           `${this.songs.length} song(s) added to playlist`,
           {
-            position: "bottom-left"
+            position: "bottom-left",
           }
         );
       });
     },
 
-    triggerGetPlaylists() {
+    triggerGetPlaylists(): void {
       if (!this.fetchingPlaylists) {
         this.fetchingPlaylists = true;
         this.getPlaylists();
       }
-    }
-  }
+    },
+  },
 };
 </script>

@@ -12,21 +12,21 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { mapActions, mapState } from "vuex";
 import VSArtistCard from "@/components/ArtistCard";
 
 export default {
   name: "Artists",
   components: { VSArtistCard },
-  mounted() {
+  mounted(): void {
     this.getArtists();
   },
   computed: {
-    ...mapState("artist", ["artists"])
+    ...mapState("artist", ["artists"]),
   },
   methods: {
-    ...mapActions("artist", ["getArtists"])
-  }
+    ...mapActions("artist", ["getArtists"]),
+  },
 };
 </script>

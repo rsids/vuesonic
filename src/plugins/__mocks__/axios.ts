@@ -17,7 +17,7 @@ $axios.interceptors.response.use(
     }
     return response;
   },
-  err => {
+  (err) => {
     Promise.reject(err);
   }
 );
@@ -25,7 +25,7 @@ $axios.interceptors.response.use(
 Vue.use({
   install() {
     Vue.prototype.axios = $axios;
-  }
+  },
 });
 
 declare module "vue/types/vue" {

@@ -6,6 +6,6 @@ module.exports = {
   transform: {
     ".*\\.(vue)$": "vue-jest",
     "^.+\\.tsx?$": "ts-jest",
-    "(vue-intersect).+\\.js$": "babel-jest"
-  }
+    "(vue-intersect).+\\.js$": "babel-jest",
+  },
 };

@@ -55,10 +55,10 @@ interface CoverartArgs {
     ...mapActions("album", [
       "getCoverArt",
       "getAlbumFromMusicDirectory",
-      "getAlbum"
+      "getAlbum",
     ]),
-    ...mapActions("stream", ["play"])
-  }
+    ...mapActions("stream", ["play"]),
+  },
 })
 export default class VSCover extends Vue {
   $dialog!: VuetifyDialog;
@@ -76,7 +76,7 @@ export default class VSCover extends Vue {
   @Prop() entity!: Album | Artist | Playlist;
   @Prop() type!: string;
 
-  get icon() {
+  get icon(): string {
     if (this.type === "artist") {
       return "mdi-account";
     } else if (this.type === "album") {
@@ -85,25 +85,25 @@ export default class VSCover extends Vue {
     return "mdi-playlist";
   }
 
-  playIt() {
+  playIt(): void {
     if (this.type === "album") {
       if (this.entity.id) {
         this.getAlbum(this.entity as Album).then(
-          album => {
+          (album) => {
             // @todo enable
             // this[PLAYLIST]({ playlist: album.song });
             this.play({ song: album.song[0] });
           },
-          error => {
+          (error) => {
             if (error.error.code === 70) {
               this.$dialog.notify.error("Album not found", {
-                position: "bottom-left"
+                position: "bottom-left",
               });
             }
           }
         );
       } else {
-        this.getAlbumFromMusicDirectory(this.entity as Album).then(album => {
+        this.getAlbumFromMusicDirectory(this.entity as Album).then((album) => {
           // @todo enable
           // this[PLAYLIST]({ playlist: album.song });
           this.play({ song: album.song[0] });
@@ -112,21 +112,21 @@ export default class VSCover extends Vue {
     }
   }
 
-  loadCover() {
+  loadCover(): void {
     if (!this.requested) {
       this.requested = true;
       this.getCover();
     }
   }
 
-  getCover() {
+  getCover(): void {
     if (
       this.requested &&
       this.entity &&
       this.entity.coverArt &&
       this.entity.coverArt !== ""
     ) {
-      this.getCoverArt({ id: this.entity.coverArt }).then(cover => {
+      this.getCoverArt({ id: this.entity.coverArt }).then((cover) => {
         this.cover = window.URL.createObjectURL(cover);
       });
     } else {
@@ -135,7 +135,7 @@ export default class VSCover extends Vue {
   }
 
   @Watch("entity", { immediate: true })
-  onEntityChanged() {
+  onEntityChanged(): void {
     this.getCover();
   }
 }

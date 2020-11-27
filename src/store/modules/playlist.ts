@@ -4,7 +4,7 @@ import { duration } from "@/utils/generic";
 import { Song } from "@/store/interfaces/song";
 import {
   PlaylistResponse,
-  PlaylistsResponse
+  PlaylistsResponse,
 } from "@/store/interfaces/subsonicResponse";
 import Vue from "vue";
 import { UpdatePlaylistParams } from "@/store/interfaces/updatePlaylistParams";
@@ -13,7 +13,7 @@ import {
   Module,
   Mutation,
   MutationAction,
-  VuexModule
+  VuexModule,
 } from "vuex-module-decorators";
 
 @Module({ namespaced: true })
@@ -22,7 +22,7 @@ export default class PlaylistStore extends VuexModule {
   currentPlaylist!: Playlist;
 
   @Mutation
-  updateStar({ id, toggle }) {
+  updateStar({ id, toggle }: { id: number; toggle: boolean }): void {
     if (this.currentPlaylist?.entry) {
       if (id) {
         this.currentPlaylist.entry = this.currentPlaylist.entry.map(
@@ -38,27 +38,33 @@ export default class PlaylistStore extends VuexModule {
   }
 
   @Action
-  async createPlaylist({ title, songs }) {
-    const result = Vue.prototype.axios.get(`createPlaylist`, {
+  async createPlaylist({
+    title,
+    songs,
+  }: {
+    title: string;
+    songs: Song[];
+  }): Promise<unknown> {
+    const result = await Vue.prototype.axios.get(`createPlaylist`, {
       params: {
         name: title,
-        songId: songs.map(song => song.id)
+        songId: songs.map((song) => song.id),
       },
-      paramsSerializer: params => qs.stringify(params, { indices: false })
+      paramsSerializer: (params) => qs.stringify(params, { indices: false }),
     });
     if (result.status === "ok") {
-      await this.getPlaylists();
+      return this.getPlaylists();
     }
   }
 
   @MutationAction
-  async deletePlaylist({ id }) {
+  async deletePlaylist({ id }: { id: number }): Promise<unknown> {
     await Vue.prototype.axios.get(`deletePlaylist?id=${id}`);
     return { playlists: [] as Playlist[] };
   }
 
   @MutationAction
-  async getPlaylists() {
+  async getPlaylists(): Promise<unknown> {
     const response: PlaylistsResponse = await Vue.prototype.axios.get(
       `getPlaylists`
     );
@@ -66,12 +72,12 @@ export default class PlaylistStore extends VuexModule {
   }
 
   @MutationAction
-  async getPlaylist({ id }) {
+  async getPlaylist({ id }: { id: number }): Promise<unknown> {
     const response: PlaylistResponse = await Vue.prototype.axios.get(
       `getPlaylist?id=${id}`
     );
     if (response.playlist) {
-      response.playlist.entry = response.playlist?.entry?.map(song => {
+      response.playlist.entry = response.playlist?.entry?.map((song) => {
         song.durationFormatted = duration(song.duration);
         song.starred = !!song.starred;
         return song;
@@ -82,18 +88,18 @@ export default class PlaylistStore extends VuexModule {
   }
 
   @Action
-  async updatePlaylist(params: UpdatePlaylistParams) {
+  async updatePlaylist(params: UpdatePlaylistParams): Promise<unknown> {
     const getParams = { ...params };
-    getParams.songIdToAdd = getParams.songsToAdd?.map(song => song.id);
+    getParams.songIdToAdd = getParams.songsToAdd?.map((song) => song.id);
     delete getParams.songsToAdd;
 
     await Vue.prototype.axios.get("updatePlaylist", {
       params: getParams,
-      paramsSerializer: params => qs.stringify(params, { indices: false })
+      paramsSerializer: (params) => qs.stringify(params, { indices: false }),
     });
 
     if (this.currentPlaylist?.id === params.playlistId) {
-      await this.getPlaylist(this.currentPlaylist);
+      return this.getPlaylist(this.currentPlaylist);
     }
   }
 }

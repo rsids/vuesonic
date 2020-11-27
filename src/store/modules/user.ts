@@ -1,33 +1,25 @@
 import { User } from "@/store/interfaces/user";
-import { RootState } from "@/store/RootState";
-import { Module } from "vuex";
-import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
+import { UserResponse } from "@/store/interfaces/subsonicResponse";
 import Vue from "vue";
+import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
 
-interface UserState {
-  user?: User;
-}
+@Module({ namespaced: true })
+export default class UserStore extends VuexModule {
+  user: User | null = null;
 
-const state: UserState = {
-  user: undefined
-};
-
-const SET_USER = "setUserMutation";
-
-const mutations = {
-  [SET_USER](state: UserState, value: User) {
-    state.user = value;
+  @Mutation
+  setUser(value: User): void {
+    this.user = value;
   }
-};
 
-const actions = {
-  getUser({ commit, state }, { user }) {
+  @Action
+  getUser({ user }: { user: User }): Promise<User> {
     return new Promise((resolve, reject) => {
       Vue.prototype.axios
         .get(`getUser?username=${user}`)
-        .then((response: SubsonicResponse) => {
-          commit(SET_USER, response.user);
-          resolve(state.user);
+        .then((response: UserResponse) => {
+          this.context.commit("setUser", response.user);
+          resolve(this.user as User);
         })
         .catch(() => {
           reject({
@@ -35,28 +27,30 @@ const actions = {
           });
         });
     });
-  },
-  getUsers() {
-    throw new Error("Not implemented");
-  },
-  createUser() {
-    throw new Error("Not implemented");
-  },
-  updateUser() {
-    throw new Error("Not implemented");
-  },
-  deleteUser() {
-    throw new Error("Not implemented");
-  },
-  changePassword() {
+  }
+
+  @Action
+  getUsers(): void {
     throw new Error("Not implemented");
   }
-};
 
-export const user: Module<UserState, RootState> = {
-  namespaced: true,
-  state,
-  getters: {},
-  actions,
-  mutations
-};
+  @Action
+  createUser(): void {
+    throw new Error("Not implemented");
+  }
+
+  @Action
+  updateUser(): void {
+    throw new Error("Not implemented");
+  }
+
+  @Action
+  deleteUser(): void {
+    throw new Error("Not implemented");
+  }
+
+  @Action
+  changePassword(): void {
+    throw new Error("Not implemented");
+  }
+}

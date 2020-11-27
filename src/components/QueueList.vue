@@ -21,7 +21,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import VSSonglist from "@/components/Songlist";
 import { mapMutations, mapState } from "vuex";
 import VSSavePlaylist from "@/components/SavePlaylist";
@@ -31,15 +31,15 @@ export default {
   components: { VSSavePlaylist, VSSonglist },
 
   computed: {
-    ...mapState("stream", ["playlist"])
+    ...mapState("stream", ["playlist"]),
   },
 
   methods: {
     ...mapMutations("stream", ["setPlaylist"]),
-    onClear() {
+    onClear(): void {
       this.setPlaylist({ playlist: [], resetHistory: true });
-    }
-  }
+    },
+  },
 };
 </script>
 
