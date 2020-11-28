@@ -18,6 +18,7 @@ import {
   MutationAction,
   VuexModule,
 } from "vuex-module-decorators";
+import { namespace } from "vuex-class";
 
 interface UpdateStar {
   id: number;
@@ -36,6 +37,8 @@ interface Cancelable {
 
 const ALBUMSET_SIZE = 30;
 const requests: CancelTokenSource[] = [];
+
+export const album = namespace("album");
 
 @Module({ namespaced: true })
 export default class AlbumStore extends VuexModule {

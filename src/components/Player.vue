@@ -65,95 +65,98 @@
   </v-footer>
 </template>
 
-<script>
-import { mapActions, mapMutations, mapState } from "vuex";
+<script lang="ts">
 import { duration } from "@/utils/generic";
-import VSCover from "@/components/Cover";
-import VSQueueList from "@/components/QueueList";
+import VSCover from "@/components/Cover.vue";
+import VSQueueList from "@/components/QueueList.vue";
+import { Component, Vue, Watch } from "vue-property-decorator";
+import { stream } from "@/store/modules/stream";
+import { Song } from "@/store/interfaces/song";
 
 const PREV_MODE_PREV = 0;
 const PREV_MODE_SEEK = 1;
-export default {
+
+@Component({
   name: "VSPlayer",
   components: { VSQueueList, VSCover },
-  data() {
-    return {
-      prevClick: 0,
-      prevMode: PREV_MODE_PREV,
-      queue: false,
-      seeking: false,
-      songProgress: 0,
-    };
-  },
-  methods: {
-    ...mapActions("stream", ["next", "prev"]),
-    ...mapMutations("stream", ["setPlaying", "setPaused", "seek"]),
+})
+export default class Player extends Vue {
+  @stream.Action prev;
+  @stream.Action next;
 
-    changePlayhead($event) {
-      this.seeking = false;
-      this.seek($event);
-    },
-    startSeeking() {
-      this.seeking = true;
-    },
+  @stream.Mutation seek;
+  @stream.Mutation setPaused;
+  @stream.Mutation setPlaying;
 
-    skipNext() {
-      this.next();
-    },
+  @stream.State hasPrev!: boolean;
+  @stream.State hasNext!: boolean;
+  @stream.State paused!: boolean;
+  @stream.State progress!: number;
+  @stream.State song!: Song;
 
-    skipPrev() {
-      if (this.songProgress < 2 && this.prevMode === PREV_MODE_SEEK) {
-        this.seek(0);
-        this.prevMode = PREV_MODE_PREV;
-        this.prevClick = setTimeout(() => {
-          this.prevMode = PREV_MODE_SEEK;
-        }, 1000);
-      } else {
-        this.prev();
-      }
-    },
+  prevClick = 0;
+  prevMode = PREV_MODE_PREV;
+  queue = false;
+  seeking = false;
+  songProgress = 0;
 
-    togglePlay() {
-      this.playing = !this.playing;
-    },
-  },
-  computed: {
-    ...mapState("stream", ["song", "paused", "progress", "hasNext", "hasPrev"]),
+  get playing(): boolean {
+    return !this.paused;
+  }
+  set playing(val: boolean) {
+    val ? this.setPlaying() : this.setPaused();
+  }
+  get progressFormatted(): string {
+    return duration(this.songProgress);
+  }
 
-    playhead: {
-      get() {
-        return this.songProgress;
-      },
-      set(val) {
-        this.songProgress = val;
-      },
-    },
+  get playhead(): number {
+    return this.songProgress;
+  }
+  set playhead(val: number) {
+    this.songProgress = val;
+  }
 
-    progressFormatted() {
-      return duration(this.songProgress);
-    },
+  changePlayhead($event: MouseEvent): void {
+    this.seeking = false;
+    this.seek($event);
+  }
 
-    playing: {
-      get() {
-        return !this.paused;
-      },
-      set(val) {
-        val ? this.setPlaying() : this.setPaused();
-      },
-    },
-  },
-  watch: {
-    progress: function (val) {
-      if (!this.seeking) {
-        this.songProgress = val;
-      }
-    },
+  startSeeking(): void {
+    this.seeking = true;
+  }
 
-    song: function () {
-      this.prevMode = PREV_MODE_SEEK;
-    },
-  },
-};
+  skipNext(): void {
+    this.next();
+  }
+
+  skipPrev(): void {
+    if (this.songProgress < 2 && this.prevMode === PREV_MODE_SEEK) {
+      this.seek(0);
+      this.prevMode = PREV_MODE_PREV;
+      this.prevClick = (setTimeout(() => {
+        this.prevMode = PREV_MODE_SEEK;
+      }, 1000) as unknown) as number;
+    } else {
+      this.prev();
+    }
+  }
+
+  togglePlay(): void {
+    this.playing = !this.playing;
+  }
+
+  @Watch("progress")
+  onProgressChange(val: number): void {
+    if (!this.seeking) {
+      this.songProgress = val;
+    }
+  }
+  @Watch("song")
+  onSongChange(): void {
+    this.prevMode = PREV_MODE_SEEK;
+  }
+}
 </script>
 <style lang="scss" scoped>
 $playerWidth: 256px;

@@ -1,5 +1,7 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
+import Album from "../views/Album.vue";
+import Artist from "../views/Artist.vue";
 import Library from "../views/Library.vue";
 import Recent from "../views/Recent.vue";
 
@@ -36,18 +38,18 @@ const routes: Array<RouteConfig> = [
       // },
     ],
   },
-  // {
-  //   path: "/library/albums/:id",
-  //   name: "album",
-  //   alias: ["/library/albums/:id/*", "/library/albums/:id/*/*"],
-  //   component: Album,
-  // },
-  // {
-  //   path: "/library/artists/:id",
-  //   name: "artist",
-  //   alias: "/library/artists/:id/*",
-  //   component: Artist,
-  // },
+  {
+    path: "/library/albums/:id",
+    name: "album",
+    alias: ["/library/albums/:id/*", "/library/albums/:id/*/*"],
+    component: Album,
+  },
+  {
+    path: "/library/artists/:id",
+    name: "artist",
+    alias: "/library/artists/:id/*",
+    component: Artist,
+  },
   // {
   //   path: "/library/playlists/:id",
   //   name: "playlist",
@@ -60,12 +62,12 @@ const routes: Array<RouteConfig> = [
   //   component: () =>
   //     import(/* webpackChunkName: "starred" */ "../views/Starred.vue"),
   // },
-  // {
-  //   path: "/search/:query",
-  //   name: "search",
-  //   component: () =>
-  //     import(/* webpackChunkName: "search" */ "../views/Search.vue"),
-  // },
+  {
+    path: "/search/:query",
+    name: "search",
+    component: () =>
+      import(/* webpackChunkName: "search" */ "../views/Search.vue"),
+  },
 ];
 
 const router = new VueRouter({

@@ -47,62 +47,55 @@
 <script lang="ts">
 import VSLogin from "@/components/Login.vue";
 import VSPlayer from "@/components/Player.vue";
-import Vue from "vue";
-import { mapActions, mapMutations, mapState } from "vuex";
 import VSToolbar from "@/components/Toolbar.vue";
-import { SET_DRAWER } from "@/store/modules/ui";
+import { ui } from "@/store/modules/ui";
+import { Component, Vue } from "vue-property-decorator";
+import { connection } from "@/store/modules/connection";
+import { search } from "@/store/modules/search";
+import { stream } from "@/store/modules/stream";
 
-let searchDelay: number;
 const SEARCH_DELAY = 150;
 
-export default Vue.extend({
+@Component({
   name: "App",
 
   components: {
     VSToolbar,
     VSLogin,
-    VSPlayer
+    VSPlayer,
   },
+})
+export default class App extends Vue {
+  @stream.Action init;
+  @ui.Mutation setDrawer;
 
-  data: (): unknown => ({
-    dialog: false,
-    tab: null,
-    items: ["web", "shopping", "videos", "images", "news"]
-  }),
+  @connection.State hasCredentials;
+  @search.State query!: string;
+  @ui.State drawer!: boolean;
+
+  searchDelay!: number;
+  dialog = false;
 
   mounted(): void {
     this.init();
-  },
-
-  computed: {
-    ...mapState("connection", ["hasCredentials"]),
-    ...mapState("search", ["query"]),
-    ...mapState("ui", ["drawer"]),
-    showDrawer: {
-      get() {
-        return this.drawer;
-      },
-      set(val) {
-        this[SET_DRAWER](val);
-      }
-    },
-    searchQuery: {
-      get() {
-        return this.query;
-      },
-      set(val) {
-        clearTimeout(searchDelay);
-        searchDelay = (setTimeout(() => {
-          this.query = val;
-        }, SEARCH_DELAY) as unknown) as number;
-      }
-    }
-  },
-  methods: {
-    ...mapActions("stream", ["init"]),
-    ...mapMutations("ui", [SET_DRAWER])
   }
-});
+
+  get showDrawer(): boolean {
+    return this.drawer;
+  }
+  set showDrawer(val: boolean) {
+    this.setDrawer(val);
+  }
+  get searchQuery(): string {
+    return this.query;
+  }
+  set searchQuery(val: string) {
+    clearTimeout(this.searchDelay);
+    this.searchDelay = (setTimeout(() => {
+      this.query = val;
+    }, SEARCH_DELAY) as unknown) as number;
+  }
+}
 </script>
 
 <style lang="scss">

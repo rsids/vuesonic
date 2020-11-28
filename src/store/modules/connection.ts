@@ -1,6 +1,7 @@
 import { salt } from "@/utils/generic";
 import { Md5 } from "ts-md5";
 import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
+import { namespace } from "vuex-class";
 
 interface ConnectionParams {
   u: string;
@@ -10,6 +11,8 @@ interface ConnectionParams {
   f: string;
   v: string;
 }
+
+export const connection = namespace("connection");
 
 @Module({ namespaced: true })
 export default class ConnectionStore extends VuexModule {
@@ -52,7 +55,8 @@ export default class ConnectionStore extends VuexModule {
     sessionStorage.setItem("server", server);
   }
 
-  getUrl(url: string): string {
+  @Action
+  getUrl({ url }: { url: string }): string {
     const fullUrl = new URL(`${this._server}/rest/${url}`);
     const params = this.params;
     for (const paramsKey in params) {

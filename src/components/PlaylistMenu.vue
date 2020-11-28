@@ -37,73 +37,67 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "vuex";
+<script lang="ts">
 import { Playlist } from "@/store/interfaces/playlist";
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { Song } from "@/store/interfaces/song";
+import { playlist } from "@/store/modules/playlist";
 
-export default {
+@Component({
   name: "VSPlaylistMenu",
-  props: {
-    songs: Array,
-  },
-  data() {
-    return {
-      fetchingPlaylists: false,
-    };
-  },
-  computed: {
-    ...mapState("playlist", ["playlists"]),
-  },
-  methods: {
-    ...mapActions("playlist", [
-      "createPlaylist",
-      "getPlaylists",
-      "updatePlaylist",
-    ]),
+})
+export default class PlaylistMenu extends Vue {
+  @Prop() songs!: Song[];
 
-    async addToNewPlaylist() {
-      const title = await this.$dialog.prompt({
-        title: "New Playlist",
-        text: "Name",
-        actions: {
-          false: "Cancel",
-          true: "Create playlist",
-        },
-      });
-      this.createPlaylist({
-        title: title,
-        songs: this.songs,
-      }).then(() => {
-        this.$dialog.message.info(
-          `${this.songs.length} song(s) added to new playlist`,
-          {
-            position: "bottom-left",
-          }
-        );
-      });
-      return title;
-    },
+  @playlist.State playlists!: Playlist[];
+  @playlist.Action createPlaylist;
+  @playlist.Action getPlaylists;
+  @playlist.Action updatePlaylist;
 
-    addToPlaylist(playlist) {
-      this.updatePlaylist({
-        playlistId: playlist.id,
-        songsToAdd: this.songs,
-      }).then(() => {
-        this.$dialog.message.info(
-          `${this.songs.length} song(s) added to playlist`,
-          {
-            position: "bottom-left",
-          }
-        );
-      });
-    },
+  fetchingPlaylists = false;
 
-    triggerGetPlaylists() {
-      if (!this.fetchingPlaylists) {
-        this.fetchingPlaylists = true;
-        this.getPlaylists();
-      }
-    },
-  },
-};
+  async addToNewPlaylist(): Promise<string> {
+    const title = await this.$dialog.prompt({
+      title: "New Playlist",
+      text: "Name",
+      actions: {
+        false: "Cancel",
+        true: "Create playlist",
+      },
+    });
+    this.createPlaylist({
+      title,
+      songs: this.songs,
+    }).then(() => {
+      this.$dialog.message.info(
+        `${this.songs.length} song(s) added to new playlist`,
+        {
+          position: "bottom-left",
+        }
+      );
+    });
+    return title;
+  }
+
+  addToPlaylist(playlist: Playlist): void {
+    this.updatePlaylist({
+      playlistId: playlist.id,
+      songsToAdd: this.songs,
+    }).then(() => {
+      this.$dialog.message.info(
+        `${this.songs.length} song(s) added to playlist`,
+        {
+          position: "bottom-left",
+        }
+      );
+    });
+  }
+
+  triggerGetPlaylists(): void {
+    if (!this.fetchingPlaylists) {
+      this.fetchingPlaylists = true;
+      this.getPlaylists();
+    }
+  }
+}
 </script>

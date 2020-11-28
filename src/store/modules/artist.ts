@@ -7,6 +7,9 @@ import {
   MutationAction,
   VuexModule,
 } from "vuex-module-decorators";
+import { namespace } from "vuex-class";
+
+export const artist = namespace("artist");
 
 @Module({ namespaced: true })
 export default class ArtistStore extends VuexModule {

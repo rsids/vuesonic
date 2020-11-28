@@ -36,43 +36,40 @@
   </div>
 </template>
 
-<script>
-import VSEmptyState from "@/components/EmptyState";
-import { mapActions, mapMutations, mapState } from "vuex";
-import VSCover from "@/components/Cover";
-import VSAlbumCard from "@/components/AlbumCard";
+<script lang="ts">
+import VSEmptyState from "@/components/EmptyState.vue";
+import VSCover from "@/components/Cover.vue";
+import VSAlbumCard from "@/components/AlbumCard.vue";
 import { noop } from "@/utils/generic";
+import { Component, Vue } from "vue-property-decorator";
+import { artist } from "@/store/modules/artist";
 
-export default {
+@Component({
   name: "Artist",
   components: { VSAlbumCard, VSCover, VSEmptyState },
-  data() {
-    return {
-      cover: "",
-      notFound: false,
-    };
-  },
-  mounted() {
+})
+export default class Artist extends Vue {
+  cover = "";
+  notFound = false;
+
+  @artist.Action getArtist!: (_) => Promise<Artist>;
+  @artist.Mutation setArtist;
+  @artist.State currentArtist;
+
+  get metaData(): string {
+    return "";
+  }
+
+  mounted(): void {
     this.getArtist(this.$route.params).then(noop, (err) => {
       if (err.error.code === 70) {
         // 404
         this.notFound = true;
       }
     });
-  },
-  destroyed() {
+  }
+  destroyed(): void {
     this.setArtist(null);
-  },
-  methods: {
-    ...mapActions("artist", ["getArtist"]),
-    ...mapMutations("artist", ["setArtist"]),
-  },
-  computed: {
-    ...mapState("artist", ["currentArtist"]),
-
-    metaData() {
-      return "";
-    },
-  },
-};
+  }
+}
 </script>

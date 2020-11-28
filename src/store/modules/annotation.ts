@@ -1,6 +1,9 @@
 import Vue from "vue";
 import { Action, Module, VuexModule } from "vuex-module-decorators";
 import { SubsonicResponse } from "@/store/interfaces/subsonicResponse";
+import { namespace } from "vuex-class";
+
+export const annotation = namespace("annotation");
 
 @Module({ namespaced: true })
 export default class AnnotationStore extends VuexModule {

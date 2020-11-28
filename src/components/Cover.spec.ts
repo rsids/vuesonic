@@ -40,17 +40,25 @@ describe("Cover", () => {
   });
 
   it("should return the correct icon for artist", () => {
-    expect(Cover["computed"].icon.call({ type: "artist" })).toEqual(
+    const c = new Cover();
+    const type = "artist";
+    expect((c.$options?.computed?.icon as any).get.call({ type })).toEqual(
       "mdi-account"
     );
   });
 
   it("should return the correct icon for album", () => {
-    expect(Cover["computed"].icon.call({ type: "album" })).toEqual("mdi-album");
+    const c = new Cover();
+    const type = "album";
+    expect((c.$options?.computed?.icon as any).get.call({ type })).toEqual(
+      "mdi-album"
+    );
   });
 
   it("should return the correct icon for playlist", () => {
-    expect(Cover["computed"].icon.call({ type: "playlist" })).toEqual(
+    const c = new Cover();
+    const type = "playlist";
+    expect((c.$options?.computed?.icon as any).get.call({ type })).toEqual(
       "mdi-playlist"
     );
   });

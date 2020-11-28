@@ -38,10 +38,10 @@ const shuffle = (a: unknown[]): unknown[] => {
 };
 
 interface getArtistUrlSignature {
-  artistId: number;
-  id: number;
-  artist: string;
-  name: string;
+  artistId?: number;
+  id?: number;
+  artist?: string;
+  name?: string;
 }
 const getArtistUrl = ({
   artistId,
@@ -51,7 +51,7 @@ const getArtistUrl = ({
 }: getArtistUrlSignature): string | undefined => {
   if (artistId || id) {
     const aId = artistId || id;
-    let artistName = artist || name;
+    let artistName = artist || name || "";
     artistName = encodeURIComponent(artistName.split(" ").join("-"));
     return `/library/artists/${aId}/${artistName}`;
   }

@@ -91,40 +91,42 @@
   </v-container>
 </template>
 
-<script>
-import { mapActions, mapState } from "vuex";
+<script lang="ts">
 import VSArtistCard from "@/components/ArtistCard.vue";
 import VSAlbumCard from "@/components/AlbumCard.vue";
 import VSSavePlaylist from "@/components/SavePlaylist.vue";
 import VSSonglist from "@/components/Songlist.vue";
+import { Component, Vue } from "vue-property-decorator";
+import { search } from "@/store/modules/search";
+import { Artist } from "@/store/interfaces/artist";
+import { Album } from "@/store/interfaces/album";
+import { Song } from "@/store/interfaces/song";
 
-export default {
+@Component({
   name: "Search",
   components: { VSSonglist, VSSavePlaylist, VSAlbumCard, VSArtistCard },
-  computed: {
-    ...mapState("search", [
-      "artists",
-      "albums",
-      "songs",
-      "hasMoreAlbums",
-      "hasMoreArtists",
-      "hasMoreSongs",
-    ]),
-    query() {
-      return this.$route.params.query;
-    },
-  },
+})
+export default class Search extends Vue {
+  @search.State artists!: Artist[];
+  @search.State albums!: Album[];
+  @search.State songs!: Song[];
+  @search.State hasMoreAlbums = false;
+  @search.State hasMoreArtists = false;
+  @search.State hasMoreSongs = false;
 
-  methods: {
-    ...mapActions("search", ["search", "searchMore"]),
+  @search.Action search;
+  @search.Action searchMore;
 
-    seeAll(type) {
-      this.searchMore({ type });
-    },
-  },
+  get query(): string {
+    return this.$route.params.query;
+  }
 
-  mounted() {
+  mounted(): void {
     this.search({ query: this.query });
-  },
-};
+  }
+
+  seeAll(type: string): void {
+    this.searchMore({ type });
+  }
+}
 </script>

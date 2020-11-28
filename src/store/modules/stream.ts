@@ -1,6 +1,9 @@
 import { Song } from "@/store/interfaces/song";
 import { shuffle } from "@/utils/generic";
 import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
+import { namespace } from "vuex-class";
+
+export const stream = namespace("stream");
 
 @Module({ namespaced: true })
 export default class StreamStore extends VuexModule {

@@ -161,7 +161,7 @@ export default class Login extends Vue {
     return this.active;
   }
 
-  set isActive(_) {
+  set isActive(_: boolean) {
     // nothing
   }
 

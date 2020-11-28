@@ -30,13 +30,14 @@
 </template>
 
 <script lang="ts">
-import { mapActions } from "vuex";
 import { Component, Prop, Provide, Vue, Watch } from "vue-property-decorator";
 import { Album } from "@/store/interfaces/album";
 import { Artist } from "@/store/interfaces/artist";
 import { Playlist } from "@/store/interfaces/playlist";
 import { Song } from "@/store/interfaces/song";
 import { VuetifyDialog } from "vuetify-dialog";
+import { album } from "@/store/modules/album";
+import { stream } from "@/store/modules/stream";
 
 interface PlayArgs {
   song: Song;
@@ -47,22 +48,9 @@ interface CoverartArgs {
 
 @Component({
   name: "VSCover",
-  methods: {
-    ...mapActions("album", [
-      "getCoverArt",
-      "getAlbumFromMusicDirectory",
-      "getAlbum",
-    ]),
-    ...mapActions("stream", ["play"]),
-  },
 })
-export default class VSCover extends Vue {
+export default class Cover extends Vue {
   $dialog!: VuetifyDialog;
-
-  getCoverArt!: (c: CoverartArgs) => Promise<unknown>;
-  getAlbumFromMusicDirectory!: (album: Album) => Promise<Album>;
-  getAlbum!: (album: Album) => Promise<Album>;
-  play!: (p: PlayArgs) => void;
 
   @Provide() cover = "";
   @Provide() hover = false;
@@ -71,6 +59,11 @@ export default class VSCover extends Vue {
   @Prop() size!: number;
   @Prop() entity!: Album | Artist | Playlist;
   @Prop() type!: string;
+
+  @album.Action getCoverArt!: (c: CoverartArgs) => Promise<unknown>;
+  @album.Action getAlbumFromMusicDirectory!: (album: Album) => Promise<Album>;
+  @album.Action getAlbum!: (album: Album) => Promise<Album>;
+  @stream.Action play!: (p: PlayArgs) => void;
 
   get icon(): string {
     if (this.type === "artist") {

@@ -1,40 +1,26 @@
-import { RootState } from "@/store/RootState";
-import { Module } from "vuex";
+import { namespace } from "vuex-class";
+import { Module, Mutation, VuexModule } from "vuex-module-decorators";
 
-export interface UiState {
-  drawer: boolean;
-  tabs?: string[];
-  tab: string | undefined;
+export const ui = namespace("ui");
+
+@Module({ namespaced: true })
+export default class UiStore extends VuexModule {
+  drawer = false;
+  tabs: string[] = ["recents", "playlists", "artists", "albums", "starred"];
+  tab!: string;
+
+  @Mutation
+  setDrawer(value: boolean): void {
+    this.drawer = value;
+  }
+
+  @Mutation
+  setTab(value: string): void {
+    this.tab = value;
+  }
+
+  @Mutation
+  setTabs(value: string[]): void {
+    this.tabs = value;
+  }
 }
-
-const state: UiState = {
-  drawer: false,
-  tabs: ["recents", "playlists", "artists", "albums", "starred"],
-  tab: undefined,
-};
-
-export const SET_DRAWER = "setDrawerMutation";
-export const SET_TAB = "setTabMutation";
-export const SET_TABS = "setTabsMutation";
-
-const mutations = {
-  [SET_DRAWER](state: UiState, value: boolean): void {
-    state.drawer = value;
-  },
-  [SET_TAB](state: UiState, value: string): void {
-    state.tab = value;
-  },
-  [SET_TABS](state: UiState, value: string[]): void {
-    state.tabs = ([] as string[]).concat(value);
-  },
-};
-
-const actions = {};
-
-export const ui: Module<UiState, RootState> = {
-  namespaced: true,
-  state,
-  getters: {},
-  actions,
-  mutations,
-};

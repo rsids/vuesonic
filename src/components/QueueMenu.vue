@@ -10,33 +10,32 @@
 </template>
 
 <script lang="ts">
-import { mapActions } from "vuex";
 import { Component, Prop, Vue } from "vue-property-decorator";
 import { Song } from "@/store/interfaces/song";
+import { stream } from "@/store/modules/stream";
 
 @Component({
   name: "VSQueueMenu",
-  ...mapActions("stream", ["playNext", "addToQueue"]),
 })
 export default class QueueMenu extends Vue {
   @Prop() songs!: Song[];
   @Prop() type!: string;
 
-  playNext!: (s) => void;
-  addToQueue!: (s) => void;
+  @stream.Action playNext!: (_) => void;
+  @stream.Action addToQueue!: (_) => void;
 
-  itemtype() {
+  get itemtype(): string {
     if (this.type === "album") {
       return "album";
     }
     return "";
   }
 
-  addToPlayingNext() {
+  addToPlayingNext(): void {
     this.playNext({ songs: this.songs });
   }
 
-  addItemToQueue() {
+  addItemToQueue(): void {
     this.addToQueue({ songs: this.songs });
   }
 }

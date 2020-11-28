@@ -11,33 +11,30 @@
   </div>
 </template>
 
-<script>
-import { Artist } from "@/store/interfaces/artist";
-import VSCover from "@/components/Cover";
-import { mapActions } from "vuex";
+<script lang="ts">
+import VSCover from "@/components/Cover.vue";
 import { getArtistUrl } from "@/utils/generic";
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { Artist } from "@/store/interfaces/artist";
+import { album } from "@/store/modules/album";
 
-export default {
+@Component({
   name: "VSArtistCard",
   components: { VSCover },
-  props: {
-    artist,
-  },
+})
+export default class ArtistCard extends Vue {
+  @Prop() artist!: Artist;
 
-  methods: {
-    ...mapActions("album", ["cancelAllRequests"]),
-    gotoArtist() {
-      this.cancelAllRequests();
-      this.$router.push(this.artistUrl);
-    },
-  },
+  @album.Action cancelAllRequests;
 
-  computed: {
-    artistUrl() {
-      return getArtistUrl(this.artist);
-    },
-  },
-};
+  get artistUrl(): string {
+    return getArtistUrl(this.artist) || "";
+  }
+  gotoArtist(): void {
+    this.cancelAllRequests();
+    this.$router.push(this.artistUrl);
+  }
+}
 </script>
 
 <style scoped lang="scss">

@@ -44,7 +44,7 @@ $axios.interceptors.response.use(
 );
 
 export default {
-  install() {
+  install(): void {
     Vue.prototype.axios = $axios;
   },
 };

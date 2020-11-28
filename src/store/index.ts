@@ -7,7 +7,7 @@ import PlaylistStore from "@/store/modules/playlist";
 import ConnectionStore from "@/store/modules/connection";
 import UserStore from "@/store/modules/user";
 import StreamStore from "@/store/modules/stream";
-import { ui } from "@/store/modules/ui";
+import UiStore from "@/store/modules/ui";
 import { RootState } from "@/store/RootState";
 import AlbumStore from "@/store/modules/album";
 
@@ -26,7 +26,7 @@ const store: StoreOptions<RootState> = {
     playlist: PlaylistStore,
     search: SearchStore,
     stream: StreamStore,
-    ui,
+    ui: UiStore,
     user: UserStore,
   },
 };

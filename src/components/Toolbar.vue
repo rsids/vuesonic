@@ -32,43 +32,40 @@
   </v-app-bar>
 </template>
 
-<script>
-import { mapMutations, mapState } from "vuex";
-import { SET_DRAWER } from "@/store/modules/ui";
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+import { namespace } from "vuex-class";
 
-export default {
+const ui = namespace("ui");
+
+@Component({
   name: "VSToolbar",
-  data() {
-    return {
-      searchQuery: "",
-      tab: "",
-    };
-  },
-  computed: {
-    ...mapState("ui", ["tabs", "drawer"]),
-    toolbarTabs: {
-      get() {
-        return this.tabs;
-      },
-    },
-    showDrawer: {
-      get() {
-        return this.drawer;
-      },
-      set(val) {
-        this[SET_DRAWER](val);
-      },
-    },
-  },
-  methods: {
-    ...mapMutations("ui", [SET_DRAWER]),
+})
+export default class Toolbar extends Vue {
+  @ui.State drawer;
+  @ui.State tabs;
 
-    doSearch() {
-      this.$router.push({
-        name: "search",
-        params: { query: this.searchQuery },
-      });
-    },
-  },
-};
+  @ui.Mutation setDrawer;
+
+  searchQuery = "";
+  tab = "";
+
+  get toolbarTabs(): string[] {
+    return this.tabs;
+  }
+
+  get showDrawer(): boolean {
+    return this.drawer;
+  }
+  set showDrawer(val: boolean) {
+    this.setDrawer(val);
+  }
+
+  doSearch(): void {
+    this.$router.push({
+      name: "search",
+      params: { query: this.searchQuery },
+    });
+  }
+}
 </script>

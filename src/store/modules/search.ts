@@ -4,6 +4,7 @@ import { Artist } from "@/store/interfaces/artist";
 import { Album } from "@/store/interfaces/album";
 import { Song } from "@/store/interfaces/song";
 import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
+import { namespace } from "vuex-class";
 
 interface SearchParams {
   query: string;
@@ -20,6 +21,8 @@ const SEARCH_DEFAULTS = {
   ARTIST_COUNT: 4,
   SONG_COUNT: 10,
 };
+
+export const search = namespace("search");
 
 @Module({ namespaced: true })
 export default class SearchStore extends VuexModule {

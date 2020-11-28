@@ -15,6 +15,9 @@ import {
   MutationAction,
   VuexModule,
 } from "vuex-module-decorators";
+import { namespace } from "vuex-class";
+
+export const playlist = namespace("playlist");
 
 @Module({ namespaced: true })
 export default class PlaylistStore extends VuexModule {

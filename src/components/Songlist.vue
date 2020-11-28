@@ -97,13 +97,15 @@ import VSQueueMenu from "@/components/QueueMenu.vue";
 import { getArtistUrl } from "@/utils/generic";
 import { Song } from "@/store/interfaces/song";
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { namespace } from "vuex-class";
+import { stream } from "@/store/modules/stream";
+import { annotation } from "@/store/modules/annotation";
 
-const streamModule = namespace("stream");
-const annotationModule = namespace("annotation");
 @Component({
   name: "VSSonglist",
   components: { VSQueueMenu, VSPlaylistMenu },
+  data: {
+    hovered: null,
+  },
 })
 export default class Songlist extends Vue {
   @Prop() songs!: Song[];
@@ -111,50 +113,50 @@ export default class Songlist extends Vue {
   @Prop() full!: boolean;
   @Prop() numbering!: string;
 
-  @annotationModule.Action star;
-  @streamModule.Action play;
-  @streamModule.Mutation setPlaylist;
-  @streamModule.State("song") currentSong!: Song;
+  hovered!: number;
 
-  hovered: unknown;
+  @annotation.Action star;
+  @stream.Action play;
+  @stream.Mutation setPlaylist;
+  @stream.State("song") currentSong!: Song;
 
-  addStar({ id }) {
+  addStar({ id }: { id: number }): void {
     this.star({ id, toggle: true });
   }
 
-  removeStar({ id }) {
+  removeStar({ id }: { id: number }): void {
     this.star({ id, toggle: false });
   }
 
-  onMouseOver(id) {
+  onMouseOver(id: number): void {
     if (!this.currentSong || this.currentSong.id !== id) {
       this.hovered = id;
     }
   }
 
-  playSong(item) {
+  playSong(item: Song): void {
     this.setPlaylist({ playlist: this.songs });
     this.play({ song: item });
   }
 
-  gotoArtist(song) {
+  gotoArtist(song: Song): void {
     const url = getArtistUrl(song);
     if (url) {
       this.$router.push(url);
     }
   }
 
-  gotoAlbum(song) {
+  gotoAlbum(song: Song): void {
     const artist = encodeURIComponent(song.artist.split(" ").join("-"));
     const album = encodeURIComponent(song.album.split(" ").join("-"));
     const url = `/library/albums/${song.albumId}/${artist}/${album}`.toLowerCase();
     this.$router.push(url);
   }
-  get hasMenuOptions() {
+  get hasMenuOptions(): boolean {
     return !!this.$slots["menuoptions"];
   }
 
-  get headers() {
+  get headers(): unknown[] {
     const headers = [
       {
         text: "#",

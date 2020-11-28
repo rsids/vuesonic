@@ -21,26 +21,25 @@
   </div>
 </template>
 
-<script>
-import VSSonglist from "@/components/Songlist";
-import { mapMutations, mapState } from "vuex";
-import VSSavePlaylist from "@/components/SavePlaylist";
+<script lang="ts">
+import VSSonglist from "@/components/Songlist.vue";
+import VSSavePlaylist from "@/components/SavePlaylist.vue";
+import { Component, Vue } from "vue-property-decorator";
+import { stream } from "@/store/modules/stream";
 
-export default {
+@Component({
   name: "VSQueueList",
   components: { VSSavePlaylist, VSSonglist },
+})
+export default class QueueList extends Vue {
+  @stream.State playlist;
 
-  computed: {
-    ...mapState("stream", ["playlist"]),
-  },
+  @stream.Mutation setPlaylist;
 
-  methods: {
-    ...mapMutations("stream", ["setPlaylist"]),
-    onClear() {
-      this.setPlaylist({ playlist: [], resetHistory: true });
-    },
-  },
-};
+  onClear(): void {
+    this.setPlaylist({ playlist: [], resetHistory: true });
+  }
+}
 </script>
 
 <style scoped>

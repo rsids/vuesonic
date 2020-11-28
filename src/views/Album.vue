@@ -56,16 +56,19 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapMutations, mapState } from "vuex";
-import VSEmptyState from "@/components/EmptyState";
+<script lang="ts">
+import VSEmptyState from "@/components/EmptyState.vue";
 import { duration, noop } from "@/utils/generic";
-import VSSonglist from "@/components/Songlist";
-import VSCover from "@/components/Cover";
-import VSPlaylistMenu from "@/components/PlaylistMenu";
-import VSQueueMenu from "@/components/QueueMenu";
+import VSSonglist from "@/components/Songlist.vue";
+import VSCover from "@/components/Cover.vue";
+import VSPlaylistMenu from "@/components/PlaylistMenu.vue";
+import VSQueueMenu from "@/components/QueueMenu.vue";
+import { Component, Vue } from "vue-property-decorator";
+import { Album as IAlbum } from "@/store/interfaces/album";
+import { album } from "@/store/modules/album";
+import { stream } from "@/store/modules/stream";
 
-export default {
+@Component({
   name: "Album",
   components: {
     VSQueueMenu,
@@ -74,68 +77,68 @@ export default {
     VSSonglist,
     VSEmptyState,
   },
-  data() {
-    return {
-      cover: "",
-      notFound: false,
-    };
-  },
-  computed: {
-    ...mapState("album", ["currentAlbum"]),
-    metaData() {
-      const data = [];
-      if (this?.currentAlbum.year) {
-        data.push(this.currentAlbum.year);
-      }
-      if (this?.currentAlbum.songCount) {
-        data.push(`${this.currentAlbum.songCount} songs`);
-      }
-      if (this?.currentAlbum.duration) {
-        data.push(duration(this.currentAlbum.duration));
-      }
-      if (this?.currentAlbum.genre) {
-        data.push(this.currentAlbum.genre);
-      }
-      return data.join(" • ");
-    },
-  },
-  mounted() {
+})
+export default class Album extends Vue {
+  cover = "";
+  notFound = false;
+
+  @album.State currentAlbum!: IAlbum;
+  @album.Action getAlbum;
+  @album.Action getCoverArt;
+  @album.Mutation setAlbum;
+
+  @stream.Action play;
+  @stream.Action shuffleAndPlay;
+  @stream.Mutation setPlaylist;
+
+  get metaData(): string {
+    const data: string[] = [];
+    if (this?.currentAlbum.year) {
+      data.push(this.currentAlbum.year.toString(10));
+    }
+    if (this?.currentAlbum.songCount) {
+      data.push(`${this.currentAlbum.songCount} songs`);
+    }
+    if (this?.currentAlbum.duration) {
+      data.push(duration(this.currentAlbum.duration));
+    }
+    if (this?.currentAlbum.genre) {
+      data.push(this.currentAlbum.genre);
+    }
+    return data.join(" • ");
+  }
+
+  mounted(): void {
     this.getAlbum(this.$route.params).then(noop, (err) => {
       if (err.error.code === 70) {
         // 404
         this.notFound = true;
       }
     });
-  },
-  destroyed() {
+  }
+  destroyed(): void {
     this.setAlbum(null);
-  },
-  methods: {
-    ...mapActions("album", ["getAlbum", "getCoverArt"]),
-    ...mapActions("stream", ["shuffleAndPlay", "play"]),
-    ...mapMutations("album", ["setAlbum"]),
-    ...mapMutations("stream", ["setPlaylist"]),
+  }
 
-    gotoArtist() {
-      const artist = encodeURIComponent(
-        this.currentAlbum.artist.split(" ").join("-")
-      );
+  gotoArtist(): void {
+    const artist = encodeURIComponent(
+      this.currentAlbum.artist.split(" ").join("-")
+    );
 
-      this.$router.push(
-        `/library/artists/${this.currentAlbum.artistId}/${artist}`
-      );
-    },
+    this.$router.push(
+      `/library/artists/${this.currentAlbum.artistId}/${artist}`
+    );
+  }
 
-    playAlbum() {
-      this.setPlaylist({ playlist: this.currentAlbum.song });
-      this.play({ song: this.currentAlbum.song[0] });
-    },
+  playAlbum(): void {
+    this.setPlaylist({ playlist: this.currentAlbum.song });
+    this.play({ song: this.currentAlbum.song[0] });
+  }
 
-    shuffleAlbum() {
-      this.shuffleAndPlay({ songs: this.currentAlbum.song });
-    },
-  },
-};
+  shuffleAlbum(): void {
+    this.shuffleAndPlay({ songs: this.currentAlbum.song });
+  }
+}
 </script>
 
 <style lang="scss" scoped>
