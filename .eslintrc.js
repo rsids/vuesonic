@@ -14,8 +14,8 @@ module.exports = {
     ecmaVersion: 2020,
   },
   rules: {
-    "no-explicit-any": process.env.NODE_ENV === "production" ? "warn" : "off",
-    "no-implicit-any": process.env.NODE_ENV === "production" ? "warn" : "off",
+    // "no-explicit-any": process.env.NODE_ENV === "production" ? "warn" : "off",
+    // "no-implicit-any": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
   },

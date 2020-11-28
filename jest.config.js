@@ -6,11 +6,15 @@ module.exports = {
   transform: {
     ".*\\.(vue)$": "vue-jest",
     "^.+\\.tsx?$": "ts-jest",
-    "(vue-intersect).+\\.js$": "babel-jest",
   },
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
   setupFiles: ["./tests/setup-unittest.ts"],
   verbose: true,
+  collectCoverage: true,
+  collectCoverageFrom: [
+    "src/**/*.{ts,vue}",
+    "!src/main.ts", // No need to cover bootstrap file
+  ],
 };

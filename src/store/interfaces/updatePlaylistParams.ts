@@ -7,7 +7,5 @@ export interface UpdatePlaylistParams {
   public?: boolean;
   songsToAdd?: Song[];
   songIndexToRemove?: number[];
-  // @todo Add correct type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [x: string]: any;
+  [x: string]: unknown;
 }

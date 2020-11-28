@@ -169,8 +169,6 @@ export default class Login extends Vue {
     if (this.loggingIn) {
       return;
     }
-    // eslint-disable-next-line no-console
-    console.log(this.form);
     this.loggingIn = true;
     this.storeCredentials(this.form);
     this.getUser(this.form).then(
