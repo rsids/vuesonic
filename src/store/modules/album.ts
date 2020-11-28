@@ -1,6 +1,6 @@
 import { Album } from "@/store/interfaces/album";
 import { Cover } from "@/store/interfaces/cover";
-import axios, { CancelTokenSource } from "axios";
+import axios, { AxiosResponse, CancelTokenSource } from "axios";
 import { Song } from "@/store/interfaces/song";
 import { duration } from "@/utils/generic";
 import {
@@ -10,7 +10,6 @@ import {
   StarredResponse,
 } from "@/store/interfaces/subsonicResponse";
 import Vue from "vue";
-import { HttpResponse } from "jest-mock-axios/dist/lib/mock-axios-types";
 import {
   Action,
   Module,
@@ -49,7 +48,7 @@ export default class AlbumStore extends VuexModule {
   hasMoreAlbums = true;
   musicDirectoryAlbumAdapter = new Map<number, number>();
   recents: Album[] = [];
-  starred!: Song[];
+  starred: Song[] = [];
 
   @Mutation
   setAlbum(value: Album): void {
@@ -227,7 +226,7 @@ export default class AlbumStore extends VuexModule {
           responseType: "blob",
           cancelToken: request.token,
         })
-        .then((response: HttpResponse) => {
+        .then((response: AxiosResponse) => {
           if (response) {
             resolve(response.data);
           } else {

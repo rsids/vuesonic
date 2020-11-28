@@ -18,26 +18,23 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "vuex";
-import VSPlaylistCard from "@/components/PlaylistCard";
-import VSEmptyState from "@/components/EmptyState";
+<script lang="ts">
+import VSPlaylistCard from "@/components/PlaylistCard.vue";
+import VSEmptyState from "@/components/EmptyState.vue";
+import { Component, Vue } from "vue-property-decorator";
+import { playlist } from "@/store/modules/playlist";
+import { Playlist } from "@/store/interfaces/playlist";
 
-export default {
+@Component({
   name: "Playlists",
   components: { VSEmptyState, VSPlaylistCard },
-  data() {
-    return {};
-  },
-  mounted() {
-    this.getPlaylists();
-  },
+})
+export default class Playlists extends Vue {
+  @playlist.Action getPlaylists;
+  @playlist.State playlists!: Playlist[];
 
-  computed: {
-    ...mapState("playlist", ["playlists"]),
-  },
-  methods: {
-    ...mapActions("playlist", ["getPlaylists"]),
-  },
-};
+  mounted(): void {
+    this.getPlaylists();
+  }
+}
 </script>

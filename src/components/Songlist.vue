@@ -103,9 +103,6 @@ import { annotation } from "@/store/modules/annotation";
 @Component({
   name: "VSSonglist",
   components: { VSQueueMenu, VSPlaylistMenu },
-  data: {
-    hovered: null,
-  },
 })
 export default class Songlist extends Vue {
   @Prop() songs!: Song[];
@@ -113,7 +110,7 @@ export default class Songlist extends Vue {
   @Prop() full!: boolean;
   @Prop() numbering!: string;
 
-  hovered!: number;
+  hovered = 0;
 
   @annotation.Action star;
   @stream.Action play;

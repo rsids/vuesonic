@@ -16,37 +16,35 @@
       </v-row>
     </v-container>
     <v-s-empty-state
-      v-if="starred && starred.length === 0"
-      description="Playlist not found"
+      v-if="loaded && starred && starred.length === 0"
+      description="No starred items!"
       icon="mdi-album"
     ></v-s-empty-state>
   </div>
 </template>
 
 <script lang="ts">
-import { mapActions, mapState } from "vuex";
-import { noop } from "@/utils/generic";
 import VSSonglist from "@/components/Songlist.vue";
 import VSSavePlaylist from "@/components/SavePlaylist.vue";
 import { Component, Vue } from "vue-property-decorator";
-import EmptyState from "@/components/EmptyState.vue";
+import VSEmptyState from "@/components/EmptyState.vue";
+import { album } from "@/store/modules/album";
+import { Song } from "@/store/interfaces/song";
 
 @Component({
   name: "Playlist",
-  components: { VSSavePlaylist, VSSonglist, EmptyState },
-  methods: {
-    ...mapActions("album", ["getStarred"]),
-  },
-  computed: {
-    ...mapState("album", ["starred"]),
-  },
+  components: { VSSavePlaylist, VSSonglist, VSEmptyState },
 })
 export default class Starred extends Vue {
+  @album.Action getStarred!: () => Promise<unknown>;
+
+  @album.State starred!: Song[];
+
   cover = "";
-  getStarred!: () => Promise<unknown>;
+  loaded = false;
 
   mounted(): void {
-    this.getStarred().then(noop);
+    this.getStarred().then(() => (this.loaded = true));
   }
 }
 </script>

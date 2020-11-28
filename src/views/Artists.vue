@@ -12,21 +12,23 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState } from "vuex";
-import VSArtistCard from "@/components/ArtistCard";
+<script lang="ts">
+import VSArtistCard from "@/components/ArtistCard.vue";
+import { Component, Vue } from "vue-property-decorator";
+import { artist } from "@/store/modules/artist";
+import { Artist as IArtist } from "@/store/interfaces/artist";
 
-export default {
+@Component({
   name: "Artists",
   components: { VSArtistCard },
-  mounted() {
+})
+export default class Artist extends Vue {
+  @artist.Action getArtists;
+
+  @artist.State artists!: IArtist[];
+
+  mounted(): void {
     this.getArtists();
-  },
-  computed: {
-    ...mapState("artist", ["artists"]),
-  },
-  methods: {
-    ...mapActions("artist", ["getArtists"]),
-  },
-};
+  }
+}
 </script>

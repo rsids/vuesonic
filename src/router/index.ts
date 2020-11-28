@@ -1,8 +1,11 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Album from "../views/Album.vue";
+import Albums from "../views/Albums.vue";
 import Artist from "../views/Artist.vue";
+import Artists from "../views/Artists.vue";
 import Library from "../views/Library.vue";
+import Playlists from "../views/Playlists.vue";
 import Recent from "../views/Recent.vue";
 
 Vue.use(VueRouter);
@@ -20,22 +23,22 @@ const routes: Array<RouteConfig> = [
         alias: ["", "/recents"],
         component: Recent,
       },
-      // {
-      //   path: "artists",
-      //   name: "artists",
-      //   component: Artists,
-      // },
-      // {
-      //   path: "playlists",
-      //   name: "playlists",
-      //   alias: "",
-      //   component: Playlists,
-      // },
-      // {
-      //   path: "albums",
-      //   name: "albums",
-      //   component: Albums,
-      // },
+      {
+        path: "artists",
+        name: "artists",
+        component: Artists,
+      },
+      {
+        path: "playlists",
+        name: "playlists",
+        alias: "",
+        component: Playlists,
+      },
+      {
+        path: "albums",
+        name: "albums",
+        component: Albums,
+      },
     ],
   },
   {
@@ -56,12 +59,12 @@ const routes: Array<RouteConfig> = [
   //   alias: "/library/playlists/:id/*",
   //   component: Playlist,
   // },
-  // {
-  //   path: "/library/starred",
-  //   name: "starred",
-  //   component: () =>
-  //     import(/* webpackChunkName: "starred" */ "../views/Starred.vue"),
-  // },
+  {
+    path: "/library/starred",
+    name: "starred",
+    component: () =>
+      import(/* webpackChunkName: "starred" */ "../views/Starred.vue"),
+  },
   {
     path: "/search/:query",
     name: "search",

@@ -10,31 +10,26 @@
   </v-card>
 </template>
 
-<script>
-import VSCover from "@/components/Cover";
+<script lang="ts">
+import VSCover from "@/components/Cover.vue";
+import { Component, Prop, Vue } from "vue-property-decorator";
+import { Playlist } from "@/store/interfaces/playlist";
 
-export default {
+@Component({
   name: "VSPlaylistCard",
   components: { VSCover },
-  props: {
-    playlist,
-  },
-  data() {
-    return {
-      cover: "",
-    };
-  },
+})
+export default class PlaylistCard extends Vue {
+  @Prop() playlist!: Playlist;
 
-  computed: {
-    playlistUrl() {
-      if (this.playlist) {
-        const name = encodeURIComponent(
-          this.playlist.name.split(" ").join("-")
-        );
-        return `/library/playlists/${this.playlist.id}/${name}`;
-      }
-      return undefined;
-    },
-  },
-};
+  cover = "";
+
+  get playlistUrl(): string | undefined {
+    if (this.playlist) {
+      const name = encodeURIComponent(this.playlist.name.split(" ").join("-"));
+      return `/library/playlists/${this.playlist.id}/${name}`;
+    }
+    return undefined;
+  }
+}
 </script>

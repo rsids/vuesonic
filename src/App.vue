@@ -58,7 +58,6 @@ const SEARCH_DELAY = 150;
 
 @Component({
   name: "App",
-
   components: {
     VSToolbar,
     VSLogin,
