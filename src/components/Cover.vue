@@ -45,6 +45,9 @@ interface PlayArgs {
 interface CoverartArgs {
   id: string;
 }
+interface PlaylistArgs {
+  playlist: Song[];
+}
 
 @Component({
   name: "VSCover",
@@ -64,6 +67,7 @@ export default class Cover extends Vue {
   @album.Action getAlbumFromMusicDirectory!: (album: Album) => Promise<Album>;
   @album.Action getAlbum!: (album: Album) => Promise<Album>;
   @stream.Action play!: (p: PlayArgs) => void;
+  @stream.Mutation setPlaylist!: (p: PlaylistArgs) => void;
 
   get icon(): string {
     if (this.type === "artist") {
@@ -79,8 +83,7 @@ export default class Cover extends Vue {
       if (this.entity.id) {
         this.getAlbum(this.entity as Album).then(
           (album) => {
-            // @todo enable
-            // this[PLAYLIST]({ playlist: album.song });
+            this.setPlaylist({ playlist: album.song });
             this.play({ song: album.song[0] });
           },
           (error) => {
@@ -93,8 +96,7 @@ export default class Cover extends Vue {
         );
       } else {
         this.getAlbumFromMusicDirectory(this.entity as Album).then((album) => {
-          // @todo enable
-          // this[PLAYLIST]({ playlist: album.song });
+          this.setPlaylist({ playlist: album.song });
           this.play({ song: album.song[0] });
         });
       }
@@ -130,16 +132,4 @@ export default class Cover extends Vue {
 }
 </script>
 
-<style scoped>
-.no-cover {
-  background: #eeeeee;
-}
-.cover-container {
-  position: relative;
-}
-.btn--play {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-}
-</style>
+<style></style>

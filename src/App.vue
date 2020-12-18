@@ -119,4 +119,17 @@ export default class App extends Vue {
     flex-direction: column;
   }
 }
+
+.no-cover {
+  background: #eeeeee;
+}
+.cover-container {
+  position: relative;
+}
+
+.btn--play {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+}
 </style>

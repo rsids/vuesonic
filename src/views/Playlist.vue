@@ -68,35 +68,43 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapMutations, mapState } from "vuex";
-import VSEmptyState from "@/components/EmptyState";
+<script lang="ts">
+import { Component, Vue } from "vue-property-decorator";
+import VSEmptyState from "@/components/EmptyState.vue";
 import { duration } from "@/utils/generic";
-import VSSonglist from "@/components/Songlist";
+import VSSonglist from "@/components/Songlist.vue";
+import { playlist } from "@/store/modules/playlist";
+import { album } from "@/store/modules/album";
+import { stream } from "@/store/modules/stream";
 
-export default {
+@Component({
   name: "Playlist",
   components: { VSSonglist, VSEmptyState },
-  data() {
-    return {
-      cover: "",
-      notFound: false,
-    };
-  },
-  computed: {
-    ...mapState("playlist", ["currentPlaylist"]),
-    metaData() {
-      const data = [];
-      if (this?.currentPlaylist.songCount) {
-        data.push(`${this.currentPlaylist.songCount} songs`);
-      }
-      if (this?.currentPlaylist.duration) {
-        data.push(duration(this.currentPlaylist.duration));
-      }
-      return data.join(" • ");
-    },
-  },
-  mounted() {
+})
+export default class Playlist extends Vue {
+  @album.Action getCoverArt;
+  @playlist.Action getPlaylist;
+  @playlist.Action deletePlaylist;
+  @playlist.Action updatePlaylist;
+  @playlist.State currentPlaylist;
+  @stream.Action play;
+  @stream.Mutation setPlaylist;
+
+  cover = "";
+  notFound = false;
+
+  get metaData(): string {
+    const data: string[] = [];
+    if (this?.currentPlaylist.songCount) {
+      data.push(`${this.currentPlaylist.songCount} songs`);
+    }
+    if (this?.currentPlaylist.duration) {
+      data.push(duration(this.currentPlaylist.duration));
+    }
+    return data.join(" • ");
+  }
+
+  mounted(): void {
     this.getPlaylist(this.$route.params).then(
       (playlist) => {
         if (playlist.coverArt) {
@@ -114,54 +122,37 @@ export default {
         }
       }
     );
-  },
-  methods: {
-    ...mapActions("album", ["getCoverArt"]),
-    ...mapActions("playlist", [
-      "getPlaylist",
-      "deletePlaylist",
-      "updatePlaylist",
-    ]),
-    ...mapMutations("stream", ["setPlaylist"]),
-    ...mapActions("stream", ["play"]),
+  }
 
-    playIt() {
-      this.setPlaylist({ playlist: this.currentPlaylist.entry });
-      this.play({ song: this.currentPlaylist.entry[0] });
-    },
+  playIt(): void {
+    this.setPlaylist({ playlist: this.currentPlaylist.entry });
+    this.play({ song: this.currentPlaylist.entry[0] });
+  }
 
-    async deleteIt() {
-      const res = await this.$dialog.confirm({
-        text: "Are you sure you want to delete this playlist?",
-        title: "Warning",
+  async deleteIt(): Promise<void> {
+    const res = await this.$dialog.confirm({
+      text: "Are you sure you want to delete this playlist?",
+      title: "Warning",
+    });
+
+    if (res) {
+      this.deletePlaylist(this.currentPlaylist).then(() => {
+        this.$router.push({ name: "playlists" });
       });
+    }
+  }
 
-      if (res) {
-        this.deletePlaylist(this.currentPlaylist).then(() => {
-          this.$router.push({ name: "playlists" });
-        });
-      }
-    },
-
-    removeFromPlaylist({ index }) {
-      this.updatePlaylist({
-        playlistId: this.currentPlaylist.id,
-        songIndexToRemove: index,
-      }).then(() => {
-        this.$dialog.message.info(
-          "1 song removed from playlist",
-          {
-            position: "bottom-left",
-          },
-          (e) => {
-            // eslint-disable-next-line no-console
-            console.log("E", e);
-          }
-        );
+  removeFromPlaylist({ index }): void {
+    this.updatePlaylist({
+      playlistId: this.currentPlaylist.id,
+      songIndexToRemove: index,
+    }).then(() => {
+      this.$dialog.message.info("1 song removed from playlist", {
+        position: "bottom-left",
       });
-    },
-  },
-};
+    });
+  }
+}
 </script>
 
 <style lang="scss" scoped>

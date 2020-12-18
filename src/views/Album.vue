@@ -5,7 +5,7 @@
         <v-s-cover :entity="currentAlbum" :size="160" type="artist"></v-s-cover>
         <div class="pl-4 pt-4">
           <h1 class="title">
-            <span class="album-title" v-text="currentAlbum.name"></span>
+            <span class="pr-4" v-text="currentAlbum.name"></span>
             <v-btn color="dark-grey" fab outlined small @click="playAlbum()">
               <v-icon>mdi-play</v-icon>
             </v-btn>
@@ -148,10 +148,5 @@ export default class Album extends Vue {
   .v-icon {
     padding-right: 8px;
   }
-}
-
-.album-title {
-  display: inline-block;
-  padding-right: 16px;
 }
 </style>

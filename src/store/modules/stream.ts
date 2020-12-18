@@ -98,7 +98,7 @@ export default class StreamStore extends VuexModule {
   @Action
   addToQueue({ songs }: { songs: Song[] }): void {
     this.context.commit("setPlaylist", {
-      playlist: [...this.playlist, songs],
+      playlist: [...this.playlist, ...songs],
       resetHistory: false,
     });
   }

@@ -126,9 +126,7 @@ export default class Songlist extends Vue {
   }
 
   onMouseOver(id: number): void {
-    if (!this.currentSong || this.currentSong.id !== id) {
-      this.hovered = id;
-    }
+    this.hovered = id;
   }
 
   playSong(item: Song): void {

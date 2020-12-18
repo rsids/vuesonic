@@ -40,6 +40,11 @@ export default class PlaylistStore extends VuexModule {
     }
   }
 
+  @Mutation
+  setCurrentPlaylist(playlist: Playlist): void {
+    this.currentPlaylist = playlist;
+  }
+
   @Action
   async createPlaylist({
     title,
@@ -74,8 +79,8 @@ export default class PlaylistStore extends VuexModule {
     return { playlists: response.playlists.playlist || [] };
   }
 
-  @MutationAction
-  async getPlaylist({ id }: { id: number }): Promise<unknown> {
+  @Action
+  async getPlaylist({ id }: { id: number }): Promise<Playlist | null> {
     const response: PlaylistResponse = await Vue.prototype.axios.get(
       `getPlaylist?id=${id}`
     );
@@ -85,9 +90,11 @@ export default class PlaylistStore extends VuexModule {
         song.starred = !!song.starred;
         return song;
       });
-      return { currentPlaylist: response.playlist };
+      this.context.commit("setCurrentPlaylist", response.playlist);
+      return response.playlist;
     }
-    return { currentPlaylist: null };
+    this.context.commit("setCurrentPlaylist", null);
+    return null;
   }
 
   @Action

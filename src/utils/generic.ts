@@ -30,11 +30,12 @@ const salt = (): string => {
  * @param {Array} a items An array containing the items.
  */
 const shuffle = (a: unknown[]): unknown[] => {
+  const shuffled: unknown[] = [...a];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
-  return a;
+  return shuffled;
 };
 
 interface getArtistUrlSignature {
