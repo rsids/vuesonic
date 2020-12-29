@@ -22,7 +22,7 @@
       small
       class="btn--play"
       fab
-      v-if="hover && type !== 'artist'"
+      v-if="hover && type !== 'artist' && type !== 'song'"
       @click.stop="playIt()"
       ><v-icon>mdi-play</v-icon></v-btn
     >
@@ -72,14 +72,14 @@ export default class Cover extends Vue {
   get icon(): string {
     if (this.type === "artist") {
       return "mdi-account";
-    } else if (this.type === "album") {
+    } else if (this.type === "album" || this.type === "song") {
       return "mdi-album";
     }
     return "mdi-playlist";
   }
 
   playIt(): void {
-    if (this.type === "album") {
+    if (this.type === "album" || this.type === "song") {
       if (this.entity.id) {
         this.getAlbum(this.entity as Album).then(
           (album) => {

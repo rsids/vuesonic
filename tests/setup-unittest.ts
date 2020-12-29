@@ -10,3 +10,14 @@ Vue.use(Vuetify);
 Vue.use(http);
 
 window.IntersectionObserver = IntersectionObserver;
+// window.HTMLMediaElement = HTMLMediaElement;
+window.HTMLMediaElement.prototype.load = () => {
+  /* do nothing */
+};
+window.HTMLMediaElement.prototype.play = () => {
+  /* do nothing */
+  return Promise.resolve();
+};
+window.HTMLMediaElement.prototype.pause = () => {
+  /* do nothing */
+};

@@ -44,7 +44,10 @@
       </div>
       <v-row>
         <v-col cols="12">
-          <v-s-songlist :songs="currentAlbum.song"></v-s-songlist>
+          <v-s-songlist
+            :songs="currentAlbum.song"
+            @click-song="playSong"
+          ></v-s-songlist>
         </v-col>
       </v-row>
     </v-container>
@@ -67,6 +70,7 @@ import { Component, Vue } from "vue-property-decorator";
 import { Album as IAlbum } from "@/store/interfaces/album";
 import { album } from "@/store/modules/album";
 import { stream } from "@/store/modules/stream";
+import { Song } from "@/store/interfaces/song";
 
 @Component({
   name: "Album",
@@ -116,6 +120,7 @@ export default class Album extends Vue {
       }
     });
   }
+
   destroyed(): void {
     this.setAlbum(null);
   }
@@ -133,6 +138,11 @@ export default class Album extends Vue {
   playAlbum(): void {
     this.setPlaylist({ playlist: this.currentAlbum.song });
     this.play({ song: this.currentAlbum.song[0] });
+  }
+
+  playSong({ song }: { song: Song }): void {
+    this.setPlaylist({ playlist: this.currentAlbum.song });
+    this.play({ song });
   }
 
   shuffleAlbum(): void {

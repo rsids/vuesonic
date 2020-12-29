@@ -43,6 +43,7 @@
             :songs="starred"
             :full="true"
             :numbering="'index'"
+            @song-click="playSong"
           ></v-s-songlist>
           <v-s-save-playlist
             label="Save as playlist"
@@ -66,7 +67,7 @@ import { Component, Vue } from "vue-property-decorator";
 import VSEmptyState from "@/components/EmptyState.vue";
 import { album } from "@/store/modules/album";
 import { Song } from "@/store/interfaces/song";
-import { duration, shuffle } from "@/utils/generic";
+import { duration } from "@/utils/generic";
 import VSPlaylistMenu from "@/components/PlaylistMenu.vue";
 import VSQueueMenu from "@/components/QueueMenu.vue";
 import { stream } from "@/store/modules/stream";
@@ -85,8 +86,10 @@ export default class Starred extends Vue {
   @album.Action getStarred!: () => Promise<unknown>;
   @album.State starred!: Song[];
 
-  @stream.Action play!: (_) => void;
-  @stream.Mutation setPlaylist!: (_) => void;
+  @stream.Action setPlaylist!: (_) => void;
+  @stream.Action playNow!: (_) => void;
+  @stream.Action playIndex!: (_) => void;
+  @stream.Action shuffleAndPlay!: (_) => void;
 
   cover = "";
   loaded = false;
@@ -95,15 +98,17 @@ export default class Starred extends Vue {
     this.getStarred().then(() => (this.loaded = true));
   }
 
-  playAll(): void {
+  playSong({ index }: { index: number }): void {
     this.setPlaylist({ playlist: this.starred });
-    this.play({ song: this.starred[0] });
+    this.playIndex(index);
+  }
+
+  playAll(): void {
+    this.playNow({ songs: this.starred });
   }
 
   shuffleStarred(): void {
-    const shuffled = shuffle(this.starred);
-    this.setPlaylist({ playlist: shuffled });
-    this.play({ song: shuffled[0] });
+    this.shuffleAndPlay({ songs: this.starred });
   }
 
   get metadata(): string {

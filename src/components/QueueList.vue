@@ -13,6 +13,7 @@
       <v-s-songlist
         :elevation="0"
         :songs="playlist"
+        @click-song="playSong"
         dense
         full
         numbering="none"
@@ -35,9 +36,14 @@ export default class QueueList extends Vue {
   @stream.State playlist;
 
   @stream.Mutation setPlaylist;
+  @stream.Action playIndex;
 
   onClear(): void {
     this.setPlaylist({ playlist: [], resetHistory: true });
+  }
+
+  playSong({ index }: { index: number }): void {
+    this.playIndex(index);
   }
 }
 </script>

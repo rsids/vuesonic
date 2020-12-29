@@ -18,7 +18,7 @@
         </span>
         <div>
           <div v-if="!!song" class="d-flex align-center">
-            <v-s-cover :entity="song" :size="90" type="album"></v-s-cover>
+            <v-s-cover :entity="song" :size="90" type="song"></v-s-cover>
             <div class="ma-3">
               <div
                 class="body-1 font-weight-medium text-no-wrap text-truncate"
@@ -33,21 +33,15 @@
         </div>
       </div>
       <div class="player__controls">
-        <v-btn icon>
-          <v-icon>mdi-repeat</v-icon>
-        </v-btn>
-        <v-btn icon @click="skipPrev()">
+        <v-btn :disabled="!hasPrev" icon @click="skipPrev()">
           <v-icon>mdi-skip-previous</v-icon>
         </v-btn>
-        <v-btn :disabled="!song" color="primary" fab @click="togglePlay()">
+        <v-btn :disabled="!canPlay" color="primary" fab @click="togglePlay()">
           <v-icon v-if="!playing">mdi-play</v-icon>
           <v-icon v-if="playing">mdi-pause</v-icon>
         </v-btn>
         <v-btn :disabled="!hasNext" icon @click="skipNext()">
           <v-icon>mdi-skip-next</v-icon>
-        </v-btn>
-        <v-btn color="#ff6600" icon>
-          <v-icon>mdi-shuffle</v-icon>
         </v-btn>
       </div>
       <div class="player__sound">
@@ -91,8 +85,10 @@ export default class Player extends Vue {
   @stream.State hasPrev!: boolean;
   @stream.State hasNext!: boolean;
   @stream.State paused!: boolean;
+  @stream.State playlist!: Song[];
   @stream.State progress!: number;
   @stream.State song!: Song;
+  @stream.State idx!: number;
 
   prevClick = 0;
   prevMode = PREV_MODE_PREV;
@@ -115,6 +111,10 @@ export default class Player extends Vue {
   }
   set playhead(val: number) {
     this.songProgress = val;
+  }
+
+  get canPlay(): boolean {
+    return !!this.song || this.playlist.length > 0;
   }
 
   changePlayhead($event: MouseEvent): void {
@@ -143,7 +143,11 @@ export default class Player extends Vue {
   }
 
   togglePlay(): void {
-    this.playing = !this.playing;
+    if (!this.song) {
+      this.next();
+    } else {
+      this.playing = !this.playing;
+    }
   }
 
   @Watch("progress")

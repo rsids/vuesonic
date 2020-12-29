@@ -17,7 +17,7 @@
     </template>
     <template #item="item">
       <tr
-        @click="playSong(item.item)"
+        @click="playSong(item)"
         @mouseleave="hovered = null"
         @mouseover="onMouseOver(item.item.id)"
       >
@@ -50,8 +50,8 @@
                 <v-divider v-if="hasMenuOptions"></v-divider>
                 <slot
                   name="menuoptions"
-                  v-bind:index="songs.indexOf(item.item)"
-                  v-bind:song="item.item"
+                  :index="songs.indexOf(item.item)"
+                  :song="item.item"
                 ></slot>
               </v-list>
             </v-menu>
@@ -100,6 +100,11 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { stream } from "@/store/modules/stream";
 import { annotation } from "@/store/modules/annotation";
 
+interface ListItem {
+  index: number;
+  item: Song;
+}
+
 @Component({
   name: "VSSonglist",
   components: { VSQueueMenu, VSPlaylistMenu },
@@ -129,9 +134,8 @@ export default class Songlist extends Vue {
     this.hovered = id;
   }
 
-  playSong(item: Song): void {
-    this.setPlaylist({ playlist: this.songs });
-    this.play({ song: item });
+  playSong(item: ListItem): void {
+    this.$emit("click-song", { index: item.index, song: item.item });
   }
 
   gotoArtist(song: Song): void {

@@ -81,6 +81,7 @@
           :songs="songs"
           :full="true"
           :numbering="'none'"
+          @click-song="playSong"
         ></v-s-songlist>
         <v-s-save-playlist
           label="Save as playlist"
@@ -101,6 +102,7 @@ import { search } from "@/store/modules/search";
 import { Artist } from "@/store/interfaces/artist";
 import { Album } from "@/store/interfaces/album";
 import { Song } from "@/store/interfaces/song";
+import { stream } from "@/store/modules/stream";
 
 @Component({
   name: "Search",
@@ -110,12 +112,14 @@ export default class Search extends Vue {
   @search.State artists!: Artist[];
   @search.State albums!: Album[];
   @search.State songs!: Song[];
-  @search.State hasMoreAlbums = false;
-  @search.State hasMoreArtists = false;
-  @search.State hasMoreSongs = false;
+  @search.State hasMoreAlbums;
+  @search.State hasMoreArtists;
+  @search.State hasMoreSongs;
 
   @search.Action search;
   @search.Action searchMore;
+
+  @stream.Action playNow;
 
   get query(): string {
     return this.$route.params.query;
@@ -123,6 +127,10 @@ export default class Search extends Vue {
 
   mounted(): void {
     this.search({ query: this.query });
+  }
+
+  playSong({ song }: { song: Song }): void {
+    this.playNow({ songs: [song] });
   }
 
   seeAll(type: string): void {

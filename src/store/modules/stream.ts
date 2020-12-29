@@ -5,6 +5,10 @@ import { namespace } from "vuex-class";
 
 export const stream = namespace("stream");
 
+interface Songlist {
+  songs: Song[];
+}
+
 @Module({ namespaced: true })
 export default class StreamStore extends VuexModule {
   audio: HTMLAudioElement = document.createElement("audio");
@@ -14,18 +18,16 @@ export default class StreamStore extends VuexModule {
   paused = true;
   progress = 0;
   playmode = -1;
+  idx = -1;
   playlist: Song[] = [];
   repeat = false;
   song?: Song = undefined;
 
   @Mutation
-  setHasNext(has: boolean): void {
-    this.hasNext = has;
-  }
-
-  @Mutation
-  setHasPrev(has: boolean): void {
-    this.hasPrev = has;
+  setIdx(i: number): void {
+    this.idx = i;
+    this.hasPrev = i > 0;
+    this.hasNext = i < this.playlist.length - 1;
   }
 
   @Mutation
@@ -49,21 +51,24 @@ export default class StreamStore extends VuexModule {
   }
 
   @Mutation
-  setPaused(): void {
+  setPaused(paused = true): void {
     if (window.navigator.mediaSession) {
       window.navigator.mediaSession.playbackState = "paused";
     }
-    this.paused = true;
+    this.paused = paused;
     this.audio.pause();
   }
 
   @Mutation
   setPlaying(): void {
-    if (window.navigator.mediaSession) {
-      window.navigator.mediaSession.playbackState = "playing";
+    if (this.song) {
+      this.audio.play().then(() => {
+        this.paused = false;
+        if (window.navigator.mediaSession) {
+          window.navigator.mediaSession.playbackState = "playing";
+        }
+      });
     }
-    this.paused = false;
-    this.audio.play();
   }
 
   @Mutation
@@ -86,17 +91,12 @@ export default class StreamStore extends VuexModule {
   }
 
   @Mutation
-  addToPlaylist(playlist: Song[]): void {
-    this.playlist = [...this.playlist, ...playlist];
-  }
-
-  @Mutation
   setProgress(value: number): void {
     this.progress = value;
   }
 
   @Action
-  addToQueue({ songs }: { songs: Song[] }): void {
+  addToQueue(songs: Song[]): void {
     this.context.commit("setPlaylist", {
       playlist: [...this.playlist, ...songs],
       resetHistory: false,
@@ -131,6 +131,14 @@ export default class StreamStore extends VuexModule {
 
   @Action
   async play({ song }: { song: Song }): Promise<string> {
+    // Sanity
+    if (
+      this.idx < 0 ||
+      this.idx >= this.playlist.length ||
+      this.playlist[this.idx].id !== song.id
+    ) {
+      this.context.commit("setIdx", this.playlist.indexOf(song));
+    }
     this.context.commit("setPaused");
     const url = await this.context.dispatch(
       "connection/getUrl",
@@ -141,63 +149,71 @@ export default class StreamStore extends VuexModule {
     try {
       this.context.commit("setSong", song);
       this.context.commit("setPlaying");
-      const idx = this.playlist.findIndex((s) => s.id === song.id);
-      this.context.commit(
-        "setHasNext",
-        idx + 1 !== this.playlist.length || this.repeat
-      );
-      this.context.commit("setHasPrev", idx > 0);
     } catch (e) {
       // eslint-disable-next-line no-console
-      console.log(e);
+      console.error(
+        `Cannot play song ${song.artist} - ${song.title}, reason:`,
+        e
+      );
     }
     return url;
   }
 
   @Action
-  next(): void {
-    if (this.playlist && this.song) {
-      const id = this.song.id;
-      let idx = this.playlist.findIndex((song) => song.id === id);
-      if (idx >= 0 && idx < this.playlist.length - 1) {
-        idx++;
-        this.context.dispatch("play", { song: this.playlist[idx] });
-      }
+  playIndex(idx: number): Promise<string> {
+    if (this.playlist && idx > 0 && idx < this.playlist.length) {
+      this.context.commit("setIdx", idx);
+      return this.context.dispatch("play", { song: this.playlist[idx] });
     }
+    return Promise.reject("no playlist or out of bounds");
   }
 
   @Action
-  playNext({ songs }: { songs: Song[] }): void {
-    let idx = 0;
-    if (this.song) {
-      idx = this.playlist.indexOf(this.song) + 1;
+  next(): Promise<string> {
+    if (this.playlist) {
+      const idx = this.idx + 1;
+      if (idx >= 0 && idx < this.playlist.length) {
+        this.context.commit("setIdx", idx);
+        return this.context.dispatch("play", { song: this.playlist[idx] });
+      }
     }
+    return Promise.reject("no playlist or out of bounds");
+  }
+
+  @Action
+  playNext({ songs }: Songlist): Promise<string> | undefined {
     const arr = [...this.playlist];
-    arr.splice(idx, 0, ...songs);
+    arr.splice(this.idx + 1, 0, ...songs);
     this.context.commit("setPlaylist", { playlist: arr, resetHistory: false });
     if (!this.song) {
-      this.context.dispatch("play", { song: this.playlist[0] });
+      this.context.commit("setIdx", 0);
+      return this.context.dispatch("play", { song: this.playlist[this.idx] });
     }
   }
 
   @Action
-  prev(): void {
-    if (this.playlist && this.song) {
-      const id = this.song.id;
-      let idx = this.playlist.findIndex((song) => song.id === id);
+  playNow({ songs }: Songlist): Promise<string> {
+    this.context.commit("setPlaylist", { playlist: songs });
+    this.context.commit("setIdx", 0);
+    return this.context.dispatch("play", { song: this.playlist[this.idx] });
+  }
+
+  @Action
+  prev(): Promise<string> {
+    if (this.playlist) {
+      const idx = this.idx - 1;
       if (idx >= 0) {
-        idx--;
-        idx = idx < 0 ? this.playlist.length - 1 : idx;
-        this.context.dispatch("play", { song: this.playlist[idx] });
+        this.context.commit("setIdx", idx);
+        return this.context.dispatch("play", { song: this.playlist[idx] });
       }
     }
+    return Promise.reject("no playlist or out of bounds");
   }
 
   @Action
   shuffleAndPlay({ songs }: { songs: Song[] }): void {
-    this.context.commit("setPlaylist", {
-      playlist: shuffle(([] as Song[]).concat(songs)),
+    this.context.dispatch("playNow", {
+      songs: shuffle(([] as Song[]).concat(songs)),
     });
-    this.context.dispatch("play", { song: this.playlist[0] });
   }
 }

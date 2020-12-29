@@ -42,6 +42,7 @@
         <v-col cols="12">
           <v-s-songlist
             v-if="currentPlaylist.songCount > 0"
+            @click-song="playSong"
             :full="true"
             :numbering="'index'"
             :songs="currentPlaylist.entry"
@@ -76,6 +77,7 @@ import VSSonglist from "@/components/Songlist.vue";
 import { playlist } from "@/store/modules/playlist";
 import { album } from "@/store/modules/album";
 import { stream } from "@/store/modules/stream";
+import { Song } from "@/store/interfaces/song";
 
 @Component({
   name: "Playlist",
@@ -114,8 +116,6 @@ export default class Playlist extends Vue {
         }
       },
       (err) => {
-        // eslint-disable-next-line no-console
-        console.log("ERR STATE", err);
         if (err.error.code === 70) {
           // 404
           this.notFound = true;
@@ -127,6 +127,11 @@ export default class Playlist extends Vue {
   playIt(): void {
     this.setPlaylist({ playlist: this.currentPlaylist.entry });
     this.play({ song: this.currentPlaylist.entry[0] });
+  }
+
+  playSong({ song }: { song: Song }): void {
+    this.setPlaylist({ playlist: this.currentPlaylist.entry });
+    this.play({ song });
   }
 
   async deleteIt(): Promise<void> {
@@ -142,7 +147,7 @@ export default class Playlist extends Vue {
     }
   }
 
-  removeFromPlaylist({ index }): void {
+  removeFromPlaylist({ index }: { index: number }): void {
     this.updatePlaylist({
       playlistId: this.currentPlaylist.id,
       songIndexToRemove: index,
