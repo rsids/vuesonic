@@ -7,6 +7,7 @@ import { Playlist } from "@/store/interfaces/playlist";
 import { Index } from "@/store/interfaces/index";
 import { Artist } from "@/store/interfaces/artist";
 import { Song } from "@/store/interfaces/song";
+import { ScanStatus } from "@/store/interfaces/scanStatus";
 
 export interface SubsonicResponse {
   status: string;
@@ -54,6 +55,10 @@ export interface StarredResponse extends SubsonicResponse {
 
 export interface UserResponse extends SubsonicResponse {
   user: User;
+}
+
+export interface ScanStatusResponse extends SubsonicResponse {
+  scanStatus: ScanStatus;
 }
 
 export interface SubsonicError {

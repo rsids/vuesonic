@@ -2,6 +2,9 @@ import { salt } from "@/utils/generic";
 import { Md5 } from "ts-md5";
 import { Action, Module, Mutation, VuexModule } from "vuex-module-decorators";
 import { namespace } from "vuex-class";
+import Vue from "vue";
+import { ScanStatusResponse } from "@/store/interfaces/subsonicResponse";
+import { ScanStatus } from "@/store/interfaces/scanStatus";
 
 interface ConnectionParams {
   u: string;
@@ -12,24 +15,38 @@ interface ConnectionParams {
   v: string;
 }
 
-export const connection = namespace("connection");
+export const server = namespace("server");
 
 @Module({ namespaced: true })
-export default class ConnectionStore extends VuexModule {
+export default class ServerStore extends VuexModule {
   password = sessionStorage.getItem("password") || "";
   _server = sessionStorage.getItem("server") || "";
   username = sessionStorage.getItem("username") || "";
   hasCredentials = !!sessionStorage.getItem("server");
+  scanStatus: ScanStatus | undefined;
 
   @Mutation
   setHasCredentials(value: boolean): void {
     this.hasCredentials = value;
   }
 
+  @Mutation
+  setScanStatus(value: ScanStatus): void {
+    this.scanStatus = value;
+  }
+
   @Action
   clearCredentials(): void {
     sessionStorage.clear();
     this.context.commit("setHasCredentials", false);
+  }
+
+  @Action({ commit: "setScanStatus" })
+  async getScanStatus(): Promise<ScanStatus> {
+    const response: ScanStatusResponse = await Vue.prototype.axios.get(
+      `getScanStatus`
+    );
+    return response.scanStatus;
   }
 
   @Mutation

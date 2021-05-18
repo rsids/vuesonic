@@ -141,7 +141,7 @@ export default class StreamStore extends VuexModule {
     }
     this.context.commit("setPaused");
     const url = await this.context.dispatch(
-      "connection/getUrl",
+      "server/getUrl",
       { url: `stream?id=${song.id}` },
       { root: true }
     );

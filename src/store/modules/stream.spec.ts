@@ -5,7 +5,7 @@ import album from "@/../__mocks__/album.json";
 import Vue from "vue";
 import { cloneDeep } from "lodash";
 import { Song } from "@/store/interfaces/song";
-import ConnectionStore from "@/store/modules/connection";
+import ServerStore from "@/store/modules/server";
 
 /**
  * Unittests for the stream store.
@@ -22,13 +22,13 @@ describe("stream store", () => {
     store = new Vuex.Store({
       modules: {
         stream: cloneDeep(StreamStore),
-        connection: cloneDeep(ConnectionStore),
+        server: cloneDeep(ServerStore),
       },
     });
   });
 
   beforeEach(() => {
-    store.commit("connection/storeCredentials", {
+    store.commit("server/storeCredentials", {
       user: "test",
       password: "test",
       server: "http://testserver",

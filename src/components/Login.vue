@@ -86,7 +86,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import { namespace } from "vuex-class";
 import { Validations } from "vuelidate-property-decorators";
 
-const connection = namespace("connection");
+const server = namespace("server");
 const user = namespace("user");
 @Component({
   name: "VSLogin",
@@ -95,8 +95,8 @@ const user = namespace("user");
 export default class Login extends Vue {
   @Prop() active!: boolean;
 
-  @connection.Mutation storeCredentials;
-  @connection.Action clearCredentials;
+  @server.Mutation storeCredentials;
+  @server.Action clearCredentials;
   @user.Action getUser;
 
   invalidCredentials = false;

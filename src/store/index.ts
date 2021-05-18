@@ -4,7 +4,7 @@ import AnnotationStore from "@/store/modules/annotation";
 import ArtistStore from "@/store/modules/artist";
 import SearchStore from "@/store/modules/search";
 import PlaylistStore from "@/store/modules/playlist";
-import ConnectionStore from "@/store/modules/connection";
+import ServerStore from "@/store/modules/server";
 import UserStore from "@/store/modules/user";
 import StreamStore from "@/store/modules/stream";
 import UiStore from "@/store/modules/ui";
@@ -22,7 +22,7 @@ const store: StoreOptions<RootState> = {
     album: AlbumStore,
     annotation: AnnotationStore,
     artist: ArtistStore,
-    connection: ConnectionStore,
+    server: ServerStore,
     playlist: PlaylistStore,
     search: SearchStore,
     stream: StreamStore,

@@ -12,11 +12,11 @@ const $axios = axios.create({});
 
 $axios.interceptors.request.use(
   (config: AxiosRequestConfig) => {
-    const server = store.getters["connection/server"];
+    const server = store.getters["server/server"];
     config.baseURL = `${server}/rest/`;
     config.params = {
       ...config.params,
-      ...store.getters["connection/params"],
+      ...store.getters["server/params"],
     };
     return config;
   },

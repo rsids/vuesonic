@@ -50,7 +50,7 @@ import VSPlayer from "@/components/Player.vue";
 import VSToolbar from "@/components/Toolbar.vue";
 import { ui } from "@/store/modules/ui";
 import { Component, Vue } from "vue-property-decorator";
-import { connection } from "@/store/modules/connection";
+import { server } from "@/store/modules/server";
 import { search } from "@/store/modules/search";
 import { stream } from "@/store/modules/stream";
 
@@ -68,7 +68,7 @@ export default class App extends Vue {
   @stream.Action init;
   @ui.Mutation setDrawer;
 
-  @connection.State hasCredentials;
+  @server.State hasCredentials;
   @search.State query!: string;
   @ui.State drawer!: boolean;
 
