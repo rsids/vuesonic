@@ -5,7 +5,7 @@ import mockAxios from "jest-mock-axios";
 const $axios = mockAxios.create();
 
 export default {
-  install() {
+  install(): void {
     Vue.prototype.axios = $axios;
   },
 };
