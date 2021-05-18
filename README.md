@@ -1,5 +1,9 @@
 # vuesonic
 
+A subsonic / airsonic player written in vue
+
+![Screenshot](vuesonic.png)
+
 ## Project setup
 ```
 npm install
