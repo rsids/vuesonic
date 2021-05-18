@@ -109,7 +109,7 @@ export default class AlbumStore extends VuexModule {
   @Action
   cancelAllRequests(): void {
     while (requests.length > 0) {
-      ((requests.pop() as unknown) as Cancelable).cancel();
+      (requests.pop() as Cancelable).cancel();
     }
   }
 

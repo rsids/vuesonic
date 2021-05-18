@@ -23,7 +23,7 @@ export default class ServerStore extends VuexModule {
   _server = sessionStorage.getItem("server") || "";
   username = sessionStorage.getItem("username") || "";
   hasCredentials = !!sessionStorage.getItem("server");
-  scanStatus: ScanStatus | undefined;
+  scanStatus: ScanStatus = { scanning: false, count: 0 };
 
   @Mutation
   setHasCredentials(value: boolean): void {
@@ -32,7 +32,8 @@ export default class ServerStore extends VuexModule {
 
   @Mutation
   setScanStatus(value: ScanStatus): void {
-    this.scanStatus = value;
+    this.scanStatus = { ...value };
+    console.log(this.scanStatus);
   }
 
   @Action
@@ -45,6 +46,14 @@ export default class ServerStore extends VuexModule {
   async getScanStatus(): Promise<ScanStatus> {
     const response: ScanStatusResponse = await Vue.prototype.axios.get(
       `getScanStatus`
+    );
+    return response.scanStatus;
+  }
+
+  @Action({ commit: "setScanStatus" })
+  async startScan(): Promise<ScanStatus> {
+    const response: ScanStatusResponse = await Vue.prototype.axios.get(
+      `startScan`
     );
     return response.scanStatus;
   }

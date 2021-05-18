@@ -16,11 +16,7 @@
       <v-icon size="medium">mdi-star</v-icon>
     </template>
     <template #item="item">
-      <tr
-        @click="playSong(item)"
-        @mouseleave="hovered = null"
-        @mouseover="onMouseOver(item.item.id)"
-      >
+      <tr @click="playSong(item)" @mouseleave="hovered = null" @mouseover="onMouseOver(item.item.id)">
         <td v-if="numbering !== 'none'" class="px-0 text-center">
           <span v-if="hovered !== item.item.id">
             <span v-if="numbering === 'track'" v-text="item.item.track"></span>
@@ -32,9 +28,7 @@
           <div class="d-flex align-center">
             <div class="d-flex flex-column text-truncate">
               <span class="text-no-wrap" v-text="item.item.title"></span>
-              <span v-if="dense" class="caption text-no-wrap"
-                >{{ item.item.artist }} - {{ item.item.album }}</span
-              >
+              <span v-if="dense" class="caption text-no-wrap">{{ item.item.artist }} - {{ item.item.album }}</span>
             </div>
             <v-spacer></v-spacer>
             <v-menu bottom right>
@@ -48,11 +42,7 @@
                 <v-divider></v-divider>
                 <v-s-playlist-menu :songs="[item.item]"></v-s-playlist-menu>
                 <v-divider v-if="hasMenuOptions"></v-divider>
-                <slot
-                  name="menuoptions"
-                  :index="songs.indexOf(item.item)"
-                  :song="item.item"
-                ></slot>
+                <slot name="menuoptions" :index="songs.indexOf(item.item)" :song="item.item"></slot>
               </v-list>
             </v-menu>
           </div>
@@ -77,14 +67,10 @@
           <span v-text="item.item.playCount"></span>
         </td>
         <td class="align-center justify-center text-center px-0">
-          <v-icon
-            v-if="!item.item.starred && hovered === item.item.id"
-            @click.stop="addStar(item.item)"
+          <v-icon v-if="!item.item.starred && hovered === item.item.id" @click.stop="addStar(item.item)"
             >mdi-star-outline
           </v-icon>
-          <v-icon v-if="!!item.item.starred" @click.stop="removeStar(item.item)"
-            >mdi-star
-          </v-icon>
+          <v-icon v-if="!!item.item.starred" @click.stop="removeStar(item.item)">mdi-star </v-icon>
         </td>
       </tr>
     </template>
